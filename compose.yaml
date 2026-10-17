@@ -1,0 +1,16 @@
+services:
+  erpbooking:
+    build:
+      context: .
+    ports:
+      - "${ERPBOOKING_BIND_ADDRESS:-127.0.0.1}:${ERPBOOKING_PORT:-8080}:8080"
+    restart: unless-stopped
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
