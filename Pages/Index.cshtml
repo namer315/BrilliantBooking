@@ -1,0 +1,56 @@
+@page
+@model ERPBooking.Pages.IndexModel
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f7fb">
+  <title>@Model.PageTitle</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <main class="page">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="@Model.ApplicationName home">
+        <span class="brand-mark" aria-hidden="true">E</span>
+        <span>@Model.ApplicationName</span>
+      </a>
+      <span class="environment">@Model.WorkspaceLabel</span>
+    </header>
+
+    <section class="hero" aria-labelledby="page-title">
+      <div class="eyebrow"><span class="eyebrow-dot"></span> YOUR BOOKING WORKSPACE</div>
+      <h1 id="page-title">A clear start<br>for better <span>bookings.</span></h1>
+      <p class="intro">@Model.IntroText</p>
+
+      <section class="status-card" aria-labelledby="status-title">
+        <div class="status-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="m5 12.5 4.3 4.3L19.5 6.8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="status-copy">
+          <h2 id="status-title">Backend connection</h2>
+          <p id="connection-status" role="status" aria-live="polite">Checking the C# API…</p>
+        </div>
+        <span id="status-indicator" class="status-indicator" aria-label="Checking"></span>
+      </section>
+
+      <div class="next-step">
+        <span class="step-number">01</span>
+        <div>
+          <h2>Ready for your next feature</h2>
+          <p>Build on this foundation with booking workflows, data storage, and the tools your team needs.</p>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <span>@Model.ApplicationName</span>
+      <span>Razor Pages frontend <i aria-hidden="true">·</i> ASP.NET Core backend</span>
+    </footer>
+  </main>
+</body>
+</html>

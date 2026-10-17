@@ -1,0 +1,246 @@
+:root {
+  color-scheme: light;
+  font-family: "Segoe UI", Arial, sans-serif;
+  color: #17211e;
+  background: #f6f7fb;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  background:
+    radial-gradient(ellipse at 82% 12%, rgba(218, 236, 226, .66), transparent 35%),
+    #f6f7fb;
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+  width: min(100% - 64px, 1120px);
+  min-height: 100vh;
+  margin: 0 auto;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 88px;
+  border-bottom: 1px solid #e6e9e7;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  color: inherit;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -.5px;
+  text-decoration: none;
+}
+
+.brand-mark {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border-radius: 10px;
+  background: #177456;
+  color: #fff;
+  font-size: 17px;
+}
+
+.environment {
+  color: #687671;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+}
+
+.hero {
+  width: min(100%, 650px);
+  margin: auto;
+  padding: 80px 0 100px;
+}
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #527064;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+.eyebrow-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #21a276;
+  box-shadow: 0 0 0 4px #e2f2e9;
+}
+
+h1 {
+  margin: 27px 0 16px;
+  font-size: clamp(46px, 7vw, 72px);
+  font-weight: 600;
+  letter-spacing: -4.5px;
+  line-height: 1.08;
+}
+
+h1 span {
+  color: #25835f;
+}
+
+.intro {
+  max-width: 500px;
+  margin: 0;
+  color: #66736e;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.status-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 43px;
+  padding: 20px 22px;
+  border: 1px solid #e5ebe7;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .85);
+  box-shadow: 0 10px 35px rgba(28, 63, 47, .04);
+}
+
+.status-icon {
+  display: grid;
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 12px;
+  background: #e8f5ee;
+  color: #25835f;
+}
+
+.status-icon svg {
+  width: 21px;
+  height: 21px;
+}
+
+.status-copy {
+  flex: 1;
+}
+
+.status-copy h2,
+.next-step h2 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.status-copy p,
+.next-step p {
+  margin: 5px 0 0;
+  color: #78837f;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.status-indicator {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #e7a33e;
+}
+
+.status-indicator.connected {
+  background: #26a16f;
+  box-shadow: 0 0 0 4px #e5f4eb;
+}
+
+.status-indicator.error {
+  background: #d75b54;
+  box-shadow: 0 0 0 4px #f9e9e8;
+}
+
+.next-step {
+  display: flex;
+  gap: 18px;
+  margin-top: 31px;
+}
+
+.step-number {
+  padding-top: 1px;
+  color: #25835f;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .6px;
+}
+
+.next-step p {
+  max-width: 490px;
+}
+
+footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 21px 0;
+  border-top: 1px solid #e6e9e7;
+  color: #818b87;
+  font-size: 11px;
+}
+
+footer i {
+  padding: 0 4px;
+  color: #25835f;
+  font-style: normal;
+}
+
+@media (max-width: 600px) {
+  .page {
+    width: min(100% - 40px, 1120px);
+  }
+
+  .topbar {
+    height: 72px;
+  }
+
+  .environment {
+    font-size: 8px;
+    letter-spacing: .8px;
+  }
+
+  .hero {
+    padding: 73px 0 80px;
+  }
+
+  h1 {
+    letter-spacing: -2.8px;
+  }
+
+  .intro {
+    font-size: 15px;
+  }
+
+  .status-card {
+    gap: 12px;
+    padding: 17px 15px;
+  }
+
+  footer {
+    gap: 12px;
+    font-size: 10px;
+  }
+}
