@@ -20,9 +20,36 @@ For a Linux x64 host:
 dotnet publish ERPBooking.csproj -c Release -p:PublishProfile=linux-x64
 ```
 
-Copy the complete contents of the matching `bin/Release/net10.0/<runtime-identifier>/publish` directory to the host. The output includes the application, bundled .NET runtime, and static assets. Run `ERPBooking.exe` on Windows or `./ERPBooking` on Linux. No separate .NET installation is required on the host.
+The output in `bin/Release/net10.0/<runtime-identifier>/publish` includes the application, bundled .NET runtime, and static assets. No separate .NET installation is required on the host.
 
 This is a self-contained deployment, not a static-only website: the C# API still needs to run as a process on the host. If hosting behind IIS, the ASP.NET Core Hosting Bundle may still be needed for IIS integration; alternatively, run the app directly or behind a reverse proxy.
+
+## Self-host on Linux with systemd
+
+The included installer targets a Linux x64 server running systemd. Publish the app, then create an archive of the published output on your development machine:
+
+```powershell
+dotnet publish ERPBooking.csproj -c Release -p:PublishProfile=linux-x64
+tar -czf ERPBooking-linux-x64.tar.gz -C bin/Release/net10.0/linux-x64/publish .
+```
+
+Copy the archive and installer files to your Linux server:
+
+```powershell
+scp ERPBooking-linux-x64.tar.gz deploy/linux/install.sh deploy/linux/erpbooking.service user@your-server:/tmp/
+```
+
+On the server, extract and install the application:
+
+```sh
+mkdir -p /tmp/erpbooking-publish
+tar -xzf /tmp/ERPBooking-linux-x64.tar.gz -C /tmp/erpbooking-publish
+sudo bash /tmp/install.sh /tmp/erpbooking-publish
+```
+
+The installer creates a restricted `erpbooking` system account, installs the app under `/opt/erpbooking`, and enables the `erpbooking` systemd service. The service listens only on `127.0.0.1:5080`; put a TLS-enabled reverse proxy in front of it for external access. Check the API locally with `curl http://127.0.0.1:5080/api/health`, inspect logs with `sudo journalctl -u erpbooking -f`, and check service state with `sudo systemctl status erpbooking`.
+
+To deploy an update, repeat the publish, copy, and install steps. The installer stops the service before replacing files and restarts it afterward.
 
 ## API
 

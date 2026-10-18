@@ -1,0 +1,22 @@
+[Unit]
+Description=ERPBooking ASP.NET Core web application
+After=network.target
+
+[Service]
+Type=simple
+User=erpbooking
+Group=erpbooking
+WorkingDirectory=/opt/erpbooking
+ExecStart=/opt/erpbooking/ERPBooking
+Restart=on-failure
+RestartSec=5
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=ASPNETCORE_URLS=http://127.0.0.1:5080
+Environment=DOTNET_NOLOGO=true
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target
