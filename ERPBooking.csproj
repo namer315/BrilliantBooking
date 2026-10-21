@@ -8,6 +8,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>ERPBooking-4e5ba277-0a87-4ddf-b2ec-7d5a50f60242</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
