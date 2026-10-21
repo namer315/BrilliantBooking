@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ERPBooking", "ERPBooking.csproj", "{FFB15B62-CC06-4D04-9D05-AE7E22E92FC9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data", "Data\Data.csproj", "{C044E5E2-4FFC-43F0-A058-F0750D5BDC10}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,18 @@ Global
 		{FFB15B62-CC06-4D04-9D05-AE7E22E92FC9}.Release|x64.Build.0 = Release|Any CPU
 		{FFB15B62-CC06-4D04-9D05-AE7E22E92FC9}.Release|x86.ActiveCfg = Release|Any CPU
 		{FFB15B62-CC06-4D04-9D05-AE7E22E92FC9}.Release|x86.Build.0 = Release|Any CPU
+		{C044E5E2-4FFC-43F0-A058-F0750D5BDC10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C044E5E2-4FFC-43F0-A058-F0750D5BDC10}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C044E5E2-4FFC-43F0-A058-F0750D5BDC10}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C044E5E2-4FFC-43F0-A058-F0750D5BDC10}.Debug|x64.Build.0 = Debug|Any CPU
+		{C044E5E2-4FFC-43F0-A058-F0750D5BDC10}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C044E5E2-4FFC-43F0-A058-F0750D5BDC10}.Debug|x86.Build.0 = Debug|Any CPU
+		{C044E5E2-4FFC-43F0-A058-F0750D5BDC10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C044E5E2-4FFC-43F0-A058-F0750D5BDC10}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C044E5E2-4FFC-43F0-A058-F0750D5BDC10}.Release|x64.ActiveCfg = Release|Any CPU
+		{C044E5E2-4FFC-43F0-A058-F0750D5BDC10}.Release|x64.Build.0 = Release|Any CPU
+		{C044E5E2-4FFC-43F0-A058-F0750D5BDC10}.Release|x86.ActiveCfg = Release|Any CPU
+		{C044E5E2-4FFC-43F0-A058-F0750D5BDC10}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
