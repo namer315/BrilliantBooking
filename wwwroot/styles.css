@@ -4,7 +4,7 @@
   color-scheme: light;
   font-family: "DM Sans", "Segoe UI", Arial, sans-serif;
   color: #243229;
-  background: #f8f7f3;
+  background: #ffffff;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -13,7 +13,7 @@
   --ink: #243229;
   --muted: #788078;
   --line: #e7e5dd;
-  --paper: #f8f7f3;
+  --paper: #ffffff;
   --serif: "Playfair Display", Georgia, serif;
 }
 
@@ -369,6 +369,20 @@ summary:focus-visible {
   color: var(--green-dark);
 }
 
+.listing-intro {
+  width: min(100% - 96px, 1320px);
+  margin: 0 auto;
+  padding: 36px 0 8px;
+}
+
+.listing-intro h1 {
+  margin: 8px 0 0;
+  color: var(--ink);
+  font-size: clamp(28px, 3vw, 36px);
+  font-weight: 700;
+  letter-spacing: -.5px;
+}
+
 .search-section,
 .restaurant-section {
   width: min(100% - 96px, 1320px);
@@ -522,15 +536,16 @@ summary:focus-visible {
 
 .restaurant-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 21px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px 20px;
 }
 
 .restaurant-card {
   min-width: 0;
   overflow: hidden;
-  border: 1px solid #e9e7df;
-  background: #fffefa;
+  border: 1px solid #e4e4e0;
+  border-radius: 12px;
+  background: #ffffff;
   transition: transform .2s ease, box-shadow .2s ease;
 }
 
@@ -542,7 +557,7 @@ summary:focus-visible {
 .card-image-link {
   position: relative;
   display: block;
-  height: 207px;
+  height: 190px;
   overflow: hidden;
   background: #ddd8c9;
 }
@@ -604,8 +619,8 @@ summary:focus-visible {
 .card-meta {
   justify-content: flex-start;
   gap: 7px;
-  color: #85877f;
-  font-size: 9px;
+  color: #6b6f69;
+  font-size: 12px;
 }
 
 .meta-dot {
@@ -627,10 +642,9 @@ summary:focus-visible {
 .card-title-row h3 {
   overflow: hidden;
   margin: 0;
-  color: var(--green-dark);
-  font-family: var(--serif);
-  font-size: 19px;
-  font-weight: 600;
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 700;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

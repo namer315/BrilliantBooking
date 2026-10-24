@@ -5,180 +5,125 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f8f7f3">
+  <meta name="theme-color" content="#ffffff">
   <meta name="description" content="Discover Cape Town restaurants and find a table for your next night out.">
   <title>@Model.PageTitle | @Model.ApplicationName</title>
   <link rel="preconnect" href="https://images.unsplash.com">
   <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/listing.css">
 </head>
-<body>
+<body class="listing-page">
   <header class="site-header">
     <a class="brand" href="/" aria-label="Cape & Table home">
       <span class="brand-icon" aria-hidden="true">C</span>
-      <span>Cape <span class="brand-amp">&</span> Table</span>
+      <span>Cape <span class="brand-amp">&amp;</span> Table</span>
     </a>
-    <nav aria-label="Main navigation">
-      <a class="nav-link active" href="/">Find a table</a>
-      <a class="nav-link" href="#how-it-works">How it works</a>
+    <form method="get" action="/" class="pill-search" role="search" aria-label="Search restaurants">
+      <input type="hidden" name="area" value="@Model.Area">
+      <input type="hidden" name="cuisine" value="@Model.Cuisine">
+      <input type="hidden" name="priceLevel" value="@Model.PriceLevel">
+      <label class="pill-field pill-query">
+        <span class="visually-hidden">Search restaurants</span>
+        <input type="search" name="query" value="@Model.Query" placeholder="Search restaurants">
+      </label>
+      <label class="pill-field">
+        <span class="visually-hidden">Date</span>
+        <input type="date" name="date" value="@Model.Date.ToString("yyyy-MM-dd")" min="@ERPBooking.Booking.CapeTownClock.Today.ToString("yyyy-MM-dd")">
+      </label>
+      <label class="pill-field">
+        <span class="visually-hidden">Time</span>
+        <select name="time">
+          <option value="">Any time</option>
+          @foreach (var slot in new[] { "17:00", "17:30", "18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00" })
+          {
+            <option value="@slot" selected="@(Model.Time == slot)">@slot</option>
+          }
+        </select>
+      </label>
+      <label class="pill-field">
+        <span class="visually-hidden">Party size</span>
+        <select name="guests">
+          @for (var count = 1; count <= 8; count++)
+          {
+            <option value="@count" selected="@(Model.Guests == count)">@count @(count == 1 ? "guest" : "guests")</option>
+          }
+        </select>
+      </label>
+      <button class="pill-button" type="submit" aria-label="Search restaurants"><span aria-hidden="true">&#9906;</span></button>
+    </form>
+    <nav class="header-links" aria-label="Main navigation">
+      <a href="#how-it-works">How it works</a>
     </nav>
-    <a class="header-cta" href="#restaurants">Explore restaurants <span aria-hidden="true">↗</span></a>
   </header>
   <p class="prototype-notice" role="note">Demo experience: restaurant listings and availability are sample data. Bookings are saved locally and not sent to restaurants.</p>
 
   <main>
-    <section class="hero">
-      <div class="hero-content">
-        <p class="eyebrow"><span></span> THE BEST OF CAPE TOWN, SERVED</p>
-        <h1>Good food.<br><em>Great company.</em></h1>
-        <p class="hero-copy">Find your next favourite table, from seaside suppers to hidden neighbourhood gems.</p>
-        <a class="hero-link" href="#restaurants">Explore Cape Town <span aria-hidden="true">↓</span></a>
-      </div>
-      <div class="hero-photo" role="img" aria-label="A warmly lit restaurant ready for dinner">
-        <div class="hero-note"><span class="note-sparkle" aria-hidden="true">✳</span><span>Make tonight<br><strong>delicious.</strong></span></div>
-        <div class="hero-location"><span aria-hidden="true">⌖</span> CAPE TOWN, SOUTH AFRICA</div>
-      </div>
-      <div class="hero-stamp" aria-hidden="true"><span>FIND YOUR</span><strong>TABLE</strong><span>IN THE CAPE</span></div>
+    <section class="listing-intro" aria-labelledby="listing-title">
+      <h1 id="listing-title">Restaurants in Cape Town</h1>
     </section>
 
-    <section class="quick-browse" aria-label="Browse restaurants by cuisine or neighbourhood">
-      <div class="browse-group">
-        <div class="browse-heading">
-          <p class="eyebrow">FOLLOW YOUR CRAVING</p>
-          <h2>Browse by cuisine</h2>
-        </div>
-        <div class="browse-links" aria-label="Cuisine shortcuts">
-          <a class="browse-chip @(string.IsNullOrEmpty(Model.Cuisine) ? "selected" : string.Empty)"
+    <div class="filter-bar">
+      <div class="chip-row" role="group" aria-label="Filter restaurants">
+        <a class="chip @(string.IsNullOrEmpty(Model.Cuisine) ? "selected" : string.Empty)"
+           asp-page="/Index" asp-route-query="@Model.Query" asp-route-area="@Model.Area"
+           asp-route-cuisine="" asp-route-priceLevel="@Model.PriceLevel"
+           asp-route-date="@Model.Date.ToString("yyyy-MM-dd")" asp-route-time="@Model.Time"
+           asp-route-guests="@Model.Guests"
+           aria-current="@(string.IsNullOrEmpty(Model.Cuisine) ? "true" : null)">All cuisines</a>
+        @foreach (var cuisine in Model.Cuisines)
+        {
+          <a class="chip @(Model.Cuisine == cuisine ? "selected" : string.Empty)"
              asp-page="/Index" asp-route-query="@Model.Query" asp-route-area="@Model.Area"
-             asp-route-cuisine="" asp-route-priceLevel="@Model.PriceLevel"
+             asp-route-cuisine="@cuisine" asp-route-priceLevel="@Model.PriceLevel"
              asp-route-date="@Model.Date.ToString("yyyy-MM-dd")" asp-route-time="@Model.Time"
-             asp-route-guests="@Model.Guests" asp-fragment="restaurants"
-             aria-current="@(string.IsNullOrEmpty(Model.Cuisine) ? "true" : null)">All cuisines</a>
-          @foreach (var cuisine in Model.Cuisines)
-          {
-            <a class="browse-chip @(Model.Cuisine == cuisine ? "selected" : string.Empty)"
-               asp-page="/Index" asp-route-query="@Model.Query" asp-route-area="@Model.Area"
-               asp-route-cuisine="@cuisine" asp-route-priceLevel="@Model.PriceLevel"
-               asp-route-date="@Model.Date.ToString("yyyy-MM-dd")" asp-route-time="@Model.Time"
-               asp-route-guests="@Model.Guests" asp-fragment="restaurants"
-               aria-current="@(Model.Cuisine == cuisine ? "true" : null)">@cuisine</a>
-          }
-        </div>
-      </div>
-      <div class="browse-group neighbourhood-group">
-        <div class="browse-heading">
-          <p class="eyebrow">A TABLE AROUND THE CORNER</p>
-          <h2>Explore neighbourhoods</h2>
-        </div>
-        <div class="browse-links neighbourhood-links" aria-label="Neighbourhood shortcuts">
-          <a class="neighbourhood-link @(string.IsNullOrEmpty(Model.Area) ? "selected" : string.Empty)"
-             asp-page="/Index" asp-route-query="@Model.Query" asp-route-area=""
+             asp-route-guests="@Model.Guests"
+             aria-current="@(Model.Cuisine == cuisine ? "true" : null)">@cuisine</a>
+        }
+        <span class="chip-divider" aria-hidden="true"></span>
+        <a class="chip @(string.IsNullOrEmpty(Model.Area) ? "selected" : string.Empty)"
+           asp-page="/Index" asp-route-query="@Model.Query" asp-route-area=""
+           asp-route-cuisine="@Model.Cuisine" asp-route-priceLevel="@Model.PriceLevel"
+           asp-route-date="@Model.Date.ToString("yyyy-MM-dd")" asp-route-time="@Model.Time"
+           asp-route-guests="@Model.Guests"
+           aria-current="@(string.IsNullOrEmpty(Model.Area) ? "true" : null)">All areas</a>
+        @foreach (var area in Model.Areas)
+        {
+          <a class="chip @(Model.Area == area ? "selected" : string.Empty)"
+             asp-page="/Index" asp-route-query="@Model.Query" asp-route-area="@area"
              asp-route-cuisine="@Model.Cuisine" asp-route-priceLevel="@Model.PriceLevel"
              asp-route-date="@Model.Date.ToString("yyyy-MM-dd")" asp-route-time="@Model.Time"
-             asp-route-guests="@Model.Guests" asp-fragment="restaurants"
-             aria-current="@(string.IsNullOrEmpty(Model.Area) ? "true" : null)">All areas <span aria-hidden="true">↗</span></a>
-          @foreach (var area in Model.Areas)
-          {
-            <a class="neighbourhood-link @(Model.Area == area ? "selected" : string.Empty)"
-               asp-page="/Index" asp-route-query="@Model.Query" asp-route-area="@area"
-               asp-route-cuisine="@Model.Cuisine" asp-route-priceLevel="@Model.PriceLevel"
-               asp-route-date="@Model.Date.ToString("yyyy-MM-dd")" asp-route-time="@Model.Time"
-               asp-route-guests="@Model.Guests" asp-fragment="restaurants"
-               aria-current="@(Model.Area == area ? "true" : null)">@area <span aria-hidden="true">↗</span></a>
-          }
-        </div>
+             asp-route-guests="@Model.Guests"
+             aria-current="@(Model.Area == area ? "true" : null)">@area</a>
+        }
+        <span class="chip-divider" aria-hidden="true"></span>
+        <a class="chip @(Model.PriceLevel == 0 ? "selected" : string.Empty)"
+           asp-page="/Index" asp-route-query="@Model.Query" asp-route-area="@Model.Area"
+           asp-route-cuisine="@Model.Cuisine" asp-route-priceLevel="0"
+           asp-route-date="@Model.Date.ToString("yyyy-MM-dd")" asp-route-time="@Model.Time"
+           asp-route-guests="@Model.Guests"
+           aria-current="@(Model.PriceLevel == 0 ? "true" : null)">Any price</a>
+        @for (var level = 1; level <= 4; level++)
+        {
+          <a class="chip @(Model.PriceLevel == level ? "selected" : string.Empty)"
+             asp-page="/Index" asp-route-query="@Model.Query" asp-route-area="@Model.Area"
+             asp-route-cuisine="@Model.Cuisine" asp-route-priceLevel="@level"
+             asp-route-date="@Model.Date.ToString("yyyy-MM-dd")" asp-route-time="@Model.Time"
+             asp-route-guests="@Model.Guests"
+             aria-current="@(Model.PriceLevel == level ? "true" : null)">Up to @(new string('R', level))</a>
+        }
       </div>
-    </section>
-
-    <section class="search-section" aria-labelledby="search-title">
-      <div class="section-heading">
-        <div>
-          <p class="eyebrow">YOUR NEXT NIGHT OUT</p>
-          <h2 id="search-title">Where are we eating?</h2>
-        </div>
-        <p class="section-aside">A good table is just a few clicks away.</p>
-      </div>
-      <form method="get" action="/" class="search-form" aria-label="Search and filter restaurants">
-        <label class="search-field search-keyword">
-          <span>SEARCH</span>
-          <input type="search" name="query" value="@Model.Query" placeholder="Restaurant, cuisine, area">
-        </label>
-        <label class="search-field">
-          <span>WHEN</span>
-          <input type="date" name="date" value="@Model.Date.ToString("yyyy-MM-dd")" min="@ERPBooking.Booking.CapeTownClock.Today.ToString("yyyy-MM-dd")">
-        </label>
-        <label class="search-field">
-          <span>TIME</span>
-          <select name="time">
-            <option value="">Any time</option>
-            @foreach (var slot in new[] { "17:00", "17:30", "18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00" })
-            {
-              <option value="@slot" selected="@(Model.Time == slot)">@slot</option>
-            }
-          </select>
-        </label>
-        <label class="search-field search-guests">
-          <span>PARTY</span>
-          <select name="guests">
-            @for (var count = 1; count <= 8; count++)
-            {
-              <option value="@count" selected="@(Model.Guests == count)">@count @(count == 1 ? "guest" : "guests")</option>
-            }
-          </select>
-        </label>
-        <button class="search-button" type="submit" aria-label="Search restaurants">Find a table <span aria-hidden="true">↗</span></button>
-        <details class="more-filters">
-          <summary>More filters <span aria-hidden="true">＋</span></summary>
-          <div class="filter-options">
-            <label class="search-field">
-              <span>AREA</span>
-              <select name="area">
-                <option value="">All areas</option>
-                @foreach (var area in Model.Areas)
-                {
-                  <option value="@area" selected="@(Model.Area == area)">@area</option>
-                }
-              </select>
-            </label>
-            <label class="search-field">
-              <span>CUISINE</span>
-              <select name="cuisine">
-                <option value="">All cuisines</option>
-                @foreach (var cuisine in Model.Cuisines)
-                {
-                  <option value="@cuisine" selected="@(Model.Cuisine == cuisine)">@cuisine</option>
-                }
-              </select>
-            </label>
-            <label class="search-field">
-              <span>PRICE</span>
-              <select name="priceLevel">
-                <option value="0" selected="@(Model.PriceLevel == 0)">Any price</option>
-                <option value="1" selected="@(Model.PriceLevel == 1)">Up to R</option>
-                <option value="2" selected="@(Model.PriceLevel == 2)">Up to RR</option>
-                <option value="3" selected="@(Model.PriceLevel == 3)">Up to RRR</option>
-                <option value="4" selected="@(Model.PriceLevel == 4)">Up to RRRR</option>
-              </select>
-            </label>
-          </div>
-        </details>
-      </form>
-    </section>
+    </div>
 
     <section class="restaurant-section" id="restaurants" aria-labelledby="restaurants-title">
-      <div class="listing-heading">
-        <div>
-          <p class="eyebrow">A TABLE WITH YOUR NAME ON IT</p>
-          <h2 id="restaurants-title">Restaurants worth the reservation</h2>
-        </div>
-        <p class="result-count">@Model.Restaurants.Count @(Model.Restaurants.Count == 1 ? "restaurant" : "restaurants") with availability</p>
-      </div>
+      <h2 id="restaurants-title" class="visually-hidden">Restaurants</h2>
+      <p class="result-count">@Model.Restaurants.Count @(Model.Restaurants.Count == 1 ? "restaurant" : "restaurants") with availability</p>
       @if (Model.Restaurants.Count == 0)
       {
         <div class="empty-state">
-          <span aria-hidden="true">✳</span>
+          <span aria-hidden="true">&#10035;</span>
           <h3>No tables found just yet</h3>
           <p>Try another date, time, or filter to discover more Cape Town favourites.</p>
-          <a href="/">Clear your search <span aria-hidden="true">↗</span></a>
+          <a href="/">Clear your search <span aria-hidden="true">&#8599;</span></a>
         </div>
       }
       else
@@ -189,30 +134,30 @@
             var restaurant = listing.Restaurant;
             <article class="restaurant-card">
               <a class="card-image-link" asp-page="/Restaurants/Details" asp-route-slug="@restaurant.Slug"
-                 asp-route-date="@Model.Date.ToString("yyyy-MM-dd")" asp-route-guests="@Model.Guests">
+                 asp-route-date="@Model.Date.ToString("yyyy-MM-dd")" asp-route-guests="@Model.Guests" tabindex="-1" aria-hidden="true">
                 <img src="@restaurant.ImageUrl" alt="@restaurant.ImageAlt" loading="lazy">
                 <span class="image-tag">@restaurant.Highlight</span>
-                <span class="image-arrow" aria-hidden="true">↗</span>
               </a>
               <div class="card-content">
-                <div class="card-meta"><span>@restaurant.Area</span><span class="meta-dot">·</span><span>@restaurant.Cuisine</span><span class="price">@restaurant.PriceLabel</span></div>
-                <div class="card-title-row">
-                  <h3><a asp-page="/Restaurants/Details" asp-route-slug="@restaurant.Slug">@restaurant.Name</a></h3>
-                  <span class="rating"><span aria-hidden="true">★</span> @restaurant.Rating.ToString("0.0") <small>(@restaurant.ReviewCount)</small></span>
-                </div>
-                <p class="card-description">@restaurant.Description</p>
-                <div class="available-row">
-                  <span class="available-label">AVAILABLE</span>
-                  <div class="time-slots">
-                    @foreach (var slot in listing.AvailableTimes)
-                    {
-                      <a asp-page="/Restaurants/Details" asp-route-slug="@restaurant.Slug"
-                         asp-route-date="@Model.Date.ToString("yyyy-MM-dd")" asp-route-guests="@Model.Guests"
-                         asp-route-time="@ERPBooking.Booking.RestaurantCatalog.FormatTime(slot)">
-                        @ERPBooking.Booking.RestaurantCatalog.FormatTime(slot)
-                      </a>
-                    }
-                  </div>
+                <h3><a asp-page="/Restaurants/Details" asp-route-slug="@restaurant.Slug"
+                       asp-route-date="@Model.Date.ToString("yyyy-MM-dd")" asp-route-guests="@Model.Guests">@restaurant.Name</a></h3>
+                <p class="card-cuisine">@restaurant.Cuisine in @restaurant.Area</p>
+                <p class="card-rating">
+                  <span>@restaurant.Rating.ToString("0.0")</span><span class="star" aria-hidden="true">&#9733;</span>
+                  <span class="meta-dot" aria-hidden="true">&bull;</span>
+                  <span>@restaurant.ReviewCount reviews</span>
+                  <span class="meta-dot" aria-hidden="true">&bull;</span>
+                  <span>@restaurant.PriceLabel</span>
+                </p>
+                <div class="time-slots" aria-label="Available times">
+                  @foreach (var slot in listing.AvailableTimes)
+                  {
+                    <a asp-page="/Restaurants/Details" asp-route-slug="@restaurant.Slug"
+                       asp-route-date="@Model.Date.ToString("yyyy-MM-dd")" asp-route-guests="@Model.Guests"
+                       asp-route-time="@ERPBooking.Booking.RestaurantCatalog.FormatTime(slot)">
+                      @ERPBooking.Booking.RestaurantCatalog.FormatTime(slot)
+                    </a>
+                  }
                 </div>
               </div>
             </article>
@@ -233,9 +178,9 @@
   </main>
 
   <footer class="site-footer">
-    <a class="brand" href="/"><span class="brand-icon" aria-hidden="true">C</span><span>Cape <span class="brand-amp">&</span> Table</span></a>
+    <a class="brand" href="/"><span class="brand-icon" aria-hidden="true">C</span><span>Cape <span class="brand-amp">&amp;</span> Table</span></a>
     <p>Made for memorable meals in Cape Town.</p>
-    <span>© @DateTime.Today.Year Cape & Table</span>
+    <span>&copy; @DateTime.Today.Year Cape &amp; Table</span>
   </footer>
 </body>
 </html>
