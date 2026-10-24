@@ -1,11 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Data.VO;
 
 namespace Data.DAO;
-/// <summary>
-/// Represents a user value object. HQL queries can be used to retrieve instances of this class from the database.
-/// </summary>
-public class UserDAO
+
+public sealed class UserDAO
 {
+    private const string GetUsersHql = "from UserVO";
+
+    private readonly NHibernateRepository _repository;
+
+    public UserDAO(NHibernateRepository repository)
+    {
+        ArgumentNullException.ThrowIfNull(repository);
+        _repository = repository;
+    }
+
+    public IList<UserVO> GetUsers() => _repository.Query<UserVO>(GetUsersHql).ToList();
 }

@@ -1,14 +1,13 @@
 using Data;
+using Data.DAO;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
-builder.Services.AddSingleton<NHibernateSessionFactory>(_ =>
-{
-    var connectionString = builder.Configuration.GetConnectionString("TD");
-    ArgumentException.ThrowIfNullOrWhiteSpace(connectionString);
-    return new NHibernateSessionFactory(connectionString);
-});
+var connectionString = builder.Configuration.GetConnectionString("TD");
+ArgumentException.ThrowIfNullOrWhiteSpace(connectionString);
+builder.Services.AddSingleton(_ => new NHibernateSessionFactory(connectionString));
 builder.Services.AddScoped<NHibernateRepository>();
+builder.Services.AddScoped<UserDAO>();
 
 var app = builder.Build();
 
