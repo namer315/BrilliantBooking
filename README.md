@@ -1,10 +1,10 @@
 # ERPBooking
 
-An ASP.NET Core Razor Pages frontend with a C# Minimal API. The Razor homepage is rendered from `Pages/Index.cshtml` and its code-behind model, while CSS and JavaScript are served from `wwwroot`. Self-contained publish profiles bundle the .NET runtime for Windows x64 and Linux x64, so the target host does not need the .NET runtime installed separately.
+An ASP.NET Core Razor Pages restaurant discovery and booking site, with a C# health endpoint. Restaurant listings and availability are rendered by Razor Pages; styles are served from `wwwroot`. Self-contained publish profiles bundle the .NET runtime for Windows x64 and Linux x64, so the target host does not need the .NET runtime installed separately.
 
 ## Develop in Visual Studio
 
-Open `ERPBooking.sln`. Edit the homepage markup in `Pages/Index.cshtml`, its C# code-behind in `Pages/Index.cshtml.cs`, and the shared styles and browser JavaScript under `wwwroot`. Press **F5** to run the app.
+Open `ERPBooking.sln` and press **F5** to run the app. Restaurant information is seeded in `Booking/RestaurantCatalog.cs`. Local reservations are stored in the ignored `App_Data/reservations.json` file; override the path with the `Booking__DataPath` environment variable.
 
 ## Self-host with Docker Compose
 
@@ -20,7 +20,7 @@ Open `http://localhost:8080` on the server. Verify the API with:
 curl --fail http://localhost:8080/api/health
 ```
 
-The response is `{"status":"ok","application":"ERPBooking"}`. The multi-stage image builds with the .NET 10 SDK and runs with only the ASP.NET Core runtime as a non-root user; no .NET installation is needed on the host. Compose restarts the service after a crash or server reboot unless you explicitly stop it, provided Docker starts on boot. Logs are rotated to limit disk usage.
+The response is `{"status":"ok","application":"ERPBooking"}`. The multi-stage image builds with the .NET 10 SDK and runs with only the ASP.NET Core runtime as a non-root user; no .NET installation is needed on the host. Compose persists reservations in the `erpbooking-data` named volume. It restarts the service after a crash or server reboot unless you explicitly stop it, provided Docker starts on boot. Logs are rotated to limit disk usage.
 
 ### Network access and HTTPS
 
@@ -40,7 +40,7 @@ docker compose logs -f erpbooking
 docker compose down
 ```
 
-After updating the source checkout, rebuild and recreate the service with `docker compose build --pull` followed by `docker compose up -d`. Use the same bind-address and port settings on every invocation. This also refreshes the base runtime image for security updates. The current app has no database or persistent application data; container replacement does not require a data volume.
+After updating the source checkout, rebuild and recreate the service with `docker compose build --pull` followed by `docker compose up -d`. Use the same bind-address and port settings on every invocation. This also refreshes the base runtime image for security updates. The named volume preserves reservation data when the application container is replaced; `docker compose down -v` removes that data.
 
 ## Publish for hosting without Docker
 
@@ -83,25 +83,26 @@ tar -xzf /tmp/ERPBooking-linux-x64.tar.gz -C /tmp/erpbooking-publish
 sudo bash /tmp/install.sh /tmp/erpbooking-publish
 ```
 
-The installer creates a restricted `erpbooking` system account, installs the app under `/opt/erpbooking`, and enables the `erpbooking` systemd service. The service listens only on `127.0.0.1:5080`; put a TLS-enabled reverse proxy in front of it for external access. Check the API locally with `curl http://127.0.0.1:5080/api/health`, inspect logs with `sudo journalctl -u erpbooking -f`, and check service state with `sudo systemctl status erpbooking`.
+The installer creates a restricted `erpbooking` system account, installs the app under `/opt/erpbooking`, and enables the `erpbooking` systemd service. The service stores reservations under `/var/lib/erpbooking` and listens only on `127.0.0.1:5080`; put a TLS-enabled reverse proxy in front of it for external access. Check the API locally with `curl http://127.0.0.1:5080/api/health`, inspect logs with `sudo journalctl -u erpbooking -f`, and check service state with `sudo systemctl status erpbooking`.
 
 To deploy an update, repeat the publish, copy, and install steps. The installer stops the service before replacing files and restarts it afterward.
 
 ## API
 
 - `GET /api/health` returns the API health status.
-- `/` renders the Razor homepage from `Pages/Index.cshtml`.
+- `/` renders the restaurant directory with search and filters.
+- `/restaurants/{slug}` shows a restaurant profile and handles availability lookup and reservation creation.
 
 ## Restaurant booking feature roadmap
 
-The current app is a starter workspace. These are the main features to build for a restaurant discovery and booking experience inspired by Dineplan's Cape Town listings:
+The first release now includes the directory, profiles, filters, availability lookup, and reservation creation. Listings and capacities are sample data, with reservations saved as JSON for a single app instance. This prototype does not yet integrate restaurant-managed inventory or send email/SMS confirmations; use a database and secure operational setup before handling real customer bookings.
 
 ### Core experience
 
-1. **Restaurant discovery** — show restaurant cards with photos, name, cuisine, area, price indication, guest rating, and booking availability.
-2. **Search and filters** — search by restaurant, cuisine, and location; filter by date, time, party size, price, and dining preferences. Support browsing a chosen area such as Cape Town.
-3. **Restaurant profiles** — provide photos, description, cuisine, menus, opening hours, address and map link, contact details, specials, and guest ratings.
-4. **Availability and reservations** — find available times across restaurants, select a party size and slot, and confirm a reservation online.
+1. **Restaurant discovery** — implemented with sample restaurants and availability.
+2. **Search and filters** — implemented for restaurant, cuisine, area, date, time, party size, and price.
+3. **Restaurant profiles** — implemented with sample photos, menu summaries, opening hours, address, contact details, highlights, and sample ratings.
+4. **Availability and reservations** — implemented with per-slot sample capacity and a server-validated reservation form.
 5. **Booking management** — let diners view upcoming and past reservations, and cancel or change a booking subject to the restaurant's policy.
 6. **Diner accounts and favourites** — support sign-in, saved diner details, and a list of favourite restaurants.
 7. **Booking communications** — send confirmation and reminder messages, and notify diners when a reservation changes or is cancelled.
@@ -114,6 +115,6 @@ The current app is a starter workspace. These are the main features to build for
 11. **Location-aware browsing** — show nearby restaurants and availability, with area-based browsing when location access is unavailable.
 12. **Responsive and accessible UI** — make discovery and booking usable on mobile, keyboard, and assistive technologies.
 
-**Suggested first milestone:** build the restaurant directory and profiles, then add availability search and reservation creation. Follow with diner booking management and restaurant-side reservation tools.
+**Next milestone:** add diner booking management and restaurant-side reservation tools backed by a production-grade reservation database and inventory management.
 
 **Reference:** [Dineplan restaurants in Cape Town](https://www.dineplan.com/restaurants/in/cape-town) and [Dineplan app features](https://www.dineplan.com/app).

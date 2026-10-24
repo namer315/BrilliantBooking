@@ -1,6 +1,7 @@
 ## Build output
 bin/
 obj/
+/App_Data/
 
 ## Visual Studio
 .vs/

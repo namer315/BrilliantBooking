@@ -5,52 +5,188 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f6f7fb">
-  <title>@Model.PageTitle</title>
+  <meta name="theme-color" content="#f8f7f3">
+  <meta name="description" content="Discover Cape Town restaurants and find a table for your next night out.">
+  <title>@Model.PageTitle | @Model.ApplicationName</title>
+  <link rel="preconnect" href="https://images.unsplash.com">
   <link rel="stylesheet" href="/styles.css">
-  <script src="/app.js" defer></script>
 </head>
 <body>
-  <main class="page">
-    <header class="topbar">
-      <a class="brand" href="/" aria-label="@Model.ApplicationName home">
-        <span class="brand-mark" aria-hidden="true">E</span>
-        <span>@Model.ApplicationName</span>
-      </a>
-      <span class="environment">@Model.WorkspaceLabel</span>
-    </header>
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="Cape & Table home">
+      <span class="brand-icon" aria-hidden="true">C</span>
+      <span>Cape <span class="brand-amp">&</span> Table</span>
+    </a>
+    <nav aria-label="Main navigation">
+      <a class="nav-link active" href="/">Find a table</a>
+      <a class="nav-link" href="#how-it-works">How it works</a>
+    </nav>
+    <a class="header-cta" href="#restaurants">Explore restaurants <span aria-hidden="true">↗</span></a>
+  </header>
+  <p class="prototype-notice" role="note">Demo experience: restaurant listings and availability are sample data. Bookings are saved locally and not sent to restaurants.</p>
 
-    <section class="hero" aria-labelledby="page-title">
-      <div class="eyebrow"><span class="eyebrow-dot"></span> YOUR BOOKING WORKSPACE</div>
-      <h1 id="page-title">A clear start<br>for better <span>bookings.</span></h1>
-      <p class="intro">@Model.IntroText</p>
-
-      <section class="status-card" aria-labelledby="status-title">
-        <div class="status-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none">
-            <path d="m5 12.5 4.3 4.3L19.5 6.8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <div class="status-copy">
-          <h2 id="status-title">Backend connection</h2>
-          <p id="connection-status" role="status" aria-live="polite">Checking the C# API…</p>
-        </div>
-        <span id="status-indicator" class="status-indicator" aria-label="Checking"></span>
-      </section>
-
-      <div class="next-step">
-        <span class="step-number">01</span>
-        <div>
-          <h2>Ready for your next feature</h2>
-          <p>Build on this foundation with booking workflows, data storage, and the tools your team needs.</p>
-        </div>
+  <main>
+    <section class="hero">
+      <div class="hero-content">
+        <p class="eyebrow"><span></span> THE BEST OF CAPE TOWN, SERVED</p>
+        <h1>Good food.<br><em>Great company.</em></h1>
+        <p class="hero-copy">Find your next favourite table, from seaside suppers to hidden neighbourhood gems.</p>
+        <a class="hero-link" href="#restaurants">Explore Cape Town <span aria-hidden="true">↓</span></a>
       </div>
+      <div class="hero-photo" role="img" aria-label="A warmly lit restaurant ready for dinner">
+        <div class="hero-note"><span class="note-sparkle" aria-hidden="true">✳</span><span>Make tonight<br><strong>delicious.</strong></span></div>
+        <div class="hero-location"><span aria-hidden="true">⌖</span> CAPE TOWN, SOUTH AFRICA</div>
+      </div>
+      <div class="hero-stamp" aria-hidden="true"><span>FIND YOUR</span><strong>TABLE</strong><span>IN THE CAPE</span></div>
     </section>
 
-    <footer>
-      <span>@Model.ApplicationName</span>
-      <span>Razor Pages frontend <i aria-hidden="true">·</i> ASP.NET Core backend</span>
-    </footer>
+    <section class="search-section" aria-labelledby="search-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">YOUR NEXT NIGHT OUT</p>
+          <h2 id="search-title">Where are we eating?</h2>
+        </div>
+        <p class="section-aside">A good table is just a few clicks away.</p>
+      </div>
+      <form method="get" action="/" class="search-form" aria-label="Search and filter restaurants">
+        <label class="search-field search-keyword">
+          <span>SEARCH</span>
+          <input type="search" name="query" value="@Model.Query" placeholder="Restaurant, cuisine, area">
+        </label>
+        <label class="search-field">
+          <span>WHEN</span>
+          <input type="date" name="date" value="@Model.Date.ToString("yyyy-MM-dd")" min="@ERPBooking.Booking.CapeTownClock.Today.ToString("yyyy-MM-dd")">
+        </label>
+        <label class="search-field">
+          <span>TIME</span>
+          <select name="time">
+            <option value="">Any time</option>
+            @foreach (var slot in new[] { "17:00", "17:30", "18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00" })
+            {
+              <option value="@slot" selected="@(Model.Time == slot)">@slot</option>
+            }
+          </select>
+        </label>
+        <label class="search-field search-guests">
+          <span>PARTY</span>
+          <select name="guests">
+            @for (var count = 1; count <= 8; count++)
+            {
+              <option value="@count" selected="@(Model.Guests == count)">@count @(count == 1 ? "guest" : "guests")</option>
+            }
+          </select>
+        </label>
+        <button class="search-button" type="submit" aria-label="Search restaurants">Find a table <span aria-hidden="true">↗</span></button>
+        <details class="more-filters">
+          <summary>More filters <span aria-hidden="true">＋</span></summary>
+          <div class="filter-options">
+            <label class="search-field">
+              <span>AREA</span>
+              <select name="area">
+                <option value="">All areas</option>
+                @foreach (var area in Model.Areas)
+                {
+                  <option value="@area" selected="@(Model.Area == area)">@area</option>
+                }
+              </select>
+            </label>
+            <label class="search-field">
+              <span>CUISINE</span>
+              <select name="cuisine">
+                <option value="">All cuisines</option>
+                @foreach (var cuisine in Model.Cuisines)
+                {
+                  <option value="@cuisine" selected="@(Model.Cuisine == cuisine)">@cuisine</option>
+                }
+              </select>
+            </label>
+            <label class="search-field">
+              <span>PRICE</span>
+              <select name="priceLevel">
+                <option value="0" selected="@(Model.PriceLevel == 0)">Any price</option>
+                <option value="1" selected="@(Model.PriceLevel == 1)">Up to R</option>
+                <option value="2" selected="@(Model.PriceLevel == 2)">Up to RR</option>
+                <option value="3" selected="@(Model.PriceLevel == 3)">Up to RRR</option>
+                <option value="4" selected="@(Model.PriceLevel == 4)">Up to RRRR</option>
+              </select>
+            </label>
+          </div>
+        </details>
+      </form>
+    </section>
+
+    <section class="restaurant-section" id="restaurants" aria-labelledby="restaurants-title">
+      <div class="listing-heading">
+        <div>
+          <p class="eyebrow">A TABLE WITH YOUR NAME ON IT</p>
+          <h2 id="restaurants-title">Restaurants worth the reservation</h2>
+        </div>
+        <p class="result-count">@Model.Restaurants.Count @(Model.Restaurants.Count == 1 ? "restaurant" : "restaurants") with availability</p>
+      </div>
+      @if (Model.Restaurants.Count == 0)
+      {
+        <div class="empty-state">
+          <span aria-hidden="true">✳</span>
+          <h3>No tables found just yet</h3>
+          <p>Try another date, time, or filter to discover more Cape Town favourites.</p>
+          <a href="/">Clear your search <span aria-hidden="true">↗</span></a>
+        </div>
+      }
+      else
+      {
+        <div class="restaurant-grid">
+          @foreach (var listing in Model.Restaurants)
+          {
+            var restaurant = listing.Restaurant;
+            <article class="restaurant-card">
+              <a class="card-image-link" asp-page="/Restaurants/Details" asp-route-slug="@restaurant.Slug"
+                 asp-route-date="@Model.Date.ToString("yyyy-MM-dd")" asp-route-guests="@Model.Guests">
+                <img src="@restaurant.ImageUrl" alt="@restaurant.ImageAlt" loading="lazy">
+                <span class="image-tag">@restaurant.Highlight</span>
+                <span class="image-arrow" aria-hidden="true">↗</span>
+              </a>
+              <div class="card-content">
+                <div class="card-meta"><span>@restaurant.Area</span><span class="meta-dot">·</span><span>@restaurant.Cuisine</span><span class="price">@restaurant.PriceLabel</span></div>
+                <div class="card-title-row">
+                  <h3><a asp-page="/Restaurants/Details" asp-route-slug="@restaurant.Slug">@restaurant.Name</a></h3>
+                  <span class="rating"><span aria-hidden="true">★</span> @restaurant.Rating.ToString("0.0") <small>(@restaurant.ReviewCount)</small></span>
+                </div>
+                <p class="card-description">@restaurant.Description</p>
+                <div class="available-row">
+                  <span class="available-label">AVAILABLE</span>
+                  <div class="time-slots">
+                    @foreach (var slot in listing.AvailableTimes)
+                    {
+                      <a asp-page="/Restaurants/Details" asp-route-slug="@restaurant.Slug"
+                         asp-route-date="@Model.Date.ToString("yyyy-MM-dd")" asp-route-guests="@Model.Guests"
+                         asp-route-time="@ERPBooking.Booking.RestaurantCatalog.FormatTime(slot)">
+                        @ERPBooking.Booking.RestaurantCatalog.FormatTime(slot)
+                      </a>
+                    }
+                  </div>
+                </div>
+              </div>
+            </article>
+          }
+        </div>
+      }
+    </section>
+
+    <section class="how-section" id="how-it-works" aria-labelledby="how-title">
+      <div class="how-intro">
+        <p class="eyebrow">LESS SCROLLING, MORE SIPPING</p>
+        <h2 id="how-title">Your table is<br><em>closer than you think.</em></h2>
+      </div>
+      <div class="how-step"><span>01</span><div><h3>Find your flavour</h3><p>Search by area, cuisine, or the kind of night you're after.</p></div></div>
+      <div class="how-step"><span>02</span><div><h3>Pick your moment</h3><p>See available times for your date and party size.</p></div></div>
+      <div class="how-step"><span>03</span><div><h3>Save your seat</h3><p>Share your details and get an instant booking reference.</p></div></div>
+    </section>
   </main>
+
+  <footer class="site-footer">
+    <a class="brand" href="/"><span class="brand-icon" aria-hidden="true">C</span><span>Cape <span class="brand-amp">&</span> Table</span></a>
+    <p>Made for memorable meals in Cape Town.</p>
+    <span>© @DateTime.Today.Year Cape & Table</span>
+  </footer>
 </body>
 </html>

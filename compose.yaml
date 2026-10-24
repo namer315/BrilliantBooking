@@ -2,6 +2,8 @@ services:
   erpbooking:
     build:
       context: .
+    volumes:
+      - erpbooking-data:/data
     ports:
       - "${ERPBOOKING_BIND_ADDRESS:-127.0.0.1}:${ERPBOOKING_PORT:-8080}:8080"
     restart: unless-stopped
@@ -14,3 +16,6 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+
+volumes:
+  erpbooking-data:

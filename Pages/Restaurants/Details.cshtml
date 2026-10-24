@@ -1,0 +1,118 @@
+@page "/restaurants/{slug}"
+@model ERPBooking.Pages.Restaurants.DetailsModel
+@using System.Globalization
+@using ERPBooking.Booking
+@if (Model.Restaurant is { } restaurant)
+{
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f8f7f3">
+  <meta name="description" content="@restaurant.Description">
+  <title>@restaurant.Name | Cape & Table</title>
+  <link rel="preconnect" href="https://images.unsplash.com">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="Cape & Table home"><span class="brand-icon" aria-hidden="true">C</span><span>Cape <span class="brand-amp">&</span> Table</span></a>
+    <nav aria-label="Main navigation"><a class="nav-link" href="/">Find a table</a><a class="nav-link" href="/#how-it-works">How it works</a></nav>
+    <a class="header-cta" href="/#restaurants">All restaurants <span aria-hidden="true">↗</span></a>
+  </header>
+  <p class="prototype-notice" role="note">Demo experience: restaurant listings and availability are sample data. Bookings are saved locally and not sent to restaurants.</p>
+  <main class="detail-page">
+    <a class="back-link" href="/#restaurants"><span aria-hidden="true">←</span> Back to restaurants</a>
+    <section class="detail-hero">
+      <div class="detail-image"><img src="@restaurant.ImageUrl" alt="@restaurant.ImageAlt"></div>
+      <div class="detail-title">
+        <p class="eyebrow">@restaurant.Area <span class="meta-dot">·</span> @restaurant.Cuisine</p>
+        <h1>@restaurant.Name</h1>
+        <p class="detail-rating"><span aria-hidden="true">★</span> @restaurant.Rating.ToString("0.0") <span>(@restaurant.ReviewCount guest ratings)</span><span class="price">@restaurant.PriceLabel</span></p>
+        <p class="detail-description">@restaurant.Description</p>
+        <span class="image-tag">@restaurant.Highlight</span>
+      </div>
+    </section>
+
+    <div class="detail-layout">
+      <section class="restaurant-info" aria-labelledby="about-title">
+        <p class="eyebrow">A LITTLE ABOUT THE PLACE</p>
+        <h2 id="about-title">Come hungry.<br><em>Leave happy.</em></h2>
+        <p>@restaurant.MenuSummary</p>
+        <div class="info-list">
+          <div><span class="info-icon" aria-hidden="true">⌖</span><div><strong>FIND US</strong><a href="https://maps.google.com/?q=@Uri.EscapeDataString(restaurant.Address)" target="_blank" rel="noopener noreferrer">@restaurant.Address <span aria-hidden="true">↗</span></a></div></div>
+          <div><span class="info-icon" aria-hidden="true">◷</span><div><strong>OPENING HOURS</strong><span>@restaurant.OpeningHours</span></div></div>
+          <div><span class="info-icon" aria-hidden="true">☎</span><div><strong>GIVE US A RING</strong><a href="tel:@restaurant.Phone">@restaurant.Phone</a></div></div>
+        </div>
+      </section>
+
+      <section class="booking-panel" aria-labelledby="booking-title">
+        @if (Model.ConfirmationReference is not null)
+        {
+          <div class="confirmation" role="status">
+            <span class="confirmation-icon" aria-hidden="true">✓</span>
+            <p class="eyebrow">YOU'RE ON THE LIST</p>
+            <h2>Table booked.</h2>
+            <p>Thanks, @Model.Input.GuestName. Your demo reservation has been saved.</p>
+            <div class="confirmation-reference"><span>BOOKING REFERENCE</span><strong>@Model.ConfirmationReference</strong></div>
+            <p class="confirmation-note">Keep this reference handy. The restaurant has not received your booking; this demo does not send email or SMS.</p>
+            <a class="button-secondary" href="/">Find another table <span aria-hidden="true">↗</span></a>
+          </div>
+        }
+        else
+        {
+          <p class="eyebrow">MAKE IT A DATE</p>
+          <h2 id="booking-title">Book your table</h2>
+          <p class="booking-intro">Choose a date and party size to see available times.</p>
+          <form method="get" class="availability-form">
+            <input type="hidden" name="slug" value="@restaurant.Slug">
+            <div class="booking-date-row">
+              <label class="form-field"><span>DATE</span><input name="date" type="date" value="@Model.Input.Date" min="@CapeTownClock.Today.ToString("yyyy-MM-dd")"></label>
+              <label class="form-field"><span>GUESTS</span>
+                <select name="guests">
+                  @for (var count = 1; count <= 8; count++)
+                  {
+                    <option value="@count" selected="@(Model.Input.Guests == count)">@count @(count == 1 ? "guest" : "guests")</option>
+                  }
+                </select>
+              </label>
+            </div>
+            <button class="button-secondary availability-submit" type="submit">Show available times <span aria-hidden="true">↻</span></button>
+          </form>
+          <form method="post" class="booking-form">
+            <input asp-for="Input.Date" type="hidden">
+            <input asp-for="Input.Guests" type="hidden">
+            <div asp-validation-summary="All" class="validation-summary" role="alert"></div>
+            <label asp-for="Input.Time" class="form-field"><span>AVAILABLE TIMES</span>
+              <select asp-for="Input.Time">
+                <option value="">Choose a time</option>
+                @foreach (var slot in Model.AvailableTimes)
+                {
+                  <option value="@RestaurantCatalog.FormatTime(slot)">@RestaurantCatalog.FormatTime(slot)</option>
+                }
+              </select>
+              <span asp-validation-for="Input.Time" class="field-error"></span>
+            </label>
+            @if (Model.AvailableTimes.Count == 0)
+            {
+              <p class="no-slots">No tables are available for this date and party size. Try another date.</p>
+            }
+            <label asp-for="Input.GuestName" class="form-field"><span>YOUR NAME</span><input asp-for="Input.GuestName" autocomplete="name" placeholder="Name for the booking"><span asp-validation-for="Input.GuestName" class="field-error"></span></label>
+            <label asp-for="Input.Email" class="form-field"><span>EMAIL ADDRESS</span><input asp-for="Input.Email" type="email" autocomplete="email" placeholder="you@example.com"><span asp-validation-for="Input.Email" class="field-error"></span></label>
+            <label asp-for="Input.Phone" class="form-field"><span>PHONE NUMBER</span><input asp-for="Input.Phone" type="tel" autocomplete="tel" placeholder="+27"><span asp-validation-for="Input.Phone" class="field-error"></span></label>
+            <button class="search-button booking-submit" type="submit" disabled="@(Model.AvailableTimes.Count == 0)">Confirm reservation <span aria-hidden="true">↗</span></button>
+            <p class="privacy-note">Your details are used for this reservation only.</p>
+          </form>
+        }
+      </section>
+    </div>
+  </main>
+  <footer class="site-footer">
+    <a class="brand" href="/"><span class="brand-icon" aria-hidden="true">C</span><span>Cape <span class="brand-amp">&</span> Table</span></a>
+    <p>Made for memorable meals in Cape Town.</p>
+    <span>© @DateTime.Today.Year Cape & Table</span>
+  </footer>
+</body>
+</html>
+}
