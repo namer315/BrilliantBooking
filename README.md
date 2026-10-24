@@ -91,3 +91,29 @@ To deploy an update, repeat the publish, copy, and install steps. The installer 
 
 - `GET /api/health` returns the API health status.
 - `/` renders the Razor homepage from `Pages/Index.cshtml`.
+
+## Restaurant booking feature roadmap
+
+The current app is a starter workspace. These are the main features to build for a restaurant discovery and booking experience inspired by Dineplan's Cape Town listings:
+
+### Core experience
+
+1. **Restaurant discovery** — show restaurant cards with photos, name, cuisine, area, price indication, guest rating, and booking availability.
+2. **Search and filters** — search by restaurant, cuisine, and location; filter by date, time, party size, price, and dining preferences. Support browsing a chosen area such as Cape Town.
+3. **Restaurant profiles** — provide photos, description, cuisine, menus, opening hours, address and map link, contact details, specials, and guest ratings.
+4. **Availability and reservations** — find available times across restaurants, select a party size and slot, and confirm a reservation online.
+5. **Booking management** — let diners view upcoming and past reservations, and cancel or change a booking subject to the restaurant's policy.
+6. **Diner accounts and favourites** — support sign-in, saved diner details, and a list of favourite restaurants.
+7. **Booking communications** — send confirmation and reminder messages, and notify diners when a reservation changes or is cancelled.
+
+### Follow-on features
+
+8. **Restaurant management** — give restaurant staff a protected area to maintain their profile, opening hours, specials, availability, and reservations.
+9. **Promotions and vouchers** — let diners discover restaurant specials and purchase or redeem dining vouchers.
+10. **Ratings and reviews** — collect and display guest feedback tied to completed visits.
+11. **Location-aware browsing** — show nearby restaurants and availability, with area-based browsing when location access is unavailable.
+12. **Responsive and accessible UI** — make discovery and booking usable on mobile, keyboard, and assistive technologies.
+
+**Suggested first milestone:** build the restaurant directory and profiles, then add availability search and reservation creation. Follow with diner booking management and restaurant-side reservation tools.
+
+**Reference:** [Dineplan restaurants in Cape Town](https://www.dineplan.com/restaurants/in/cape-town) and [Dineplan app features](https://www.dineplan.com/app).
