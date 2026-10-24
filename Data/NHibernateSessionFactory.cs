@@ -1,3 +1,4 @@
+using Data.VO;
 using FluentNHibernate;
 using NHibernate;
 using NHibernate.Cfg;
@@ -32,7 +33,7 @@ public sealed class NHibernateSessionFactory : IDisposable
             });
 
             var persistenceModel = new PersistenceModel();
-            persistenceModel.AddMappingsFromAssembly(typeof(Data.Mapping.UserVOMap).Assembly);
+            persistenceModel.AddMappingsFromAssembly(typeof(UserVOMap).Assembly);
             persistenceModel.Configure(configuration);
         };
     }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FluentNHibernate.Mapping;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -15,4 +16,16 @@ public class UserVO
     public virtual string EnglishName { get; set; } = string.Empty;
 }
 // map UserVO to UserDAO using NHibernate mapping files or Fluent NHibernate, depending on your preference.
+public class UserVOMap : ClassMap<UserVO>
+{
+    public UserVOMap()
+    {
+        Table("UserVO");
+        Id(x => x.Id).GeneratedBy.GuidComb();
+        Map(x => x.Code).Length(50).Not.Nullable();
+        Map(x => x.LocalName).Length(200).Not.Nullable();
+        Map(x => x.EnglishName).Length(200).Not.Nullable();
+    }
+}
+
 
