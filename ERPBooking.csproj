@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <Compile Remove="Data\**\*.cs" />
+    <ProjectReference Include="Data\Data.csproj" />
   </ItemGroup>
 
 </Project>

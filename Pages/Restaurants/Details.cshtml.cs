@@ -8,12 +8,14 @@ namespace ERPBooking.Pages.Restaurants;
 
 public sealed class DetailsModel(
     RestaurantCatalog catalog,
-    ReservationStore reservationStore) : PageModel
+    ReservationStore reservationStore,
+    RestaurantProfileService profileService) : PageModel
 {
     [BindProperty]
     public BookingInput Input { get; set; } = new();
 
     public Restaurant? Restaurant { get; private set; }
+    public RestaurantProfile? Profile { get; private set; }
     public IReadOnlyList<TimeOnly> AvailableTimes { get; private set; } = [];
     public string? ConfirmationReference { get; private set; }
 
@@ -84,7 +86,8 @@ public sealed class DetailsModel(
 
     private async Task<bool> LoadRestaurantAsync(string slug, CancellationToken cancellationToken)
     {
-        Restaurant = catalog.Find(slug);
+        Profile = profileService.Find(slug);
+        Restaurant = Profile?.Restaurant;
         if (Restaurant is null)
         {
             return false;

@@ -14,6 +14,8 @@
   <title>@restaurant.Name | Cape & Table</title>
   <link rel="preconnect" href="https://images.unsplash.com">
   <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/restaurant-profile.css">
+  <script src="/restaurant-profile.js" defer></script>
 </head>
 <body>
   <header class="site-header">
@@ -35,6 +37,150 @@
       </div>
     </section>
 
+    @if (Model.Profile is { } profile)
+    {
+      @if (profile.Promotions.Count > 0)
+      {
+        <section class="profile-promotions" aria-label="Promotions and announcements">
+          @foreach (var promotion in profile.Promotions)
+          {
+            <article class="promotion-card">
+              <p class="eyebrow">@promotion.Type</p>
+              <h2>@promotion.Title</h2>
+              <p>@promotion.Body</p>
+              @if (promotion.ValidFrom is not null || promotion.ValidTo is not null)
+              {
+                <p class="promotion-dates">
+                  @if (promotion.ValidFrom is not null) { <span>From @promotion.ValidFrom.Value.ToString("d MMM yyyy", CultureInfo.InvariantCulture)</span> }
+                  @if (promotion.ValidTo is not null) { <span>Until @promotion.ValidTo.Value.ToString("d MMM yyyy", CultureInfo.InvariantCulture)</span> }
+                </p>
+              }
+            </article>
+          }
+        </section>
+      }
+
+      @if (profile.Photos.Count > 0)
+      {
+        <section class="profile-section" aria-labelledby="gallery-title">
+          <div class="profile-section-heading">
+            <div><p class="eyebrow">A LOOK AROUND</p><h2 id="gallery-title">The atmosphere</h2></div>
+            <span>@profile.Photos.Count photos</span>
+          </div>
+          <div class="profile-gallery">
+            @foreach (var photo in profile.Photos)
+            {
+              <figure>
+                <button class="gallery-trigger" type="button" data-gallery-src="@photo.Url" data-gallery-alt="@photo.AltText" aria-label="Enlarge @photo.Category photo">
+                  <img src="@photo.Url" alt="@photo.AltText" loading="lazy">
+                </button>
+                <figcaption>@photo.Category</figcaption>
+              </figure>
+            }
+          </div>
+        </section>
+      }
+
+      @if (profile.MenuCategories.Count > 0)
+      {
+        <section class="profile-section" aria-labelledby="menu-title">
+          <div class="profile-section-heading"><div><p class="eyebrow">FROM THE KITCHEN</p><h2 id="menu-title">The menu</h2></div></div>
+          <div class="menu-tabs" role="tablist" aria-label="Menu categories">
+            @for (var index = 0; index < profile.MenuCategories.Count; index++)
+            {
+              <button type="button" role="tab" id="menu-tab-@index" aria-controls="menu-panel-@index" aria-selected="@(index == 0 ? "true" : "false")" class="menu-tab" data-menu-tab="@index">@profile.MenuCategories[index].Name</button>
+            }
+          </div>
+          @for (var index = 0; index < profile.MenuCategories.Count; index++)
+          {
+            var category = profile.MenuCategories[index];
+            <section id="menu-panel-@index" class="menu-panel" role="tabpanel" aria-labelledby="menu-tab-@index" hidden="@(index != 0)">
+              @if (!string.IsNullOrWhiteSpace(category.Description)) { <p class="menu-category-description">@category.Description</p> }
+              @if (category.Items.Count > 0)
+              {
+                <div class="menu-items">
+                  @foreach (var item in category.Items)
+                  {
+                    <article class="menu-item"><div><h3>@item.Name</h3><p>@item.Description</p></div><strong>R @item.Price.ToString("0.00", CultureInfo.InvariantCulture)</strong></article>
+                  }
+                </div>
+              }
+            </section>
+          }
+        </section>
+      }
+
+      <div class="profile-details-grid">
+        <section class="profile-section" aria-labelledby="hours-title">
+          <p class="eyebrow">PLAN YOUR VISIT</p><h2 id="hours-title">Opening hours</h2>
+          @if (profile.OpeningHours.Count > 0)
+          {
+            <ul class="profile-list hours-list">
+              @foreach (var hour in profile.OpeningHours)
+              {
+                <li><span>@hour.Day</span><strong>@hour.OpensAt.ToString("HH:mm", CultureInfo.InvariantCulture) – @hour.ClosesAt.ToString("HH:mm", CultureInfo.InvariantCulture)</strong></li>
+              }
+            </ul>
+          }
+          else { <p>@restaurant.OpeningHours</p> }
+          @if (profile.ClosureDates.Count > 0)
+          {
+            <h3 class="profile-subheading">Upcoming closures</h3>
+            <ul class="profile-list">
+              @foreach (var closure in profile.ClosureDates)
+              {
+                <li><span>@closure.Date.ToString("d MMM yyyy", CultureInfo.InvariantCulture)</span><span>@closure.Reason</span></li>
+              }
+            </ul>
+          }
+        </section>
+
+        @if (profile.Facilities.Count > 0)
+        {
+          <section class="profile-section" aria-labelledby="facilities-title">
+            <p class="eyebrow">GOOD TO KNOW</p><h2 id="facilities-title">Facilities</h2>
+            <ul class="facility-list">
+              @foreach (var facility in profile.Facilities)
+              {
+                <li><span aria-hidden="true">✓</span><div><strong>@facility.Label</strong><p>@facility.Description</p></div></li>
+              }
+            </ul>
+          </section>
+        }
+      </div>
+
+      @if (profile.Events.Count > 0)
+      {
+        <section class="profile-section" aria-labelledby="events-title">
+          <p class="eyebrow">ON THE CALENDAR</p><h2 id="events-title">Special events</h2>
+          <div class="profile-card-grid">
+            @foreach (var item in profile.Events)
+            {
+              <article class="profile-card"><p class="eyebrow">@item.StartsAt.ToString("d MMM yyyy", CultureInfo.InvariantCulture)</p><h3>@item.Title</h3><p>@item.Description</p><p class="event-time">@item.StartsAt.ToString("HH:mm", CultureInfo.InvariantCulture)–@item.EndsAt.ToString("HH:mm", CultureInfo.InvariantCulture)</p></article>
+            }
+          </div>
+        </section>
+      }
+
+      <section class="profile-section map-section" aria-labelledby="map-title">
+        <div><p class="eyebrow">FIND YOUR WAY</p><h2 id="map-title">Visit us</h2><p>@restaurant.Address</p><a class="button-secondary" href="https://www.google.com/maps/dir/?api=1&destination=@Uri.EscapeDataString(restaurant.Address)" target="_blank" rel="noopener noreferrer">Get directions <span aria-hidden="true">↗</span></a></div>
+        <iframe title="Map showing @restaurant.Name" src="https://www.google.com/maps?q=@Uri.EscapeDataString(restaurant.Address)&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </section>
+
+      @if (profile.Reviews.Count > 0)
+      {
+        <section class="profile-section" aria-labelledby="reviews-title">
+          <div class="profile-section-heading"><div><p class="eyebrow">GUEST NOTES</p><h2 id="reviews-title">Reviews</h2></div><p class="reviews-summary"><strong>★ @profile.AverageRating.ToString("0.0", CultureInfo.InvariantCulture)</strong> · @profile.ReviewCount reviews</p></div>
+          <div class="profile-card-grid">
+            @foreach (var review in profile.Reviews)
+            {
+              <article class="profile-card review-card"><p class="review-stars" aria-label="Rated @review.Rating out of 5">@string.Concat(Enumerable.Repeat("★", Math.Clamp(review.Rating, 0, 5)))</p><blockquote>@review.Comment</blockquote><p class="review-author"><strong>@review.Author</strong><span>@review.CreatedAt.ToString("d MMM yyyy", CultureInfo.InvariantCulture)</span></p></article>
+            }
+          </div>
+        </section>
+      }
+    }
+
     <div class="detail-layout">
       <section class="restaurant-info" aria-labelledby="about-title">
         <p class="eyebrow">A LITTLE ABOUT THE PLACE</p>
@@ -44,6 +190,14 @@
           <div><span class="info-icon" aria-hidden="true">⌖</span><div><strong>FIND US</strong><a href="https://maps.google.com/?q=@Uri.EscapeDataString(restaurant.Address)" target="_blank" rel="noopener noreferrer">@restaurant.Address <span aria-hidden="true">↗</span></a></div></div>
           <div><span class="info-icon" aria-hidden="true">◷</span><div><strong>OPENING HOURS</strong><span>@restaurant.OpeningHours</span></div></div>
           <div><span class="info-icon" aria-hidden="true">☎</span><div><strong>GIVE US A RING</strong><a href="tel:@restaurant.Phone">@restaurant.Phone</a></div></div>
+          @if (!string.IsNullOrWhiteSpace(Model.Profile?.Email))
+          {
+            <div><span class="info-icon" aria-hidden="true">✉</span><div><strong>EMAIL</strong><a href="mailto:@Model.Profile.Email">@Model.Profile.Email</a></div></div>
+          }
+          @if (!string.IsNullOrWhiteSpace(Model.Profile?.Website))
+          {
+            <div><span class="info-icon" aria-hidden="true">↗</span><div><strong>WEBSITE</strong><a href="@Model.Profile.Website" target="_blank" rel="noopener noreferrer">Visit restaurant website</a></div></div>
+          }
         </div>
       </section>
 
@@ -108,6 +262,10 @@
       </section>
     </div>
   </main>
+  <dialog class="gallery-dialog" id="gallery-dialog" aria-label="Restaurant photo">
+    <form method="dialog"><button class="gallery-close" aria-label="Close photo">×</button></form>
+    <img id="gallery-dialog-image" alt="">
+  </dialog>
   <footer class="site-footer">
     <a class="brand" href="/"><span class="brand-icon" aria-hidden="true">C</span><span>Cape <span class="brand-amp">&</span> Table</span></a>
     <p>Made for memorable meals in Cape Town.</p>
