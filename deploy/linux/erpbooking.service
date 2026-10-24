@@ -8,11 +8,13 @@ User=erpbooking
 Group=erpbooking
 WorkingDirectory=/opt/erpbooking
 ExecStart=/opt/erpbooking/ERPBooking
+StateDirectory=erpbooking
 Restart=on-failure
 RestartSec=5
 Environment=ASPNETCORE_ENVIRONMENT=Production
 Environment=ASPNETCORE_URLS=http://127.0.0.1:5080
 Environment=DOTNET_NOLOGO=true
+Environment=Booking__DataPath=/var/lib/erpbooking/reservations.json
 NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=strict

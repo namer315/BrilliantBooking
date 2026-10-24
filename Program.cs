@@ -1,13 +1,9 @@
-using Data;
-using Data.DAO;
+using ERPBooking.Booking;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
-var connectionString = builder.Configuration.GetConnectionString("TD");
-ArgumentException.ThrowIfNullOrWhiteSpace(connectionString);
-builder.Services.AddSingleton(_ => new NHibernateSessionFactory(connectionString));
-builder.Services.AddScoped<NHibernateRepository>();
-builder.Services.AddScoped<UserDAO>();
+builder.Services.AddSingleton<RestaurantCatalog>();
+builder.Services.AddSingleton<ReservationStore>();
 
 var app = builder.Build();
 
