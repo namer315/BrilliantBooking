@@ -40,6 +40,55 @@
       <div class="hero-stamp" aria-hidden="true"><span>FIND YOUR</span><strong>TABLE</strong><span>IN THE CAPE</span></div>
     </section>
 
+    <section class="quick-browse" aria-label="Browse restaurants by cuisine or neighbourhood">
+      <div class="browse-group">
+        <div class="browse-heading">
+          <p class="eyebrow">FOLLOW YOUR CRAVING</p>
+          <h2>Browse by cuisine</h2>
+        </div>
+        <div class="browse-links" aria-label="Cuisine shortcuts">
+          <a class="browse-chip @(string.IsNullOrEmpty(Model.Cuisine) ? "selected" : string.Empty)"
+             asp-page="/Index" asp-route-query="@Model.Query" asp-route-area="@Model.Area"
+             asp-route-cuisine="" asp-route-priceLevel="@Model.PriceLevel"
+             asp-route-date="@Model.Date.ToString("yyyy-MM-dd")" asp-route-time="@Model.Time"
+             asp-route-guests="@Model.Guests" asp-fragment="restaurants"
+             aria-current="@(string.IsNullOrEmpty(Model.Cuisine) ? "true" : null)">All cuisines</a>
+          @foreach (var cuisine in Model.Cuisines)
+          {
+            <a class="browse-chip @(Model.Cuisine == cuisine ? "selected" : string.Empty)"
+               asp-page="/Index" asp-route-query="@Model.Query" asp-route-area="@Model.Area"
+               asp-route-cuisine="@cuisine" asp-route-priceLevel="@Model.PriceLevel"
+               asp-route-date="@Model.Date.ToString("yyyy-MM-dd")" asp-route-time="@Model.Time"
+               asp-route-guests="@Model.Guests" asp-fragment="restaurants"
+               aria-current="@(Model.Cuisine == cuisine ? "true" : null)">@cuisine</a>
+          }
+        </div>
+      </div>
+      <div class="browse-group neighbourhood-group">
+        <div class="browse-heading">
+          <p class="eyebrow">A TABLE AROUND THE CORNER</p>
+          <h2>Explore neighbourhoods</h2>
+        </div>
+        <div class="browse-links neighbourhood-links" aria-label="Neighbourhood shortcuts">
+          <a class="neighbourhood-link @(string.IsNullOrEmpty(Model.Area) ? "selected" : string.Empty)"
+             asp-page="/Index" asp-route-query="@Model.Query" asp-route-area=""
+             asp-route-cuisine="@Model.Cuisine" asp-route-priceLevel="@Model.PriceLevel"
+             asp-route-date="@Model.Date.ToString("yyyy-MM-dd")" asp-route-time="@Model.Time"
+             asp-route-guests="@Model.Guests" asp-fragment="restaurants"
+             aria-current="@(string.IsNullOrEmpty(Model.Area) ? "true" : null)">All areas <span aria-hidden="true">↗</span></a>
+          @foreach (var area in Model.Areas)
+          {
+            <a class="neighbourhood-link @(Model.Area == area ? "selected" : string.Empty)"
+               asp-page="/Index" asp-route-query="@Model.Query" asp-route-area="@area"
+               asp-route-cuisine="@Model.Cuisine" asp-route-priceLevel="@Model.PriceLevel"
+               asp-route-date="@Model.Date.ToString("yyyy-MM-dd")" asp-route-time="@Model.Time"
+               asp-route-guests="@Model.Guests" asp-fragment="restaurants"
+               aria-current="@(Model.Area == area ? "true" : null)">@area <span aria-hidden="true">↗</span></a>
+          }
+        </div>
+      </div>
+    </section>
+
     <section class="search-section" aria-labelledby="search-title">
       <div class="section-heading">
         <div>
