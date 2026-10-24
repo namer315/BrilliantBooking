@@ -117,4 +117,3 @@ The first release now includes the directory, profiles, filters, availability lo
 
 **Next milestone:** add diner booking management and restaurant-side reservation tools backed by a production-grade reservation database and inventory management.
 
-**Reference:** [Dineplan restaurants in Cape Town](https://www.dineplan.com/restaurants/in/cape-town) and [Dineplan app features](https://www.dineplan.com/app).
