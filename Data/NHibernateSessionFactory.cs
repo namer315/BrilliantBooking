@@ -1,4 +1,4 @@
-using Data.VO;
+using Data.VO.Restaurant;
 using FluentNHibernate;
 using NHibernate;
 using NHibernate.Cfg;
@@ -33,7 +33,7 @@ public sealed class NHibernateSessionFactory : IDisposable
             });
 
             var persistenceModel = new PersistenceModel();
-            persistenceModel.AddMappingsFromAssembly(typeof(UserVOMap).Assembly);
+            persistenceModel.AddMappingsFromAssembly(typeof(RestaurantMap).Assembly);
             persistenceModel.Configure(configuration);
         };
     }
