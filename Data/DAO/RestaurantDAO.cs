@@ -6,16 +6,13 @@ namespace Data.DAO;
 
 public sealed class RestaurantDAO : NHibernateRepository
 {
-    public async Task<IList> GetAttendanceEmployeeYears(string code)
+    public async Task<IList> GetRestaurantBy(string slug)
     {
         IQuery q = Session.CreateQuery(@"
-			SELECT attendanceEmployeeYear.Id,attendanceYear.Code,attendanceYear.LocalName,attendanceYear.EnglishName
-            ,employee.Id,employee.Code,employee.LocalName,employee.EnglishName
-
-            FROM  RestaurantVO restaurant 
+            FROM RestaurantVO restaurant 
             where restaurant.Slug = :slug
 			")
-            .SetParameter("slug" , "%" + code + "%");
+            .SetParameter("slug" , slug);
 
         return await q.ListAsync();
     }
