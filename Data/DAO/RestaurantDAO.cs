@@ -1,24 +1,22 @@
-using Data.VO;
+using Data.VO.Restaurant;
+using NHibernate;
+using System.Collections;
 
 namespace Data.DAO;
 
-public sealed class RestaurantDAO
+public sealed class RestaurantDAO : NHibernateRepository
 {
-    private const string FindBySlugHql = "from RestaurantVO restaurant where restaurant.Slug = :slug";
-
-    private readonly NHibernateRepository _repository;
-
-    public RestaurantDAO(NHibernateRepository repository)
+    public async Task<IList> GetAttendanceEmployeeYears(string code)
     {
-        ArgumentNullException.ThrowIfNull(repository);
-        _repository = repository;
-    }
+        IQuery q = Session.CreateQuery(@"
+			SELECT attendanceEmployeeYear.Id,attendanceYear.Code,attendanceYear.LocalName,attendanceYear.EnglishName
+            ,employee.Id,employee.Code,employee.LocalName,employee.EnglishName
 
-    public RestaurantVO? FindBySlug(string slug)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(slug);
+            FROM  RestaurantVO restaurant 
+            where restaurant.Slug = :slug
+			")
+            .SetParameter("slug" , "%" + code + "%");
 
-        return _repository.Query<RestaurantVO>(FindBySlugHql,
-            new Dictionary<string, object> { ["slug"] = slug }).FirstOrDefault();
+        return await q.ListAsync();
     }
 }

@@ -9,7 +9,8 @@ namespace Data;
 
 public sealed class NHibernateSessionFactory : IDisposable
 {
-    private readonly ISessionFactory _sessionFactory;
+    private static ISessionFactory _sessionFactory;
+    internal static ISessionFactory SessionFactory => _sessionFactory;
 
     /// <summary>
     /// Creates a SQL Server session factory using the supplied connection string.
