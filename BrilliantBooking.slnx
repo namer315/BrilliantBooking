@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="BrilliantBooking/BrilliantBooking.csproj" />
+  <Project Path="Data/Data.csproj" />
+</Solution>
