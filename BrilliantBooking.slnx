@@ -1,4 +1,6 @@
 <Solution>
   <Project Path="BrilliantBooking/BrilliantBooking.csproj" />
+  <Project Path="Business/Business.csproj" Id="427761a4-f9a6-4ebc-b3fe-cd01a56359e3" />
   <Project Path="Data/Data.csproj" />
+  <Project Path="FDM/FDM.csproj" Id="c87b33e3-a914-4f1e-8e3e-49c13f78c5e9" />
 </Solution>
