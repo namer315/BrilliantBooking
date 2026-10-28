@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TableReserve OS - Premium Dining & Reservation Management</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        gold: {
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .audio-bar {
+            animation: bounce 1.2s infinite ease-in-out alternate;
+        }
+        @keyframes bounce {
+            0% { height: 4px; }
+            100% { height: 24px; }
+        }
+        /* Custom scrollbars */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.4); border-radius: 9999px; }
+        .dark ::-webkit-scrollbar-thumb { background: rgba(75, 85, 99, 0.5); }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen transition-colors duration-200">
+
+    <!-- APP HEADER -->
+    <header class="sticky top-0 z-40 w-full border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchView('guest')">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-300 flex items-center justify-center text-slate-950 font-bold text-xl shadow-lg shadow-amber-500/20">
+                    <i data-lucide="utensils" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <span class="font-bold text-lg tracking-tight bg-gradient-to-r from-amber-500 to-amber-300 bg-clip-text text-transparent">TableReserve OS</span>
+                    <span class="text-xs text-slate-500 dark:text-slate-400 block -mt-1 font-medium">Next-Gen Hospitality Engine</span>
+                </div>
+            </div>
+
+            <!-- VIEW MODE SWITCHER & NAVIGATION -->
+            <div class="flex items-center space-x-2 sm:space-x-4">
+                <nav class="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
+                    <button id="nav-guest-btn" onclick="switchView('guest')" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center space-x-1.5 bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm">
+                        <i data-lucide="compass" class="w-4 h-4"></i>
+                        <span>Guest Hub</span>
+                    </button>
+                    <button id="nav-host-btn" onclick="switchView('host')" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center space-x-1.5 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+                        <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                        <span>Host Console</span>
+                    </button>
+                    <button id="nav-passbook-btn" onclick="switchView('passbook')" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center space-x-1.5 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+                        <i data-lucide="ticket" class="w-4 h-4"></i>
+                        <span class="hidden sm:inline">Passbook</span>
+                        <span id="pass-count-badge" class="bg-amber-500 text-slate-950 text-[10px] font-bold px-1.5 py-0.5 rounded-full">1</span>
+                    </button>
+                </nav>
+
+                <!-- Theme Toggle -->
+                <button onclick="toggleTheme()" class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-amber-500 transition-colors">
+                    <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
+                    <i data-lucide="moon" class="w-4 h-4 block dark:hidden"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
+
+    <!-- MAIN APP CONTAINER -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- ================= GUEST HUB VIEW ================= -->
+        <section id="guest-view" class="space-y-8">
+            <!-- Hero Banner -->
+            <div class="relative rounded-3xl overflow-hidden bg-gradient-to-r from-slate-900 to-slate-800 text-white p-8 sm:p-12 border border-slate-800 shadow-2xl">
+                <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(245,158,11,0.15),transparent_60%)]"></div>
+                <div class="relative z-10 max-w-2xl space-y-4">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-400 border border-amber-500/30 uppercase tracking-widest">Fine Dining Redefined</span>
+                    <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight">Reserve Extraordinary Culinary Experiences</h1>
+                    <p class="text-slate-300 text-sm sm:text-base leading-relaxed">Instant real-time table locking, interactive seating selection, curated ambiance previews, and digital priority pass booking.</p>
+                </div>
+            </div>
+
+            <!-- Controls: Search, Filters, Grid/List Mode -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                <!-- Search -->
+                <div class="relative flex-1">
+                    <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    <input type="text" id="search-input" oninput="applyFilters()" placeholder="Search restaurant, cuisine, or vibe..." class="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
+                </div>
+
+                <!-- Filter Pills -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <select id="cuisine-filter" onchange="applyFilters()" class="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        <option value="all">All Cuisines</option>
+                        <option value="Modern French">Modern French</option>
+                        <option value="Japanese / Omakase">Japanese / Omakase</option>
+                        <option value="Italian Coastal">Italian Coastal</option>
+                        <option value="Plant-Based Fine Dining">Plant-Based</option>
+                        <option value="Modern Steakhouse">Steakhouse</option>
+                        <option value="Contemporary European">Contemporary European</option>
+                    </select>
+
+                    <select id="price-filter" onchange="applyFilters()" class="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        <option value="all">All Prices</option>
+                        <option value="$$$">$$$ (Moderate Fine)</option>
+                        <option value="$$$$">$$$$ (Ultra Luxury)</option>
+                    </select>
+
+                    <select id="dietary-filter" onchange="applyFilters()" class="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        <option value="all">All Dietary Options</option>
+                        <option value="Vegan Options">Vegan Options</option>
+                        <option value="Gluten-Free Friendly">Gluten-Free</option>
+                        <option value="Halal Certified">Halal Certified</option>
+                        <option value="Nut-Free Kitchen">Nut-Free Kitchen</option>
+                    </select>
+
+                    <!-- View Toggle -->
+                    <div class="flex items-center border border-slate-200 dark:border-slate-700 rounded-xl p-1 bg-slate-50 dark:bg-slate-800 ml-auto">
+                        <button id="view-grid-btn" onclick="setViewMode('grid')" class="p-1.5 rounded-lg bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-white">
+                            <i data-lucide="grid" class="w-4 h-4"></i>
+                        </button>
+                        <button id="view-list-btn" onclick="setViewMode('list')" class="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white">
+                            <i data-lucide="list" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Restaurant Grid/List Container -->
+            <div id="restaurants-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Dynamically populated -->
+            </div>
+        </section>
+
+        <!-- ================= HOST CONSOLE VIEW ================= -->
+        <section id="host-view" class="space-y-8 hidden">
+            <!-- Host Header & KPI Cards -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold tracking-tight">Shift Control & Floor Management</h2>
+                    <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Live operational oversight for dinner service</p>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse mr-2"></span> Active Service
+                    </span>
+                </div>
+            </div>
+
+            <!-- 4 KPI Cards -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-2">
+                    <div class="flex items-center justify-between text-slate-500 dark:text-slate-400">
+                        <span class="text-xs font-semibold uppercase tracking-wider">Occupancy</span>
+                        <i data-lucide="pie-chart" class="w-4 h-4 text-amber-500"></i>
+                    </div>
+                    <div class="flex items-baseline justify-between">
+                        <span id="kpi-occupancy" class="text-2xl font-bold">78%</span>
+                        <span class="text-xs text-emerald-500 font-medium">+5% vs avg</span>
+                    </div>
+                    <div class="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                        <div class="bg-amber-500 h-full w-[78%]"></div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-2">
+                    <div class="flex items-center justify-between text-slate-500 dark:text-slate-400">
+                        <span class="text-xs font-semibold uppercase tracking-wider">Waitlist Queue</span>
+                        <i data-lucide="users" class="w-4 h-4 text-amber-500"></i>
+                    </div>
+                    <div class="flex items-baseline justify-between">
+                        <span id="kpi-waitlist" class="text-2xl font-bold">3 Groups</span>
+                        <span class="text-xs text-slate-400">~25m avg wait</span>
+                    </div>
+                    <div class="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                        <div class="bg-indigo-500 h-full w-[45%]"></div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-2">
+                    <div class="flex items-center justify-between text-slate-500 dark:text-slate-400">
+                        <span class="text-xs font-semibold uppercase tracking-wider">Shift Revenue</span>
+                        <i data-lucide="dollar-sign" class="w-4 h-4 text-emerald-500"></i>
+                    </div>
+                    <div class="flex items-baseline justify-between">
+                        <span id="kpi-revenue" class="text-2xl font-bold">$4,850</span>
+                        <span class="text-xs text-emerald-500 font-medium">92% target</span>
+                    </div>
+                    <div class="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                        <div class="bg-emerald-500 h-full w-[92%]"></div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-2">
+                    <div class="flex items-center justify-between text-slate-500 dark:text-slate-400">
+                        <span class="text-xs font-semibold uppercase tracking-wider">Table Turn Rate</span>
+                        <i data-lucide="clock" class="w-4 h-4 text-blue-500"></i>
+                    </div>
+                    <div class="flex items-baseline justify-between">
+                        <span id="kpi-turn" class="text-2xl font-bold">82m</span>
+                        <span class="text-xs text-emerald-500 font-medium">-4m optimal</span>
+                    </div>
+                    <div class="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                        <div class="bg-blue-500 h-full w-[65%]"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive Live Floorplan Grid -->
+            <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h3 class="text-lg font-bold">Interactive Live Floorplan</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Hover or click table badges to alter live dining status</p>
+                    </div>
+
+                    <!-- Floorplan Status Legend -->
+                    <div class="flex flex-wrap items-center gap-3 text-xs">
+                        <span class="flex items-center space-x-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span><span>Available</span></span>
+                        <span class="flex items-center space-x-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span><span>Reserved</span></span>
+                        <span class="flex items-center space-x-1.5"><span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span><span>Seated</span></span>
+                        <span class="flex items-center space-x-1.5"><span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span><span>Check Dropped</span></span>
+                        <span class="flex items-center space-x-1.5"><span class="w-2.5 h-2.5 rounded-full bg-slate-400"></span><span>Dirty</span></span>
+                    </div>
+                </div>
+
+                <!-- Visual Floor Layout Canvas -->
+                <div id="floorplan-layout" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 p-6 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 min-h-[300px]">
+                    <!-- Floorplan items auto-injected -->
+                </div>
+            </div>
+
+            <!-- Shift Manifest & Waitlist Split View -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Shift Reservations Manifest Table (2 Cols) -->
+                <div class="lg:col-span-2 bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-bold">Shift Reservations Manifest</h3>
+                        <span class="text-xs text-slate-400" id="manifest-count">6 Bookings</span>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs sm:text-sm">
+                            <thead>
+                                <tr class="border-b border-slate-200 dark:border-slate-800 text-slate-400 font-semibold uppercase tracking-wider">
+                                    <th class="py-3 px-2">Time</th>
+                                    <th class="py-3 px-2">Guest</th>
+                                    <th class="py-3 px-2">Party</th>
+                                    <th class="py-3 px-2">Table</th>
+                                    <th class="py-3 px-2">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="manifest-table-body" class="divide-y divide-slate-100 dark:divide-slate-800">
+                                <!-- Dynamically filled -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Walk-in Waitlist Queue Manager (1 Col) -->
+                <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-bold">Waitlist Queue</h3>
+                        <button onclick="openWaitlistModal()" class="px-3 py-1.5 bg-amber-500 text-slate-950 rounded-xl text-xs font-bold hover:bg-amber-400 transition-colors">
+                            + Add Walk-In
+                        </button>
+                    </div>
+
+                    <div id="waitlist-queue-container" class="space-y-3">
+                        <!-- Waitlist queue cards injected -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= PASSBOOK WALLET VIEW ================= -->
+        <section id="passbook-view" class="space-y-8 hidden">
+            <div class="max-w-3xl mx-auto space-y-6">
+                <div>
+                    <h2 class="text-2xl font-bold tracking-tight">Digital Dining Passbook</h2>
+                    <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Your active priority reservations & wallet passes</p>
+                </div>
+
+                <div id="passbook-passes-container" class="space-y-6">
+                    <!-- Dynamic Passes injected here -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ================= RESTAURANT DETAIL & RESERVATION WIZARD MODAL ================= -->
+    <div id="res-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative my-8">
+            <!-- Close Button -->
+            <button onclick="closeReservationModal()" class="absolute right-5 top-5 z-10 p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <!-- Modal Header / Banner -->
+            <div id="modal-banner" class="h-48 sm:h-56 bg-cover bg-center relative p-6 flex flex-col justify-end">
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
+                <div class="relative z-10 text-white space-y-1">
+                    <span id="modal-cuisine-badge" class="px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-amber-500 text-slate-950 uppercase tracking-widest"></span>
+                    <h2 id="modal-rest-name" class="text-2xl sm:text-3xl font-bold"></h2>
+                    <p id="modal-rest-location" class="text-xs text-slate-300 flex items-center space-x-1">
+                        <i data-lucide="map-pin" class="w-3.5 h-3.5"></i> <span></span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Modal Tabs (Details vs Reserve Wizard) -->
+            <div class="border-b border-slate-200 dark:border-slate-800 px-6 flex space-x-6 text-sm font-semibold">
+                <button id="modal-tab-details" onclick="setModalTab('details')" class="py-4 border-b-2 border-amber-500 text-amber-500">Overview & Menus</button>
+                <button id="modal-tab-reserve" onclick="setModalTab('reserve')" class="py-4 border-b-2 border-transparent text-slate-400 hover:text-slate-200">Book Table (4-Step Wizard)</button>
+            </div>
+
+            <!-- Modal Body Content -->
+            <div class="p-6 space-y-6">
+                <!-- TAB 1: OVERVIEW & MENUS -->
+                <div id="tab-content-details" class="space-y-6">
+                    <p id="modal-rest-description" class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed"></p>
+
+                    <!-- Ambiance Audio Preview Simulation -->
+                    <div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-200 dark:border-slate-700/60 flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <button id="audio-play-btn" onclick="toggleAudioPreview()" class="w-10 h-10 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center font-bold hover:bg-amber-400 transition-colors">
+                                <i id="audio-icon" data-lucide="play" class="w-5 h-5"></i>
+                            </button>
+                            <div>
+                                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Ambiance Preview</h4>
+                                <span id="audio-track-name" class="text-sm font-medium">Bossa Nova & Soft Bistro Chill</span>
+                            </div>
+                        </div>
+
+                        <!-- Animated Frequency Bars -->
+                        <div id="audio-bars" class="flex items-end space-x-1 h-6 opacity-40">
+                            <span class="w-1 bg-amber-500 rounded-full audio-bar" style="animation-delay: 0.1s;"></span>
+                            <span class="w-1 bg-amber-500 rounded-full audio-bar" style="animation-delay: 0.3s;"></span>
+                            <span class="w-1 bg-amber-500 rounded-full audio-bar" style="animation-delay: 0.2s;"></span>
+                            <span class="w-1 bg-amber-500 rounded-full audio-bar" style="animation-delay: 0.4s;"></span>
+                            <span class="w-1 bg-amber-500 rounded-full audio-bar" style="animation-delay: 0.15s;"></span>
+                        </div>
+                    </div>
+
+                    <!-- Menu Highlights -->
+                    <div class="space-y-3">
+                        <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400">Chef's Menu Highlights</h3>
+                        <div id="modal-menu-list" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+                    </div>
+
+                    <!-- Dining Policies -->
+                    <div class="space-y-3 pt-4 border-t border-slate-200 dark:border-slate-800">
+                        <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400">Dining Policies</h3>
+                        <ul id="modal-policies-list" class="text-xs text-slate-500 dark:text-slate-400 space-y-1.5 list-disc list-inside"></ul>
+                    </div>
+
+                    <button onclick="setModalTab('reserve')" class="w-full py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-2xl shadow-lg shadow-amber-500/20 transition-all">
+                        Proceed to Reservation Wizard
+                    </button>
+                </div>
+
+                <!-- TAB 2: 4-STEP RESERVATION WIZARD -->
+                <div id="tab-content-reserve" class="space-y-6 hidden">
+                    <!-- Step Progress Indicator -->
+                    <div class="flex items-center justify-between text-xs font-semibold text-slate-400 border-b border-slate-200 dark:border-slate-800 pb-4">
+                        <span id="wizard-step-1-lbl" class="text-amber-500">1. Date & Party</span>
+                        <span id="wizard-step-2-lbl">2. Guest Details</span>
+                        <span id="wizard-step-3-lbl">3. Visual Seating</span>
+                        <span id="wizard-step-4-lbl">4. Digital Pass</span>
+                    </div>
+
+                    <!-- STEP 1: Date, Time, Party, Dining Area -->
+                    <div id="wizard-step-1" class="space-y-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-medium text-slate-400 mb-1">Reservation Date</label>
+                                <input type="date" id="wiz-date" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-400 mb-1">Party Size</label>
+                                <select id="wiz-party" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                                    <option value="2">2 Guests (Couples Table)</option>
+                                    <option value="4" selected>4 Guests (Standard Booth)</option>
+                                    <option value="6">6 Guests (Executive High Top)</option>
+                                    <option value="8">8 Guests (Chef's Tasting Counter)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1">Seating Zone / Area</label>
+                            <div class="grid grid-cols-3 gap-3">
+                                <button type="button" onclick="selectZone('Main Dining')" id="zone-main" class="zone-btn py-2.5 rounded-xl border border-amber-500 bg-amber-500/10 text-amber-500 text-xs font-semibold">Main Dining Room</button>
+                                <button type="button" onclick="selectZone('Patio / Garden')" id="zone-patio" class="zone-btn py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-400">Patio / Garden</button>
+                                <button type="button" onclick="selectZone('Chef Counter')" id="zone-chef" class="zone-btn py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-400">Chef's Bar</button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1">Available Slot</label>
+                            <div class="grid grid-cols-4 gap-2" id="wiz-slots-grid">
+                                <button type="button" onclick="selectSlot('18:00')" class="slot-btn py-2 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-medium">18:00</button>
+                                <button type="button" onclick="selectSlot('19:30')" class="slot-btn py-2 rounded-lg border border-amber-500 bg-amber-500 text-slate-950 font-bold text-xs">19:30</button>
+                                <button type="button" onclick="selectSlot('20:45')" class="slot-btn py-2 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-medium">20:45</button>
+                                <button type="button" onclick="selectSlot('21:15')" class="slot-btn py-2 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-medium">21:15</button>
+                            </div>
+                        </div>
+
+                        <button onclick="goToWizardStep(2)" class="w-full py-3 bg-amber-500 text-slate-950 font-bold rounded-xl mt-4 hover:bg-amber-400 transition-colors">
+                            Next: Guest Info & Preferences →
+                        </button>
+                    </div>
+
+                    <!-- STEP 2: Guest Details, Occasion, Dietary -->
+                    <div id="wizard-step-2" class="space-y-4 hidden">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-medium text-slate-400 mb-1">Full Name</label>
+                                <input type="text" id="wiz-name" value="Alexander Vance" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-400 mb-1">Email Address</label>
+                                <input type="email" id="wiz-email" value="alexander.vance@example.com" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm outline-none">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-medium text-slate-400 mb-1">Special Occasion</label>
+                                <select id="wiz-occasion" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm outline-none">
+                                    <option value="None">Casual Dining</option>
+                                    <option value="Birthday" selected>Birthday Celebration</option>
+                                    <option value="Anniversary">Anniversary</option>
+                                    <option value="Business Dinner">Business Dinner</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-400 mb-1">Dietary Requirements</label>
+                                <input type="text" id="wiz-dietary" placeholder="e.g. Gluten-free, Nut allergy" value="Nut Allergy" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm outline-none">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1">Special Requests to Host</label>
+                            <textarea id="wiz-requests" rows="2" placeholder="Quiet corner table preferred..." class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm outline-none">Window seat preferred for birthday toast.</textarea>
+                        </div>
+
+                        <div class="flex space-x-3 pt-2">
+                            <button onclick="goToWizardStep(1)" class="w-1/3 py-3 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold rounded-xl">← Back</button>
+                            <button onclick="goToWizardStep(3)" class="w-2/3 py-3 bg-amber-500 text-slate-950 font-bold rounded-xl hover:bg-amber-400 transition-colors">Select Table on Visual Floorplan →</button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 3: Visual Table Picker Grid -->
+                    <div id="wizard-step-3" class="space-y-4 hidden">
+                        <div>
+                            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Choose Available Table</h4>
+                            <p class="text-xs text-slate-500">Selected zone: <span id="wiz-selected-zone-lbl" class="font-semibold text-amber-500">Main Dining</span></p>
+                        </div>
+
+                        <div id="wiz-table-picker-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800">
+                            <!-- Injected dynamically -->
+                        </div>
+
+                        <div class="flex space-x-3 pt-2">
+                            <button onclick="goToWizardStep(2)" class="w-1/3 py-3 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold rounded-xl">← Back</button>
+                            <button onclick="confirmReservationAndGeneratePass()" class="w-2/3 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl transition-all shadow-lg shadow-emerald-500/20">Confirm & Lock Reservation ✓</button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 4: Digital Pass Confirmation & ICS Calendar Download -->
+                    <div id="wizard-step-4" class="space-y-6 hidden text-center py-4">
+                        <div class="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center mx-auto border border-emerald-500/30">
+                            <i data-lucide="check-circle-2" class="w-8 h-8"></i>
+                        </div>
+
+                        <div>
+                            <h3 class="text-2xl font-bold">Reservation Confirmed!</h3>
+                            <p class="text-xs text-slate-400">Digital Wallet Pass has been issued to your account</p>
+                        </div>
+
+                        <!-- Ticket Card Preview -->
+                        <div class="bg-gradient-to-br from-slate-900 to-slate-800 text-white p-6 rounded-3xl border border-amber-500/30 text-left space-y-4 relative overflow-hidden shadow-xl">
+                            <div class="flex justify-between items-start border-b border-slate-700/60 pb-3">
+                                <div>
+                                    <span id="pass-confirm-rest" class="font-bold text-lg text-amber-400"></span>
+                                    <p id="pass-confirm-code" class="text-xs font-mono text-slate-400"></p>
+                                </div>
+                                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/40">PRIORITY PASS</span>
+                            </div>
+
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
+                                <div>
+                                    <span class="text-slate-400 block">Date & Time</span>
+                                    <span id="pass-confirm-datetime" class="font-semibold"></span>
+                                </div>
+                                <div>
+                                    <span class="text-slate-400 block">Party Size</span>
+                                    <span id="pass-confirm-party" class="font-semibold"></span>
+                                </div>
+                                <div>
+                                    <span class="text-slate-400 block">Table Locked</span>
+                                    <span id="pass-confirm-table" class="font-semibold text-amber-400"></span>
+                                </div>
+                                <div>
+                                    <span class="text-slate-400 block">Guest</span>
+                                    <span id="pass-confirm-guest" class="font-semibold"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row gap-3">
+                            <button onclick="downloadICSFile()" class="flex-1 py-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white text-xs font-bold rounded-xl flex items-center justify-center space-x-2">
+                                <i data-lucide="calendar" class="w-4 h-4 text-amber-500"></i>
+                                <span>Add to Calendar (.ICS)</span>
+                            </button>
+                            <button onclick="switchView('passbook'); closeReservationModal();" class="flex-1 py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold rounded-xl">
+                                View in Passbook →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= ADD WALK-IN WAITLIST MODAL ================= -->
+    <div id="waitlist-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl relative">
+            <button onclick="closeWaitlistModal()" class="absolute right-4 top-4 text-slate-400 hover:text-white">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <h3 class="text-lg font-bold">Add Walk-in to Waitlist Queue</h3>
+            
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-medium text-slate-400 mb-1">Guest Name</label>
+                    <input type="text" id="wl-name" placeholder="e.g. Jordan Lee" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm outline-none">
+                </div>
+                <div>
+                    <label class="block font-medium text-slate-400 mb-1">Party Size</label>
+                    <input type="number" id="wl-party" value="2" min="1" max="12" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm outline-none">
+                </div>
+                <div>
+                    <label class="block font-medium text-slate-400 mb-1">Mobile Phone (for SMS Notification)</label>
+                    <input type="tel" id="wl-phone" value="+1 (555) 019-2834" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm outline-none">
+                </div>
+                <div>
+                    <label class="block font-medium text-slate-400 mb-1">Estimated Wait (Minutes)</label>
+                    <input type="number" id="wl-wait" value="20" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm outline-none">
+                </div>
+            </div>
+
+            <button onclick="submitWaitlistAdd()" class="w-full py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl text-xs">
+                Add to Queue
+            </button>
+        </div>
+    </div>
+
+    <!-- ================= APPLICATION JAVASCRIPT ================= -->
+    <script>
+        /* -------------------------------------------------------------
+           COMPLETE MOCK DATA - ALL 6 RESTAURANTS & POLICIES
+           ------------------------------------------------------------- */
+        const RESTAURANTS_DATA = [
+            {
+                id: 'lumina',
+                name: 'Lúmina Modern Bistro',
+                cuisine: 'Modern French',
+                price: '$$$$',
+                rating: 4.9,
+                reviewsCount: 342,
+                image: 'https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?auto=format&fit=crop&w=800&q=80',
+                location: '742 Evergreen Terrace, Downtown Highrise',
+                vibe: 'Romantic, Soft Ambient Lighting, Jazz',
+                dietary: ['Vegan Options', 'Gluten-Free Friendly', 'Nut-Free Kitchen'],
+                ambianceAudio: 'Gentle French Bistro Jazz & Acoustic Strings',
+                description: 'Lúmina combines classic French technique with progressive modern gastronomy. Experience seasonal tasting menus served in an architectural sanctuary.',
+                menuHighlights: [
+                    { name: 'Pan-Seared Duck Breast', desc: 'Cherry reduction, celeriac silk, glazed shallots', price: '$48' },
+                    { name: 'Truffle Consumé & Brioche', desc: 'Winter black truffle, cultured butter', price: '$26' },
+                    { name: 'Soufflé au Grand Marnier', desc: 'Valrhona chocolate drizzle, vanilla bean gelato', price: '$22' }
+                ],
+                policies: [
+                    'Smart casual dress code strictly enforced.',
+                    '15-minute grace period for reservations.',
+                    'Cancellations within 24 hours incur a $50 per guest fee.'
+                ]
+            },
+            {
+                id: 'osumi',
+                name: 'Osumi Omakase & Sake Bar',
+                cuisine: 'Japanese / Omakase',
+                price: '$$$$',
+                rating: 4.95,
+                reviewsCount: 480,
+                image: 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&w=800&q=80',
+                location: '88 Waterfront Pier, Marina District',
+                vibe: 'Minimalist Zen, Intimate Counter Seating',
+                dietary: ['Gluten-Free Friendly', 'Halal Certified'],
+                ambianceAudio: 'Minimalist Japanese Koto & Soft Rain FX',
+                description: 'Exclusive 12-seat counter offering an eighteen-course seasonal Omakase flown in daily from Tokyo’s Toyosu Market.',
+                menuHighlights: [
+                    { name: 'Otoro Nigiri with Caviar', desc: 'Seared bluefin belly, Golden Oscietra', price: '$35/pc' },
+                    { name: 'A5 Miyazaki Wagyu Uni Roll', desc: 'Hokkaido sea urchin, fresh wasabi root', price: '$42' },
+                    { name: 'Rare Junmai Daiginjo Flight', desc: 'Three curated rare sake pairings', price: '$65' }
+                ],
+                policies: [
+                    'Counter seating strictly reserved for guests 12 and older.',
+                    'Prompt arrival mandatory due to simultaneous course service.',
+                    'No soy sauce added; chef prepares each piece to peak balance.'
+                ]
+            },
+            {
+                id: 'trattoria',
+                name: 'Trattoria Bella Vista',
+                cuisine: 'Italian Coastal',
+                price: '$$$',
+                rating: 4.7,
+                reviewsCount: 215,
+                image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80',
+                location: '124 Ocean Avenue, Cliffside Overlook',
+                vibe: 'Warm Coastal Breeze, Live Accordion, Rustic',
+                dietary: ['Vegan Options', 'Gluten-Free Friendly'],
+                ambianceAudio: 'Amalfi Coast Chill & Acoustic Guitar',
+                description: 'Authentic handmade pastas, wood-fired seafood, and an extensive cellar of Tuscan vintages with panoramic sunset ocean views.',
+                menuHighlights: [
+                    { name: 'Tagliolini al Tartufo', desc: 'House-made pasta, black summer truffle, Parmigiano 36-mo', price: '$38' },
+                    { name: 'Salt-Crusted Branzino', desc: 'Deboned tableside, lemon olive oil, caperberries', price: '$54' },
+                    { name: 'Classic Tiramisu Tradizionale', desc: 'Savoiardi, espresso, mascarpone mousse', price: '$16' }
+                ],
+                policies: [
+                    'Patio tables subject to weather conditions.',
+                    'Family friendly; high chairs available upon request.'
+                ]
+            },
+            {
+                id: 'verde',
+                name: 'Verde & Botanica',
+                cuisine: 'Plant-Based Fine Dining',
+                price: '$$$',
+                rating: 4.8,
+                reviewsCount: 190,
+                image: 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=800&q=80',
+                location: '404 Greenhouse Lane, Arts Quarter',
+                vibe: 'Lush Botanical Greenhouse, Light & Airy',
+                dietary: ['Vegan Options', 'Gluten-Free Friendly', 'Nut-Free Kitchen', 'Halal Certified'],
+                ambianceAudio: 'Organic Ambient Chillout & Birdsong Synth',
+                description: 'Celebrating hyper-local organic botanicals and zero-waste culinary arts. 100% plant-derived gourmet creations.',
+                menuHighlights: [
+                    { name: 'Smoked King Oyster Scallops', desc: 'Parsnip puree, kelp caviar, saffron emulsion', price: '$32' },
+                    { name: 'Heirloom Beetroot Tartare', desc: 'Avocado mousse, smoked almond crisp', price: '$24' },
+                    { name: 'Matcha & Pistachio Sphere', desc: 'Coconut foam, candied edible petals', price: '$18' }
+                ],
+                policies: [
+                    '100% vegan kitchen; completely dairy and meat free.',
+                    'Valet parking available at North Entrance.'
+                ]
+            },
+            {
+                id: 'elfuego',
+                name: 'El Fuego Steak & Mezcal',
+                cuisine: 'Modern Steakhouse',
+                price: '$$$$',
+                rating: 4.85,
+                reviewsCount: 310,
+                image: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80',
+                location: '512 Ember Way, Financial District',
+                vibe: 'Moody Wood-Fired Grill, Industrial Leather',
+                dietary: ['Gluten-Free Friendly', 'Halal Certified'],
+                ambianceAudio: 'Deep House Beats & Crackling Firewood',
+                description: 'Dry-aged prime steaks cooked over mesquite wood embers paired with rare artisanal Mezcal and Tequila selections.',
+                menuHighlights: [
+                    { name: '45-Day Dry Aged Tomahawk (40oz)', desc: 'Smoked bone marrow butter, chimichurri', price: '$165' },
+                    { name: 'Charred Octopus Taco', desc: 'Blue corn tortilla, habanero ash crema', price: '$28' },
+                    { name: 'Smoked Old Fashioned', desc: 'Oaxacan mezcal, agave, orange bitters', price: '$22' }
+                ],
+                policies: [
+                    'Valet complimentary for reservations after 19:00.',
+                    'Corkage fee: $45 per 750ml bottle.'
+                ]
+            },
+            {
+                id: 'leciel',
+                name: 'Le Ciel Rooftop & Lounge',
+                cuisine: 'Contemporary European',
+                price: '$$$$',
+                rating: 4.9,
+                reviewsCount: 512,
+                image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80',
+                location: '100 Skyway Boulevard, 54th Floor',
+                vibe: 'Panoramic Skyline View, Deep House Sunset Lounge',
+                dietary: ['Vegan Options', 'Gluten-Free Friendly'],
+                ambianceAudio: 'Sunset Lounge Chill Deep House',
+                description: 'Perched high on the 54th floor, Le Ciel offers innovative tapas, crafted cocktails, and breathtaking city skyline vistas.',
+                menuHighlights: [
+                    { name: 'Caviar & Potato Pillow', desc: 'Crème fraîche, chives, Royal Osetra', price: '$40' },
+                    { name: 'Wagyu Sliders', desc: 'Brioche, truffle aioli, aged cheddar', price: '$34' },
+                    { name: 'Skyline Sapphire Cocktail', desc: 'Empress gin, elderflower, champagne top', price: '$25' }
+                ],
+                policies: [
+                    'Strictly 21+ after 21:00.',
+                    'Outdoor deck seating subject to wind conditions.'
+                ]
+            }
+        ];
+
+        /* LIVE FLOORPLAN TABLES STATE INITIAL DATA */
+        let floorplanTables = [
+            { id: 'T1', seats: 2, zone: 'Main Dining', status: 'seated', guest: 'John Miller' },
+            { id: 'T2', seats: 2, zone: 'Main Dining', status: 'available', guest: '' },
+            { id: 'T3', seats: 4, zone: 'Main Dining', status: 'reserved', guest: 'Sarah Connor (19:30)' },
+            { id: 'T4', seats: 4, zone: 'Main Dining', status: 'check_dropped', guest: 'David Kim' },
+            { id: 'T5', seats: 6, zone: 'Patio / Garden', status: 'available', guest: '' },
+            { id: 'T6', seats: 6, zone: 'Patio / Garden', status: 'dirty', guest: '' },
+            { id: 'T7', seats: 2, zone: 'Chef Counter', status: 'seated', guest: 'Elena Rostova' },
+            { id: 'T8', seats: 2, zone: 'Chef Counter', status: 'available', guest: '' },
+            { id: 'T9', seats: 8, zone: 'Main Dining', status: 'reserved', guest: 'Executive Board (20:00)' },
+            { id: 'T10', seats: 4, zone: 'Patio / Garden', status: 'available', guest: '' }
+        ];
+
+        /* SHIFT MANIFEST BOOKINGS */
+        let manifestBookings = [
+            { id: 'RES-9021', name: 'Alexander Vance', time: '19:30', party: 4, table: 'T3', status: 'Confirmed' },
+            { id: 'RES-9022', name: 'Elena Rostova', time: '18:45', party: 2, table: 'T7', status: 'Seated' },
+            { id: 'RES-9023', name: 'John Miller', time: '18:15', party: 2, table: 'T1', status: 'Seated' },
+            { id: 'RES-9024', name: 'David Kim', time: '18:00', party: 4, table: 'T4', status: 'Check Dropped' },
+            { id: 'RES-9025', name: 'Marcus Brody', time: '20:30', party: 6, table: 'T5', status: 'Confirmed' },
+            { id: 'RES-9026', name: 'Sophia Chen', time: '21:00', party: 2, table: 'T8', status: 'Confirmed' }
+        ];
+
+        /* WALK-IN WAITLIST QUEUE */
+        let waitlistQueue = [
+            { id: 'WL-101', name: 'Jordan Lee', party: 2, waitMinutes: 15, phone: '+1 (555) 019-2834', status: 'Waiting' },
+            { id: 'WL-102', name: 'Taylor Swift', party: 4, waitMinutes: 30, phone: '+1 (555) 438-9921', status: 'Waiting' },
+            { id: 'WL-103', name: 'Chris Hemsworth', party: 3, waitMinutes: 25, phone: '+1 (555) 882-1049', status: 'Waiting' }
+        ];
+
+        /* USER DIGITAL PASSES WALLET */
+        let myPasses = [
+            {
+                code: 'PASS-78492',
+                restaurant: 'Lúmina Modern Bistro',
+                dateTime: 'Tonight at 19:30',
+                party: '4 Guests',
+                table: 'Table T3 (Main Dining)',
+                guest: 'Alexander Vance',
+                occasion: 'Birthday Celebration'
+            }
+        ];
+
+        /* APP STATE VARIABLE TRACKERS */
+        let currentView = 'guest';
+        let viewMode = 'grid'; // 'grid' | 'list'
+        let currentSelectedRestaurant = RESTAURANTS_DATA[0];
+        let wizardStep = 1;
+        let selectedZone = 'Main Dining';
+        let selectedSlot = '19:30';
+        let selectedTableId = 'T3';
+        let isAudioPlaying = false;
+
+        /* INITIALIZATION */
+        window.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            renderRestaurants();
+            renderFloorplan();
+            renderManifest();
+            renderWaitlist();
+            renderPassbook();
+            
+            // Set default date picker to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('wiz-date').value = today;
+        });
+
+        /* -------------------------------------------------------------
+           VIEW SWITCHING & THEME CONTROL
+           ------------------------------------------------------------- */
+        function switchView(view) {
+            currentView = view;
+            document.getElementById('guest-view').classList.add('hidden');
+            document.getElementById('host-view').classList.add('hidden');
+            document.getElementById('passbook-view').classList.add('hidden');
+
+            document.getElementById('nav-guest-btn').className = "px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center space-x-1.5 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white";
+            document.getElementById('nav-host-btn').className = "px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center space-x-1.5 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white";
+            document.getElementById('nav-passbook-btn').className = "px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center space-x-1.5 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white";
+
+            const activeClass = "px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center space-x-1.5 bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm";
+
+            if (view === 'guest') {
+                document.getElementById('guest-view').classList.remove('hidden');
+                document.getElementById('nav-guest-btn').className = activeClass;
+            } else if (view === 'host') {
+                document.getElementById('host-view').classList.remove('hidden');
+                document.getElementById('nav-host-btn').className = activeClass;
+            } else if (view === 'passbook') {
+                document.getElementById('passbook-view').classList.remove('hidden');
+                document.getElementById('nav-passbook-btn').className = activeClass;
+            }
+        }
+
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark');
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `pointer-events-auto px-4 py-3 rounded-2xl shadow-xl text-xs sm:text-sm font-semibold flex items-center space-x-2 border transition-all duration-300 transform translate-y-2 opacity-0 ${
+                type === 'success' ? 'bg-slate-900 text-white border-amber-500/50' : 'bg-slate-900 text-amber-400 border-amber-500'
+            }`;
+            toast.innerHTML = `<i data-lucide="${type === 'success' ? 'check-circle' : 'info'}" class="w-4 h-4 text-amber-500"></i><span>${message}</span>`;
+            container.appendChild(toast);
+            lucide.createIcons();
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        /* -------------------------------------------------------------
+           GUEST HUB & RESTAURANT CARDS RENDER
+           ------------------------------------------------------------- */
+        function setViewMode(mode) {
+            viewMode = mode;
+            document.getElementById('view-grid-btn').className = mode === 'grid' ? 'p-1.5 rounded-lg bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-white' : 'p-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white';
+            document.getElementById('view-list-btn').className = mode === 'list' ? 'p-1.5 rounded-lg bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-white' : 'p-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white';
+            renderRestaurants();
+        }
+
+        function applyFilters() {
+            renderRestaurants();
+        }
+
+        function renderRestaurants() {
+            const container = document.getElementById('restaurants-container');
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const cuisineVal = document.getElementById('cuisine-filter').value;
+            const priceVal = document.getElementById('price-filter').value;
+            const dietaryVal = document.getElementById('dietary-filter').value;
+
+            const filtered = RESTAURANTS_DATA.filter(r => {
+                const matchesSearch = r.name.toLowerCase().includes(searchTerm) || r.cuisine.toLowerCase().includes(searchTerm) || r.vibe.toLowerCase().includes(searchTerm);
+                const matchesCuisine = cuisineVal === 'all' || r.cuisine === cuisineVal;
+                const matchesPrice = priceVal === 'all' || r.price === priceVal;
+                const matchesDietary = dietaryVal === 'all' || r.dietary.includes(dietaryVal);
+                return matchesSearch && matchesCuisine && matchesPrice && matchesDietary;
+            });
+
+            container.className = viewMode === 'grid' ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" : "space-y-4";
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="col-span-full text-center py-12 text-slate-400">No restaurants match your active filter criteria.</div>`;
+                return;
+            }
+
+            container.innerHTML = filtered.map(r => {
+                if (viewMode === 'grid') {
+                    return `
+                    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group">
+                        <div class="relative h-48 overflow-hidden">
+                            <img src="${r.image}" alt="${r.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <span class="absolute top-3 right-3 px-2.5 py-1 rounded-full text-xs font-bold bg-slate-950/80 backdrop-blur-md text-amber-400 border border-amber-500/30">${r.price}</span>
+                            <span class="absolute top-3 left-3 px-2.5 py-1 rounded-full text-xs font-bold bg-slate-950/80 backdrop-blur-md text-white flex items-center space-x-1">
+                                <i data-lucide="star" class="w-3 h-3 text-amber-400 fill-amber-400"></i>
+                                <span>${r.rating} (${r.reviewsCount})</span>
+                            </span>
+                        </div>
+                        <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                            <div class="space-y-2">
+                                <span class="text-[10px] font-bold uppercase tracking-widest text-amber-500">${r.cuisine}</span>
+                                <h3 class="text-xl font-bold tracking-tight">${r.name}</h3>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">${r.description}</p>
+                            </div>
+
+                            <div class="flex flex-wrap gap-1">
+                                ${r.dietary.map(d => `<span class="px-2 py-0.5 rounded-md text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-medium">${d}</span>`).join('')}
+                            </div>
+
+                            <button onclick="openReservationModal('${r.id}')" class="w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl shadow-md transition-all">
+                                Reserve Table & View Details
+                            </button>
+                        </div>
+                    </div>`;
+                } else {
+                    return `
+                    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden p-4 shadow-sm hover:shadow-md transition-all flex flex-col sm:flex-row items-center gap-4">
+                        <img src="${r.image}" alt="${r.name}" class="w-full sm:w-36 h-32 object-cover rounded-2xl">
+                        <div class="flex-1 space-y-1 text-center sm:text-left">
+                            <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                                <span class="text-[10px] font-bold uppercase tracking-widest text-amber-500">${r.cuisine}</span>
+                                <span class="text-xs font-bold text-slate-400">• ${r.price}</span>
+                            </div>
+                            <h3 class="text-lg font-bold">${r.name}</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-1">${r.description}</p>
+                            <div class="flex items-center justify-center sm:justify-start space-x-1 text-xs text-amber-400 font-bold pt-1">
+                                <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400"></i>
+                                <span>${r.rating} (${r.reviewsCount} reviews)</span>
+                            </div>
+                        </div>
+                        <button onclick="openReservationModal('${r.id}')" class="w-full sm:w-auto px-5 py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl transition-all whitespace-nowrap">
+                            Reserve Table
+                        </button>
+                    </div>`;
+                }
+            }).join('');
+
+            lucide.createIcons();
+        }
+
+        /* -------------------------------------------------------------
+           RESERVATION WIZARD & MODAL CONTROLS
+           ------------------------------------------------------------- */
+        function openReservationModal(restId) {
+            currentSelectedRestaurant = RESTAURANTS_DATA.find(r => r.id === restId) || RESTAURANTS_DATA[0];
+
+            // Setup Header
+            document.getElementById('modal-banner').style.backgroundImage = `url('${currentSelectedRestaurant.image}')`;
+            document.getElementById('modal-rest-name').innerText = currentSelectedRestaurant.name;
+            document.getElementById('modal-cuisine-badge').innerText = currentSelectedRestaurant.cuisine;
+            document.querySelector('#modal-rest-location span').innerText = currentSelectedRestaurant.location;
+            document.getElementById('modal-rest-description').innerText = currentSelectedRestaurant.description;
+
+            // Render Menus
+            document.getElementById('modal-menu-list').innerHTML = currentSelectedRestaurant.menuHighlights.map(m => `
+                <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700/50 space-y-1">
+                    <div class="flex justify-between font-semibold text-xs">
+                        <span>${m.name}</span>
+                        <span class="text-amber-500">${m.price}</span>
+                    </div>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400">${m.desc}</p>
+                </div>
+            `).join('');
+
+            // Render Policies
+            document.getElementById('modal-policies-list').innerHTML = currentSelectedRestaurant.policies.map(p => `<li>${p}</li>`).join('');
+
+            // Reset Wizard to Step 1
+            goToWizardStep(1);
+            setModalTab('details');
+
+            document.getElementById('res-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeReservationModal() {
+            document.getElementById('res-modal').classList.add('hidden');
+            if(isAudioPlaying) toggleAudioPreview();
+        }
+
+        function setModalTab(tab) {
+            if (tab === 'details') {
+                document.getElementById('tab-content-details').classList.remove('hidden');
+                document.getElementById('tab-content-reserve').classList.add('hidden');
+                document.getElementById('modal-tab-details').className = "py-4 border-b-2 border-amber-500 text-amber-500";
+                document.getElementById('modal-tab-reserve').className = "py-4 border-b-2 border-transparent text-slate-400 hover:text-slate-200";
+            } else {
+                document.getElementById('tab-content-details').classList.add('hidden');
+                document.getElementById('tab-content-reserve').classList.remove('hidden');
+                document.getElementById('modal-tab-details').className = "py-4 border-b-2 border-transparent text-slate-400 hover:text-slate-200";
+                document.getElementById('modal-tab-reserve').className = "py-4 border-b-2 border-amber-500 text-amber-500";
+            }
+        }
+
+        function goToWizardStep(step) {
+            wizardStep = step;
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`wizard-step-${i}`).classList.add('hidden');
+                document.getElementById(`wizard-step-${i}-lbl`).className = i === step ? "text-amber-500 font-bold" : "text-slate-400";
+            }
+            document.getElementById(`wizard-step-${step}`).classList.remove('hidden');
+
+            if (step === 3) {
+                renderWizardTablePicker();
+            }
+        }
+
+        function selectZone(zoneName) {
+            selectedZone = zoneName;
+            document.querySelectorAll('.zone-btn').forEach(btn => {
+                btn.className = "zone-btn py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-400";
+            });
+            if (zoneName === 'Main Dining') document.getElementById('zone-main').className = "zone-btn py-2.5 rounded-xl border border-amber-500 bg-amber-500/10 text-amber-500 text-xs font-semibold";
+            if (zoneName === 'Patio / Garden') document.getElementById('zone-patio').className = "zone-btn py-2.5 rounded-xl border border-amber-500 bg-amber-500/10 text-amber-500 text-xs font-semibold";
+            if (zoneName === 'Chef Counter') document.getElementById('zone-chef').className = "zone-btn py-2.5 rounded-xl border border-amber-500 bg-amber-500/10 text-amber-500 text-xs font-semibold";
+        }
+
+        function selectSlot(slotTime) {
+            selectedSlot = slotTime;
+            document.querySelectorAll('.slot-btn').forEach(btn => {
+                btn.className = "slot-btn py-2 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-medium";
+            });
+            event.target.className = "slot-btn py-2 rounded-lg border border-amber-500 bg-amber-500 text-slate-950 font-bold text-xs";
+        }
+
+        function renderWizardTablePicker() {
+            document.getElementById('wiz-selected-zone-lbl').innerText = selectedZone;
+            const container = document.getElementById('wiz-table-picker-grid');
+            
+            // Filter tables by zone
+            const zoneTables = floorplanTables.filter(t => t.zone === selectedZone);
+
+            if (zoneTables.length === 0) {
+                container.innerHTML = `<div class="col-span-full text-center py-4 text-xs text-slate-400">No tables available in ${selectedZone}. Select another zone in Step 1.</div>`;
+                return;
+            }
+
+            container.innerHTML = zoneTables.map(t => {
+                const isAvail = t.status === 'available';
+                const isSelected = t.id === selectedTableId;
+                return `
+                    <button type="button" ${!isAvail ? 'disabled' : ''} onclick="pickWizardTable('${t.id}')" class="p-4 rounded-xl border text-center transition-all ${
+                        isSelected ? 'border-amber-500 bg-amber-500/20 text-amber-400 ring-2 ring-amber-500' : 
+                        isAvail ? 'border-slate-200 dark:border-slate-700 hover:border-amber-500 bg-white dark:bg-slate-900' : 'border-slate-200 dark:border-slate-800 opacity-40 bg-slate-100 dark:bg-slate-800 cursor-not-allowed'
+                    }">
+                        <div class="font-bold text-sm">${t.id}</div>
+                        <div class="text-[10px] text-slate-400">${t.seats} Seats</div>
+                        <span class="inline-block mt-2 px-2 py-0.5 rounded text-[9px] font-bold uppercase ${isAvail ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-700 text-slate-400'}">
+                            ${isAvail ? 'Available' : t.status}
+                        </span>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function pickWizardTable(tableId) {
+            selectedTableId = tableId;
+            renderWizardTablePicker();
+        }
+
+        function confirmReservationAndGeneratePass() {
+            const guestName = document.getElementById('wiz-name').value || 'Guest User';
+            const dateVal = document.getElementById('wiz-date').value || 'Today';
+            const partyVal = document.getElementById('wiz-party').value;
+            const occasionVal = document.getElementById('wiz-occasion').value;
+
+            const passCode = `PASS-${Math.floor(10000 + Math.random() * 90000)}`;
+            const newPass = {
+                code: passCode,
+                restaurant: currentSelectedRestaurant.name,
+                dateTime: `${dateVal} at ${selectedSlot}`,
+                party: `${partyVal} Guests`,
+                table: `Table ${selectedTableId} (${selectedZone})`,
+                guest: guestName,
+                occasion: occasionVal
+            };
+
+            myPasses.unshift(newPass);
+            renderPassbook();
+
+            // Populate Step 4 Confirmation Card
+            document.getElementById('pass-confirm-rest').innerText = newPass.restaurant;
+            document.getElementById('pass-confirm-code').innerText = newPass.code;
+            document.getElementById('pass-confirm-datetime').innerText = newPass.dateTime;
+            document.getElementById('pass-confirm-party').innerText = newPass.party;
+            document.getElementById('pass-confirm-table').innerText = newPass.table;
+            document.getElementById('pass-confirm-guest').innerText = newPass.guest;
+
+            // Update Host Manifest Table Live
+            manifestBookings.unshift({
+                id: `RES-${Math.floor(1000 + Math.random() * 9000)}`,
+                name: guestName,
+                time: selectedSlot,
+                party: parseInt(partyVal),
+                table: selectedTableId,
+                status: 'Confirmed'
+            });
+            renderManifest();
+
+            // Mark Table as Reserved in Floorplan
+            const tbl = floorplanTables.find(t => t.id === selectedTableId);
+            if(tbl) {
+                tbl.status = 'reserved';
+                tbl.guest = `${guestName} (${selectedSlot})`;
+                renderFloorplan();
+            }
+
+            goToWizardStep(4);
+            showToast('Reservation Locked & Pass Issued!', 'success');
+        }
+
+        /* AMBIANCE AUDIO SIMULATION */
+        function toggleAudioPreview() {
+            isAudioPlaying = !isAudioPlaying;
+            const icon = document.getElementById('audio-icon');
+            const bars = document.getElementById('audio-bars');
+
+            if (isAudioPlaying) {
+                icon.setAttribute('data-lucide', 'pause');
+                bars.classList.remove('opacity-40');
+                showToast(`Playing Ambiance: ${currentSelectedRestaurant.ambianceAudio}`);
+            } else {
+                icon.setAttribute('data-lucide', 'play');
+                bars.classList.add('opacity-40');
+            }
+            lucide.createIcons();
+        }
+
+        /* ICS CALENDAR DOWNLOAD GENERATOR */
+        function downloadICSFile() {
+            const icsContent = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//TableReserve OS//EN
+BEGIN:VEVENT
+SUMMARY:Dining Reservation at ${currentSelectedRestaurant.name}
+DESCRIPTION:TableLocked: ${selectedTableId}. Reserved for ${document.getElementById('wiz-name').value}
+LOCATION:${currentSelectedRestaurant.location}
+STATUS:CONFIRMED
+END:VEVENT
+END:VCALENDAR`;
+
+            const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.setAttribute('download', `reservation-${currentSelectedRestaurant.id}.ics`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            showToast('ICS Calendar File Downloaded', 'success');
+        }
+
+        /* -------------------------------------------------------------
+           HOST CONSOLE & LIVE FLOORPLAN MANAGEMENT
+           ------------------------------------------------------------- */
+        function renderFloorplan() {
+            const container = document.getElementById('floorplan-layout');
+            const statusColors = {
+                available: 'bg-emerald-500/10 border-emerald-500/30 text-emerald-500',
+                reserved: 'bg-amber-500/10 border-amber-500/30 text-amber-500',
+                seated: 'bg-indigo-500/10 border-indigo-500/30 text-indigo-500',
+                check_dropped: 'bg-rose-500/10 border-rose-500/30 text-rose-500',
+                dirty: 'bg-slate-500/10 border-slate-500/30 text-slate-400'
+            };
+
+            container.innerHTML = floorplanTables.map(t => `
+                <div class="relative group bg-white dark:bg-slate-900 border ${statusColors[t.status]} p-4 rounded-2xl flex flex-col justify-between space-y-2 shadow-sm">
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-sm text-slate-900 dark:text-white">${t.id}</span>
+                        <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase ${statusColors[t.status]}">${t.status.replace('_', ' ')}</span>
+                    </div>
+
+                    <div class="text-xs text-slate-500 dark:text-slate-400 space-y-0.5">
+                        <p class="font-medium">${t.seats} Seats (${t.zone})</p>
+                        <p class="text-[11px] truncate text-slate-400">${t.guest || 'Empty'}</p>
+                    </div>
+
+                    <!-- Live State Dropdown Editor -->
+                    <select onchange="updateTableState('${t.id}', this.value)" class="w-full text-[10px] py-1 px-1.5 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 outline-none">
+                        <option value="available" ${t.status === 'available' ? 'selected' : ''}>Available</option>
+                        <option value="reserved" ${t.status === 'reserved' ? 'selected' : ''}>Reserved</option>
+                        <option value="seated" ${t.status === 'seated' ? 'selected' : ''}>Seated</option>
+                        <option value="check_dropped" ${t.status === 'check_dropped' ? 'selected' : ''}>Check Dropped</option>
+                        <option value="dirty" ${t.status === 'dirty' ? 'selected' : ''}>Dirty</option>
+                    </select>
+                </div>
+            `).join('');
+        }
+
+        function updateTableState(tableId, newStatus) {
+            const tbl = floorplanTables.find(t => t.id === tableId);
+            if (tbl) {
+                tbl.status = newStatus;
+                if(newStatus === 'available' || newStatus === 'dirty') tbl.guest = '';
+                renderFloorplan();
+                showToast(`Table ${tableId} updated to ${newStatus.replace('_', ' ')}`);
+            }
+        }
+
+        function renderManifest() {
+            const body = document.getElementById('manifest-table-body');
+            document.getElementById('manifest-count').innerText = `${manifestBookings.length} Bookings`;
+
+            body.innerHTML = manifestBookings.map(b => `
+                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                    <td class="py-3 px-2 font-mono font-semibold">${b.time}</td>
+                    <td class="py-3 px-2 font-medium">${b.name}</td>
+                    <td class="py-3 px-2">${b.party} Guests</td>
+                    <td class="py-3 px-2 font-bold text-amber-500">${b.table}</td>
+                    <td class="py-3 px-2">
+                        <select onchange="updateManifestStatus('${b.id}', this.value)" class="text-xs px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                            <option value="Confirmed" ${b.status === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
+                            <option value="Seated" ${b.status === 'Seated' ? 'selected' : ''}>Seated</option>
+                            <option value="Check Dropped" ${b.status === 'Check Dropped' ? 'selected' : ''}>Check Dropped</option>
+                            <option value="Completed" ${b.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                            <option value="Cancelled" ${b.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                        </select>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function updateManifestStatus(bookingId, status) {
+            const booking = manifestBookings.find(b => b.id === bookingId);
+            if (booking) {
+                booking.status = status;
+                showToast(`Booking ${bookingId} marked as ${status}`);
+            }
+        }
+
+        function renderWaitlist() {
+            const container = document.getElementById('waitlist-queue-container');
+            container.innerHTML = waitlistQueue.map(w => `
+                <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700/60 flex items-center justify-between">
+                    <div>
+                        <h4 class="font-bold text-xs">${w.name} (${w.party} Guests)</h4>
+                        <p class="text-[10px] text-slate-400">Est. Wait: ${w.waitMinutes} mins • ${w.phone}</p>
+                    </div>
+                    <button onclick="triggerWaitlistSMS('${w.name}', '${w.phone}')" class="px-2.5 py-1.5 bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl text-[10px] font-bold flex items-center space-x-1">
+                        <i data-lucide="send" class="w-3 h-3"></i>
+                        <span>SMS Ready</span>
+                    </button>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function openWaitlistModal() {
+            document.getElementById('waitlist-modal').classList.remove('hidden');
+        }
+
+        function closeWaitlistModal() {
+            document.getElementById('waitlist-modal').classList.add('hidden');
+        }
+
+        function submitWaitlistAdd() {
+            const name = document.getElementById('wl-name').value;
+            const party = parseInt(document.getElementById('wl-party').value);
+            const phone = document.getElementById('wl-phone').value;
+            const waitMinutes = parseInt(document.getElementById('wl-wait').value);
+
+            if (!name) return;
+
+            waitlistQueue.push({
+                id: `WL-${Math.floor(100 + Math.random() * 900)}`,
+                name,
+                party,
+                phone,
+                waitMinutes,
+                status: 'Waiting'
+            });
+
+            renderWaitlist();
+            closeWaitlistModal();
+            showToast(`Added ${name} to live waitlist queue`, 'success');
+        }
+
+        function triggerWaitlistSMS(name, phone) {
+            showToast(`SMS Dispatch Sent to ${phone}: "Hi ${name}, your table at Lúmina is ready!"`, 'alert');
+        }
+
+        /* -------------------------------------------------------------
+           PASSBOOK WALLET
+           ------------------------------------------------------------- */
+        function renderPassbook() {
+            const container = document.getElementById('passbook-passes-container');
+            document.getElementById('pass-count-badge').innerText = myPasses.length;
+
+            if (myPasses.length === 0) {
+                container.innerHTML = `<div class="text-center py-12 text-slate-400">No active passes in your wallet.</div>`;
+                return;
+            }
+
+            container.innerHTML = myPasses.map(p => `
+                <div class="bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 text-white p-6 rounded-3xl border border-amber-500/30 relative overflow-hidden shadow-2xl space-y-4">
+                    <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+                    <div class="flex justify-between items-start border-b border-slate-700/60 pb-3">
+                        <div>
+                            <span class="text-xs font-bold uppercase tracking-widest text-amber-400">Digital Priority Ticket</span>
+                            <h3 class="text-xl font-bold">${p.restaurant}</h3>
+                        </div>
+                        <span class="font-mono text-xs px-2.5 py-1 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/40">${p.code}</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
+                        <div>
+                            <span class="text-slate-400 block">Date & Time</span>
+                            <span class="font-semibold text-slate-200">${p.dateTime}</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block">Party</span>
+                            <span class="font-semibold text-slate-200">${p.party}</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block">Table Locked</span>
+                            <span class="font-semibold text-amber-400">${p.table}</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block">Guest</span>
+                            <span class="font-semibold text-slate-200">${p.guest}</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-2">
+                        <span class="text-[10px] text-slate-400">Occasion: ${p.occasion}</span>
+                        <div class="flex space-x-2">
+                            <button onclick="downloadICSFile()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-medium rounded-xl border border-slate-700 flex items-center space-x-1">
+                                <i data-lucide="download" class="w-3.5 h-3.5 text-amber-500"></i>
+                                <span>.ICS</span>
+                            </button>
+                            <button onclick="copyShareLink('${p.code}')" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold rounded-xl flex items-center space-x-1">
+                                <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
+                                <span>Share Pass</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            lucide.createIcons();
+        }
+
+        function copyShareLink(code) {
+            const text = `https://tablereserve.os/pass/${code}`;
+            const dummy = document.createElement('input');
+            document.body.appendChild(dummy);
+            dummy.value = text;
+            dummy.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummy);
+            showToast('Pass link copied to clipboard!', 'success');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TableReserve OS - Next-Gen Dining Experience</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            apple: { blue: '#0071e3' }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    /* Custom Scrollbar Polish */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(150, 150, 150, 0.3); border-radius: 9999px; }
+  </style>
+</head>
+<body class="min-h-screen font-sans antialiased transition-colors duration-300 bg-[#f5f5f7] text-slate-900 dark:bg-[#0f0f12] dark:text-slate-100">
+
+  <!-- ========================================== -->
+  <!-- HEADER & NAVIGATION BAR                    -->
+  <!-- ========================================== -->
+  <header class="sticky top-0 z-40 w-full px-4 pt-4 pb-2 backdrop-blur-xl bg-white/70 dark:bg-[#16161a]/70 border-b border-black/[0.05] dark:border-white/[0.1] transition-colors">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      
+      <!-- Brand Logo -->
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('discover')">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20 text-white font-bold">
+          <i data-lucide="utensils" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h1 class="font-semibold text-lg leading-none tracking-tight flex items-center gap-1.5">
+            TableReserve <span class="text-xs px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:bg-blue-400/20 dark:text-blue-300 font-mono">OS</span>
+          </h1>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">Next-Gen Dining Experience</p>
+        </div>
+      </div>
+
+      <!-- Segmented Navigation Tabs -->
+      <nav class="hidden md:flex p-1 bg-black/[0.05] dark:bg-white/[0.08] rounded-2xl backdrop-blur-md">
+        <button onclick="switchTab('discover')" id="nav-discover" class="nav-btn flex items-center space-x-2 px-5 py-2 rounded-xl text-xs font-medium transition-all duration-200 bg-white dark:bg-[#25252a] text-slate-900 dark:text-white shadow-sm">
+          <i data-lucide="compass" class="w-4 h-4"></i>
+          <span>Discover Restaurants</span>
+        </button>
+        <button onclick="switchTab('my-bookings')" id="nav-bookings" class="nav-btn flex items-center space-x-2 px-5 py-2 rounded-xl text-xs font-medium transition-all duration-200 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+          <i data-lucide="calendar" class="w-4 h-4"></i>
+          <span>My Passbook</span>
+          <span id="booking-badge" class="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-blue-500 text-white font-semibold">3</span>
+        </button>
+        <button onclick="switchTab('operations')" id="nav-ops" class="nav-btn flex items-center space-x-2 px-5 py-2 rounded-xl text-xs font-medium transition-all duration-200 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+          <i data-lucide="layout-grid" class="w-4 h-4"></i>
+          <span>Host Console</span>
+        </button>
+      </nav>
+
+      <!-- Right Action Bar -->
+      <div class="flex items-center space-x-3">
+        <button onclick="toggleDarkMode()" aria-label="Toggle theme" class="p-2.5 rounded-full bg-black/[0.05] dark:bg-white/[0.08] hover:bg-black/[0.1] transition-all text-slate-700 dark:text-slate-300">
+          <i data-lucide="moon" id="theme-icon" class="w-4 h-4"></i>
+        </button>
+        <button onclick="switchTab('operations')" class="hidden lg:flex items-center space-x-2 text-xs font-medium px-4 py-2.5 rounded-xl bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 hover:opacity-90 shadow-md">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+          <span>Manager Portal</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Sub-Navigation -->
+    <div class="flex md:hidden mt-3 p-1 bg-black/[0.05] dark:bg-white/[0.08] rounded-xl text-xs justify-around">
+      <button onclick="switchTab('discover')" class="mob-nav-btn flex-1 py-2 text-center rounded-lg font-medium bg-white dark:bg-[#25252a] shadow-sm">Discover</button>
+      <button onclick="switchTab('my-bookings')" class="mob-nav-btn flex-1 py-2 text-center rounded-lg font-medium text-slate-500">Passbook</button>
+      <button onclick="switchTab('operations')" class="mob-nav-btn flex-1 py-2 text-center rounded-lg font-medium text-slate-500">Console</button>
+    </div>
+  </header>
+
+  <!-- ========================================== -->
+  <!-- MAIN CONTAINER AREA                        -->
+  <!-- ========================================== -->
+  <main class="max-w-7xl mx-auto px-4 py-8">
+
+    <!-- VIEW 1: DISCOVER -->
+    <div id="view-discover" class="space-y-8">
+      <!-- Hero Banner -->
+      <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-8 md:p-12 shadow-2xl border border-white/10">
+        <div class="relative z-10 max-w-2xl space-y-4">
+          <span class="inline-flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-semibold bg-white/10 backdrop-blur-md border border-white/15 text-blue-300">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-blue-400"></i>
+            <span>Curation by TableReserve OS</span>
+          </span>
+          <h2 class="text-3xl md:text-5xl font-extrabold tracking-tight leading-tight">
+            Reserve Extraordinary Dining Experiences.
+          </h2>
+          <p class="text-sm md:text-base text-slate-300 leading-relaxed font-light">
+            Seamlessly discover top-rated culinary destinations, preview floor plans, and secure your real-time table reservations instantly.
+          </p>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="mt-8 relative z-10 bg-white/10 backdrop-blur-xl p-3 rounded-2xl border border-white/20 shadow-2xl">
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+            <div class="flex items-center space-x-2 bg-white/10 rounded-xl px-3 py-2.5 border border-white/10">
+              <i data-lucide="search" class="w-4 h-4 text-slate-300 shrink-0"></i>
+              <input type="text" id="searchInput" oninput="filterRestaurants()" placeholder="Restaurant, cuisine..." class="bg-transparent text-xs text-white placeholder-slate-400 outline-none w-full">
+            </div>
+            <div class="flex items-center space-x-2 bg-white/10 rounded-xl px-3 py-2.5 border border-white/10">
+              <i data-lucide="calendar" class="w-4 h-4 text-slate-300 shrink-0"></i>
+              <input type="date" id="searchDate" class="bg-transparent text-xs text-white outline-none w-full">
+            </div>
+            <div class="flex items-center space-x-2 bg-white/10 rounded-xl px-3 py-2.5 border border-white/10">
+              <i data-lucide="users" class="w-4 h-4 text-slate-300 shrink-0"></i>
+              <select id="searchParty" class="bg-transparent text-xs text-white outline-none w-full [&>option]:text-slate-900">
+                <option value="2">2 Guests</option>
+                <option value="4">4 Guests</option>
+                <option value="6">6 Guests</option>
+                <option value="8">8+ Large Group</option>
+              </select>
+            </div>
+            <button onclick="filterRestaurants()" class="bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-medium py-2.5 px-4 flex items-center justify-center space-x-2 transition-all shadow-md">
+              <span>Find Tables</span>
+              <i data-lucide="chevron-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filters & Grid -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="flex flex-wrap items-center gap-2">
+          <select id="cuisineFilter" onchange="filterRestaurants()" class="bg-black/[0.04] dark:bg-white/[0.06] text-xs font-medium text-slate-700 dark:text-slate-300 px-3 py-2 rounded-xl outline-none cursor-pointer">
+            <option value="All">All Cuisines</option>
+            <option value="Contemporary American">Contemporary American</option>
+            <option value="Japanese / Omakase">Japanese / Omakase</option>
+            <option value="Italian">Italian</option>
+            <option value="Vegan / Plant-Based">Vegan / Plant-Based</option>
+            <option value="Steakhouse / Mexican Fine">Steakhouse / Mexican Fine</option>
+          </select>
+          <select id="priceFilter" onchange="filterRestaurants()" class="bg-black/[0.04] dark:bg-white/[0.06] text-xs font-medium text-slate-700 dark:text-slate-300 px-3 py-2 rounded-xl outline-none cursor-pointer">
+            <option value="All">All Prices</option>
+            <option value="$$">$$</option>
+            <option value="$$$">$$$</option>
+            <option value="$$$$">$$$$</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Restaurant Cards Grid -->
+      <div id="restaurantGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </div>
+
+    <!-- VIEW 2: MY PASSBOOK -->
+    <div id="view-my-bookings" class="space-y-6 max-w-4xl mx-auto hidden">
+      <div class="flex items-center justify-between border-b border-slate-200 dark:border-white/[0.08] pb-4">
+        <div>
+          <h2 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">My Reservation Passbook</h2>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Apple Wallet style digital passes with live confirmation.</p>
+        </div>
+        <span id="passbook-count" class="px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 text-xs font-semibold">3 Active Bookings</span>
+      </div>
+      <div id="passbookGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+    </div>
+
+    <!-- VIEW 3: HOST CONSOLE -->
+    <div id="view-operations" class="space-y-8 hidden">
+      <div class="bg-white dark:bg-[#1a1a1e] rounded-3xl p-6 border border-slate-200/80 dark:border-white/[0.08] shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span class="text-xs font-mono uppercase tracking-wider text-slate-400">Live Host Console</span>
+          </div>
+          <h2 id="ops-rest-title" class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight mt-1">Lúmina Modern Bistro</h2>
+        </div>
+        <select id="opsRestSelector" onchange="changeOpsRestaurant(this.value)" class="bg-black/[0.04] dark:bg-white/[0.08] text-xs font-semibold px-4 py-2.5 rounded-2xl outline-none cursor-pointer">
+          <option value="rest-1">Lúmina Modern Bistro</option>
+          <option value="rest-2">Osumi Omakase & Sake Bar</option>
+          <option value="rest-3">Trattoria Bella Vista</option>
+        </select>
+      </div>
+
+      <!-- Floor Plan and Waitlist -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 bg-white dark:bg-[#1a1a1e] rounded-3xl p-6 border border-slate-200 dark:border-white/[0.08] space-y-4">
+          <h3 class="font-bold text-lg text-slate-900 dark:text-white">Interactive Live Floor Plan</h3>
+          <div id="floorplanCanvas" class="relative h-80 w-full rounded-2xl bg-slate-100 dark:bg-black/30 border border-slate-200 dark:border-white/10 p-4 overflow-hidden"></div>
+        </div>
+
+        <div class="bg-white dark:bg-[#1a1a1e] rounded-3xl p-6 border border-slate-200 dark:border-white/[0.08] space-y-4 flex flex-col justify-between">
+          <div>
+            <h3 class="font-bold text-lg text-slate-900 dark:text-white">Walk-in Queue</h3>
+            <form onsubmit="addWaitlist(event)" class="mt-4 space-y-2">
+              <input type="text" id="waitlistName" placeholder="Guest Name..." required class="w-full bg-black/[0.04] dark:bg-white/[0.06] text-xs px-3 py-2 rounded-xl outline-none text-slate-800 dark:text-slate-200">
+              <button type="submit" class="w-full py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-semibold rounded-xl">+ Add to Waitlist</button>
+            </form>
+            <div id="waitlistContainer" class="mt-4 space-y-2 max-h-60 overflow-y-auto"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ========================================== -->
+  <!-- MODAL: RESERVATION WIZARD                  -->
+  <!-- ========================================== -->
+  <div id="wizardModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md hidden">
+    <div class="bg-white dark:bg-[#1a1a1e] rounded-3xl max-w-lg w-full shadow-2xl border border-slate-200 dark:border-white/10 p-6 md:p-8 space-y-6 relative">
+      <button onclick="closeWizard()" class="absolute top-5 right-5 p-2 rounded-full bg-black/5 dark:bg-white/10"><i data-lucide="x" class="w-5 h-5"></i></button>
+      
+      <div>
+        <span id="wizardStepLabel" class="text-[10px] font-mono text-blue-500 uppercase tracking-wider font-bold">Step 1 of 3</span>
+        <h3 id="wizardTitle" class="text-xl font-bold text-slate-900 dark:text-white">Reserve Table</h3>
+      </div>
+
+      <div id="wizardStepContent" class="space-y-4"></div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 px-4 py-3 rounded-2xl bg-slate-900 text-white text-xs font-medium backdrop-blur-xl shadow-2xl border border-white/10 flex items-center space-x-2 transform translate-y-20 opacity-0 transition-all duration-300">
+    <i data-lucide="sparkles" class="w-4 h-4 text-blue-400"></i>
+    <span id="toastText">Action completed successfully</span>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- JAVASCRIPT APPLICATION CORE                -->
+  <!-- ========================================== -->
+  <script>
+    // MOCK DATA
+    const restaurants = [
+      {
+        id: 'rest-1',
+        name: 'Lúmina Modern Bistro',
+        tagline: 'Hyper-seasonal coastal California gastronomy',
+        cuisine: 'Contemporary American',
+        price: '$$$',
+        rating: 4.9,
+        reviewCount: 328,
+        image: 'https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?auto=format&fit=crop&w=1200&q=80',
+        location: '1048 Ocean Avenue, Santa Monica',
+        hours: '5:00 PM - 11:00 PM',
+        dietary: ['Vegan Options', 'Gluten-Free'],
+        seatingAreas: ['Main Dining Room', 'Ocean View Patio', "Chef's Counter"],
+        tables: [
+          { id: 'T1', name: 'Table 1', area: 'Patio', seats: 2, x: 20, y: 30, status: 'available' },
+          { id: 'T2', name: 'Table 2', area: 'Patio', seats: 2, x: 50, y: 30, status: 'reserved' },
+          { id: 'T3', name: 'Table 3', area: 'Main Room', seats: 4, x: 50, y: 70, status: 'seated' }
+        ]
+      },
+      {
+        id: 'rest-2',
+        name: 'Osumi Omakase & Sake Bar',
+        tagline: 'Artisanal Edomae sushi experience with rare sake pairings',
+        cuisine: 'Japanese / Omakase',
+        price: '$$$$',
+        rating: 4.95,
+        reviewCount: 412,
+        image: 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&w=1200&q=80',
+        location: '422 Beverly Blvd, Beverly Hills',
+        hours: '6:00 PM - 10:30 PM',
+        dietary: ['Halal Seafood'],
+        seatingAreas: ["Chef's Omakase Counter"],
+        tables: [
+          { id: 'T101', name: 'Counter 1', area: 'Counter', seats: 2, x: 30, y: 40, status: 'available' }
+        ]
+      },
+      {
+        id: 'rest-3',
+        name: 'Trattoria Bella Vista',
+        tagline: 'Rustic wood-fired Italian classics and hand-rolled pasta',
+        cuisine: 'Italian',
+        price: '$$',
+        rating: 4.7,
+        reviewCount: 520,
+        image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80',
+        location: '710 Vine Street, Hollywood',
+        hours: '11:30 AM - 10:00 PM',
+        dietary: ['Vegetarian', 'Gluten-Free'],
+        seatingAreas: ['Main Dining Room', 'Courtyard Garden'],
+        tables: [
+          { id: 'T201', name: 'Table 1', area: 'Garden', seats: 4, x: 40, y: 50, status: 'available' }
+        ]
+      }
+    ];
+
+    let bookings = [
+      {
+        bookingRef: 'TR-9482',
+        restaurantName: 'Lúmina Modern Bistro',
+        date: '2026-10-28',
+        time: '7:30 PM',
+        partySize: 2,
+        seatingArea: 'Ocean View Patio',
+        guestName: 'Sophia Montgomery',
+        status: 'Confirmed'
+      }
+    ];
+
+    let waitlist = [
+      { id: 'w-1', guestName: 'David Kim', partySize: 2, seatingArea: 'Any', status: 'Waiting' }
+    ];
+
+    let currentOpsRestId = 'rest-1';
+    let wizardData = { restaurant: null, step: 1, date: '', time: '7:00 PM', partySize: 2, seatingArea: '', name: '', phone: '' };
+
+    // INITIALIZATION
+    document.addEventListener('DOMContentLoaded', () => {
+      renderRestaurants(restaurants);
+      renderPassbook();
+      renderFloorplan();
+      renderWaitlist();
+      lucide.createIcons();
+    });
+
+    // NAVIGATION
+    function switchTab(tab) {
+      document.getElementById('view-discover').classList.add('hidden');
+      document.getElementById('view-my-bookings').classList.add('hidden');
+      document.getElementById('view-operations').classList.add('hidden');
+      
+      document.getElementById(`view-${tab}`).classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    // TOGGLE DARK MODE
+    function toggleDarkMode() {
+      const html = document.documentElement;
+      html.classList.toggle('dark');
+      const isDark = html.classList.contains('dark');
+      document.getElementById('theme-icon').setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+      lucide.createIcons();
+    }
+
+    // TOAST HELPER
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastText').innerText = msg;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3500);
+    }
+
+    // RENDER RESTAURANTS
+    function renderRestaurants(list) {
+      const grid = document.getElementById('restaurantGrid');
+      grid.innerHTML = list.map(r => `
+        <div class="bg-white dark:bg-[#1a1a1e] rounded-3xl overflow-hidden border border-slate-200 dark:border-white/[0.08] shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="relative h-48 overflow-hidden">
+              <img src="${r.image}" class="w-full h-full object-cover">
+              <div class="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-white/80 dark:bg-black/60 text-xs font-semibold flex items-center space-x-1">
+                ⭐ <span>${r.rating}</span>
+              </div>
+            </div>
+            <div class="p-5 space-y-3">
+              <h3 class="font-semibold text-base">${r.name}</h3>
+              <p class="text-xs text-slate-500 line-clamp-1">${r.tagline}</p>
+              <div class="text-xs text-slate-600 dark:text-slate-400">📍 ${r.location}</div>
+            </div>
+          </div>
+          <div class="p-5 pt-0">
+            <button onclick="startReservation('${r.id}')" class="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-md">
+              Reserve Table
+            </button>
+          </div>
+        </div>
+      `).join('');
+      lucide.createIcons();
+    }
+
+    // FILTER RESTAURANTS
+    function filterRestaurants() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const cuisine = document.getElementById('cuisineFilter').value;
+      const filtered = restaurants.filter(r => 
+        (r.name.toLowerCase().includes(query) || r.cuisine.toLowerCase().includes(query)) &&
+        (cuisine === 'All' || r.cuisine === cuisine)
+      );
+      renderRestaurants(filtered);
+    }
+
+    // PASSBOOK RENDER
+    function renderPassbook() {
+      const grid = document.getElementById('passbookGrid');
+      document.getElementById('passbook-count').innerText = `${bookings.length} Active Bookings`;
+      document.getElementById('booking-badge').innerText = bookings.length;
+      
+      grid.innerHTML = bookings.map(b => `
+        <div class="rounded-3xl bg-gradient-to-b from-slate-900 to-slate-950 text-white p-6 shadow-2xl border border-white/10 space-y-4">
+          <div class="flex justify-between items-center border-b border-white/10 pb-3">
+            <span class="text-xs font-mono text-amber-400 font-bold">${b.bookingRef}</span>
+            <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full">${b.status}</span>
+          </div>
+          <div>
+            <h4 class="font-bold text-lg">${b.restaurantName}</h4>
+            <p class="text-xs text-slate-400">${b.date} at ${b.time} • ${b.partySize} Guests</p>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // WIZARD FLOW
+    function startReservation(restId) {
+      const rest = restaurants.find(r => r.id === restId);
+      wizardData = { restaurant: rest, step: 1, date: new Date().toISOString().split('T')[0], time: '7:00 PM', partySize: 2, seatingArea: rest.seatingAreas[0], name: '', phone: '' };
+      document.getElementById('wizardModal').classList.remove('hidden');
+      renderWizardStep();
+    }
+
+    function closeWizard() {
+      document.getElementById('wizardModal').classList.add('hidden');
+    }
+
+    function renderWizardStep() {
+      const container = document.getElementById('wizardStepContent');
+      document.getElementById('wizardStepLabel').innerText = `Step ${wizardData.step} of 3`;
+      
+      if (wizardData.step === 1) {
+        container.innerHTML = `
+          <div>
+            <label class="text-xs font-bold block mb-1">Select Date & Time</label>
+            <input type="date" value="${wizardData.date}" onchange="wizardData.date=this.value" class="w-full bg-slate-100 dark:bg-white/[0.06] text-xs p-3 rounded-xl mb-3">
+            <select onchange="wizardData.time=this.value" class="w-full bg-slate-100 dark:bg-white/[0.06] text-xs p-3 rounded-xl">
+              <option>6:00 PM</option><option selected>7:00 PM</option><option>8:00 PM</option>
+            </select>
+          </div>
+          <button onclick="wizardData.step=2;renderWizardStep()" class="w-full py-3 bg-blue-600 text-white rounded-xl text-xs font-semibold">Continue</button>
+        `;
+      } else if (wizardData.step === 2) {
+        container.innerHTML = `
+          <div>
+            <label class="text-xs font-bold block mb-1">Your Name & Phone</label>
+            <input type="text" placeholder="Full Name" oninput="wizardData.name=this.value" class="w-full bg-slate-100 dark:bg-white/[0.06] text-xs p-3 rounded-xl mb-3">
+            <input type="tel" placeholder="Phone Number" oninput="wizardData.phone=this.value" class="w-full bg-slate-100 dark:bg-white/[0.06] text-xs p-3 rounded-xl">
+          </div>
+          <button onclick="finalizeBooking()" class="w-full py-3 bg-emerald-600 text-white rounded-xl text-xs font-bold">Confirm Reservation</button>
+        `;
+      }
+    }
+
+    function finalizeBooking() {
+      const newBooking = {
+        bookingRef: `TR-${Math.floor(1000 + Math.random() * 9000)}`,
+        restaurantName: wizardData.restaurant.name,
+        date: wizardData.date,
+        time: wizardData.time,
+        partySize: wizardData.partySize,
+        seatingArea: wizardData.seatingArea,
+        guestName: wizardData.name || 'Valued Guest',
+        status: 'Confirmed'
+      };
+      bookings.unshift(newBooking);
+      closeWizard();
+      renderPassbook();
+      showToast(`Reservation ${newBooking.bookingRef} Confirmed!`);
+    }
+
+    // HOST CONSOLE & FLOORPLAN
+    function changeOpsRestaurant(id) {
+      currentOpsRestId = id;
+      const rest = restaurants.find(r => r.id === id);
+      document.getElementById('ops-rest-title').innerText = rest.name;
+      renderFloorplan();
+    }
+
+    function renderFloorplan() {
+      const rest = restaurants.find(r => r.id === currentOpsRestId);
+      const canvas = document.getElementById('floorplanCanvas');
+      canvas.innerHTML = rest.tables.map(t => `
+        <div style="left: ${t.x}%; top: ${t.y}%;" class="absolute -translate-x-1/2 -translate-y-1/2">
+          <div class="w-14 h-14 rounded-2xl bg-emerald-500 text-white border-2 border-emerald-600 flex flex-col items-center justify-center shadow-lg text-xs font-bold">
+            ${t.id}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function addWaitlist(e) {
+      e.preventDefault();
+      const name = document.getElementById('waitlistName').value;
+      waitlist.push({ id: Date.now(), guestName: name, partySize: 2, seatingArea: 'Any', status: 'Waiting' });
+      document.getElementById('waitlistName').value = '';
+      renderWaitlist();
+      showToast(`Added ${name} to waitlist`);
+    }
+
+    function renderWaitlist() {
+      const container = document.getElementById('waitlistContainer');
+      container.innerHTML = waitlist.map(w => `
+        <div class="p-3 bg-slate-50 dark:bg-white/[0.04] rounded-2xl flex items-center justify-between text-xs">
+          <span>${w.guestName}</span>
+          <span class="text-amber-500 font-semibold">${w.status}</span>
+        </div>
+      `).join('');
+    }
+  </script>
+</body>
+</html>
