@@ -9,3 +9,13 @@ public class RestaurantSlotVO : EntityBase
     public virtual TimeSpan Time { get; set; }
     public virtual RestaurantVO Restaurant { get; set; } = null!;
 }
+
+public class RestaurantSlotMap : EntityWithIdMapping<RestaurantSlotVO>
+{
+    public RestaurantSlotMap()
+    {
+        Map(x => x.Time).Not.Nullable();
+
+        References(x => x.Restaurant , "Restaurant").Not.Nullable().Index("IX_RestaurantSlots_RestaurantId");
+    }
+}
