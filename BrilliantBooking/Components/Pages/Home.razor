@@ -1,4 +1,5 @@
 @page "/"
+@page "/reserve"
 @rendermode InteractiveServer
 @inherits HomeBase
 
@@ -40,7 +41,124 @@
     }
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 min-h-[calc(100vh-9rem)]">
-        @if (View == "explore")
+        @if (BookingRestaurant is not null)
+        {
+            <section class="space-y-6 max-w-3xl mx-auto">
+                <div class="flex items-end justify-between gap-4">
+                    <div>
+                        <p class="text-xs font-bold text-apple-blue uppercase tracking-widest">Reservation</p>
+                        <h1 class="text-3xl font-bold">@BookingRestaurant.Name</h1>
+                        <p class="text-xs text-stone-500">@BookingRestaurant.Location · @BookingRestaurant.Cuisine</p>
+                    </div>
+                    <button type="button" @onclick="CancelBooking" class="text-xs font-semibold text-apple-red">Cancel</button>
+                </div>
+                <div class="h-1.5 w-full rounded-full bg-stone-200 dark:bg-stone-800 overflow-hidden"><div class="h-1.5 rounded-full bg-apple-blue transition-all duration-300" style="width: @(BookingStep * 25)%"></div></div>
+                <div class="grid grid-cols-4 text-[11px] font-semibold text-center">
+                    <span class="@(BookingStep == 1 ? "text-apple-blue font-bold" : "text-stone-500")">Date & Time</span>
+                    <span class="@(BookingStep == 2 ? "text-apple-blue font-bold" : "text-stone-500")">Table</span>
+                    <span class="@(BookingStep == 3 ? "text-apple-blue font-bold" : "text-stone-500")">Guest Details</span>
+                    <span class="@(BookingStep == 4 ? "text-apple-blue font-bold" : "text-stone-500")">Summary</span>
+                </div>
+
+                <div class="sf-glass rounded-3xl p-6 space-y-6">
+                    @if (BookingStep == 1)
+                    {
+                        <div class="grid sm:grid-cols-2 gap-4">
+                            <label class="space-y-1.5 text-xs font-semibold">Dining date<input type="date" @bind="BookingDate" class="field w-full" /></label>
+                            <label class="space-y-1.5 text-xs font-semibold">Party size
+                                <select @bind="PartySize" class="field w-full">@for (var i = 1; i <= 8; i++) { <option value="@i">@i guest@(i == 1 ? "" : "s")</option> }</select>
+                            </label>
+                        </div>
+                        <div class="space-y-2">
+                            <h3 class="text-sm font-bold">Select a time</h3>
+                            <div class="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                                @foreach (var slot in BookingRestaurant.Slots)
+                                {
+                                    <button type="button" @onclick="(() => TimeSlot = slot)" class="py-3 px-3 rounded-xl border text-xs font-bold text-center transition @(TimeSlot == slot ? "border-apple-blue bg-apple-blue text-white" : "border-stone-300/80 dark:border-stone-700 hover:border-apple-blue")">@slot</button>
+                                }
+                            </div>
+                        </div>
+                    }
+                    else if (BookingStep == 2)
+                    {
+                        <div class="rounded-2xl bg-[#F0EEE9] dark:bg-stone-800/60 p-4 overflow-x-auto">
+                            <svg viewBox="0 0 800 430" class="min-w-[600px] w-full">
+                                <rect x="20" y="20" width="760" height="390" rx="18" fill="none" stroke="currentColor" stroke-opacity=".12" />
+                                <text x="400" y="55" text-anchor="middle" fill="currentColor" opacity=".45">MAIN DINING ROOM</text>
+                                @foreach (var table in Tables)
+                                {
+                                    <g class="table-node @(table.Occupied ? "occupied" : "") @(BookingTable?.Name == table.Name ? "selected" : "")" @onclick="(() => { if (!table.Occupied) BookingTable = table; })">
+                                        @if (table.Round)
+                                        {
+                                            <circle cx="@table.X" cy="@table.Y" r="34" fill="@(table.Occupied ? "#9CA3AF" : "#34C759")" fill-opacity=".2" stroke="@(table.Occupied ? "#9CA3AF" : "#34C759")" stroke-width="3" />
+                                        }
+                                        else
+                                        {
+                                            <rect x="@(table.X - 45)" y="@(table.Y - 30)" width="90" height="60" rx="12" fill="@(table.Occupied ? "#9CA3AF" : "#34C759")" fill-opacity=".2" stroke="@(table.Occupied ? "#9CA3AF" : "#34C759")" stroke-width="3" />
+                                        }
+                                        <text x="@table.X" y="@(table.Y + 4)" text-anchor="middle" font-size="11" fill="currentColor">@table.Name</text>
+                                    </g>
+                                }
+                            </svg>
+                        </div>
+                        <p class="text-xs text-stone-500">@(BookingTable is null ? "Select an available table." : $"{BookingTable.Name} selected · {BookingTable.Capacity} seats maximum")</p>
+                    }
+                    else if (BookingStep == 3)
+                    {
+                        <div class="grid sm:grid-cols-2 gap-4">
+                            <label class="space-y-1.5 text-xs font-semibold">Full name<input @bind="GuestName" class="field w-full" /></label>
+                            <label class="space-y-1.5 text-xs font-semibold">Email<input type="email" @bind="GuestEmail" class="field w-full" /></label>
+                            <label class="space-y-1.5 text-xs font-semibold">Phone<input type="tel" @bind="GuestPhone" class="field w-full" /></label>
+                            <label class="space-y-1.5 text-xs font-semibold">Notes<input @bind="GuestNotes" class="field w-full" /></label>
+                        </div>
+                        <div class="space-y-2">
+                            <h3 class="text-sm font-bold">Occasion</h3>
+                            <div class="flex flex-wrap gap-2">@foreach (var occasion in Occasions) { <button type="button" @onclick="(() => ToggleOccasion(occasion))" class="px-3 py-1.5 rounded-full border text-xs font-semibold @(Occasion == occasion ? "bg-apple-blue text-white border-apple-blue" : "border-stone-300/60 dark:border-stone-800")">@occasion</button> }</div>
+                        </div>
+                        <div class="space-y-2">
+                            <h3 class="text-sm font-bold">Dietary requirements</h3>
+                            <div class="flex flex-wrap gap-2">@foreach (var item in DietaryOptions) { <button type="button" @onclick="(() => ToggleDietary(item))" class="px-3 py-1.5 rounded-full border text-xs font-semibold @(DietaryRequirements.Contains(item) ? "bg-apple-blue text-white border-apple-blue" : "border-stone-300/60 dark:border-stone-800")">@item</button> }</div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center space-y-2 py-4">
+                            <i data-lucide="check-circle" class="w-12 h-12 text-apple-green mx-auto"></i>
+                            <h2 class="text-xl font-bold">Reservation confirmed</h2>
+                            <p class="text-xs text-stone-500">Reference <b>@ConfirmationCode</b></p>
+                        </div>
+                        <div class="grid sm:grid-cols-2 gap-3 text-xs">
+                            <div class="info-pill"><b>Date</b><span>@BookingDate.ToString("dd MMM yyyy")</span></div>
+                            <div class="info-pill"><b>Time</b><span>@TimeSlot</span></div>
+                            <div class="info-pill"><b>Guests</b><span>@PartySize</span></div>
+                            <div class="info-pill"><b>Table</b><span>@(BookingTable?.Name ?? "Host assigned")</span></div>
+                            <div class="info-pill"><b>Guest</b><span>@GuestName</span></div>
+                            <div class="info-pill"><b>Occasion</b><span>@(string.IsNullOrEmpty(Occasion) ? "None" : Occasion)</span></div>
+                        </div>
+                    }
+                </div>
+
+                <div class="flex justify-between">
+                    @if (BookingStep > 1 && BookingStep < 4)
+                    {
+                        <button type="button" @onclick="PreviousBookingStep" class="px-5 py-2.5 rounded-xl border border-stone-300/80 dark:border-stone-700 text-xs font-bold">Back</button>
+                    }
+                    else
+                    {
+                        <span></span>
+                    }
+                    @if (BookingStep < 4)
+                    {
+                        <button type="button" @onclick="NextBookingStep" disabled="@(!CanAdvanceBooking)" class="px-5 py-2.5 rounded-xl bg-apple-blue text-white text-xs font-bold disabled:opacity-40">@(BookingStep == 3 ? "Confirm Reservation" : "Continue")</button>
+                    }
+                    else
+                    {
+                        <button type="button" @onclick="CancelBooking" class="px-5 py-2.5 rounded-xl bg-apple-blue text-white text-xs font-bold">Back to Explore</button>
+                    }
+                </div>
+            </section>
+        }
+        else if (View == "explore")
         {
             <section class="space-y-8">
                 <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-stone-900 via-stone-800 to-black text-white p-8 md:p-12 shadow-2xl">
@@ -128,6 +246,16 @@
                     {
                         <div class="space-y-4">
                             <div class="text-center"><b class="text-3xl">@SelectedRestaurant.Rating</b><p class="text-xs text-stone-500">Based on @SelectedRestaurant.ReviewsCount verified diner reviews</p></div>
+                            <button type="button" @onclick="ToggleReviewForm" class="px-4 py-2 rounded-xl bg-apple-blue text-white text-xs font-bold">Write a review</button>
+                            @if (ShowReviewForm)
+                            {
+                                <form class="info-pill space-y-3" @onsubmit="SubmitReview" @onsubmit:preventDefault="true">
+                                    <input class="field w-full" placeholder="Your name" @bind="NewReviewName" />
+                                    <select class="field w-full" @bind="NewReviewRating">@for (var r = 5; r >= 1; r--) { <option value="@r">@r star@(r == 1 ? "" : "s")</option> }</select>
+                                    <textarea class="field w-full" rows="3" placeholder="Share your experience" @bind="NewReviewComment"></textarea>
+                                    <button type="submit" class="px-4 py-2 rounded-xl bg-apple-blue text-white text-xs font-bold">Submit review</button>
+                                </form>
+                            }
                             @foreach (var review in SelectedRestaurant.Reviews)
                             {
                                 <div class="info-pill"><div class="flex justify-between"><b>@review.Name</b><span class="text-xs text-stone-400">@review.Date</span></div><div class="text-amber-500">@(new string('★', review.Rating))</div><p>@review.Comment</p></div>

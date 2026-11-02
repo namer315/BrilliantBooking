@@ -98,6 +98,22 @@ public partial class HomeBase : ComponentBase
     protected void SelectOverviewTab() => SetModalTab("overview");
     protected void SelectMapTab() => SetModalTab("map");
     protected void SelectReviewsTab() => SetModalTab("reviews");
+    protected bool ShowReviewForm { get; set; }
+    protected string NewReviewName { get; set; } = "";
+    protected string NewReviewComment { get; set; } = "";
+    protected int NewReviewRating { get; set; } = 5;
+    protected void ToggleReviewForm() => ShowReviewForm = !ShowReviewForm;
+    protected void SubmitReview()
+    {
+        if (SelectedRestaurant is null || string.IsNullOrWhiteSpace(NewReviewName)) return;
+        var reviews = SelectedRestaurant.Reviews.ToList();
+        reviews.Insert(0, new Review(NewReviewName, "Just now", NewReviewRating, NewReviewComment));
+        SelectedRestaurant.Reviews = reviews;
+        NewReviewName = "";
+        NewReviewComment = "";
+        NewReviewRating = 5;
+        ShowReviewForm = false;
+    }
     protected void ToggleOccasion(string occasion) => Occasion = Occasion == occasion ? "" : occasion;
     protected void ToggleDietary(string item) { if (!DietaryRequirements.Add(item)) DietaryRequirements.Remove(item); }
     protected void StartBooking(Restaurant restaurant) { SelectedRestaurant = null; BookingRestaurant = restaurant; BookingStep = 1; TimeSlot = null; BookingTable = null; Occasion = ""; DietaryRequirements.Clear(); }
@@ -145,7 +161,7 @@ public partial class HomeBase : ComponentBase
         public string Corkage { get; init; } = "Standard fee";
         public string CancellationPolicy { get; init; } = "2 Hours Free";
         public string Source { get; init; } = "Internal";
-        public IReadOnlyList<Review> Reviews { get; init; } = Array.Empty<Review>();
+        public IReadOnlyList<Review> Reviews { get; set; } = Array.Empty<Review>();
     }
     public record Dish(string Name, string Price, string Tag);
     public record Review(string Name, string Date, int Rating, string Comment)
