@@ -105,6 +105,9 @@
         .dark ::-webkit-scrollbar-thumb {
             background: rgba(255, 255, 255, 0.2);
         }
+        .dark .btn:focus, .dark .btn:active:focus, .dark .form-control:focus, .dark .form-check-input:focus {
+            box-shadow: 0 0 0 0.1rem #121110, 0 0 0 0.25rem #258cfb;
+        }
         .table-node {
             transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
             cursor: pointer;
@@ -123,12 +126,6 @@
         .table-node.occupied {
             cursor: not-allowed;
             opacity: 0.5;
-        }
-        .view-section {
-            display: none;
-        }
-        .view-section.active {
-            display: block;
         }
     </style>
 </HeadContent>
@@ -155,9 +152,9 @@
             </div>
 
             <nav class="hidden lg:flex items-center space-x-1 sf-segmented p-1">
-                <button @onclick='() => SwitchView("explore")' class="@(View == "explore" ? "active bg-white dark:bg-gray-700 text-black dark:text-white" : "text-stone-600 dark:text-stone-300") px-4 py-1.5 text-xs font-medium rounded-md transition-all">Explore</button>
-                <button @onclick='() => SwitchView("bookings")' class="@(View == "bookings" ? "active bg-white dark:bg-gray-700 text-black dark:text-white" : "text-stone-600 dark:text-stone-300") px-4 py-1.5 text-xs font-medium rounded-md transition-all">My Bookings</button>
-                <button @onclick='() => SwitchView("ops")' class="@(View == "ops" ? "active bg-white dark:bg-gray-700 text-black dark:text-white" : "text-stone-600 dark:text-stone-300") px-4 py-1.5 text-xs font-medium rounded-md transition-all flex items-center space-x-1">
+                <button @onclick='() => SwitchView("explore")' class="@(View == "explore" ? "active" : "text-stone-600 dark:text-stone-300") px-4 py-1.5 text-xs font-medium rounded-md transition-all">Explore</button>
+                <button @onclick='() => SwitchView("bookings")' class="@(View == "bookings" ? "active" : "text-stone-600 dark:text-stone-300") px-4 py-1.5 text-xs font-medium rounded-md transition-all">My Bookings</button>
+                <button @onclick='() => SwitchView("ops")' class="@(View == "ops" ? "active" : "text-stone-600 dark:text-stone-300") px-4 py-1.5 text-xs font-medium rounded-md transition-all flex items-center space-x-1">
                     <span class="w-2 h-2 rounded-full bg-apple-green animate-pulse"></span>
                     <span>Live Operations</span>
                 </button>
@@ -170,8 +167,7 @@
                 </button>
 
                 <button @onclick="ToggleTheme" class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition text-stone-600 dark:text-stone-300" title="Toggle Light/Dark Theme">
-                    <i data-lucide="moon" class="w-4 h-4 hidden dark:block"></i>
-                    <i data-lucide="sun" class="w-4 h-4 block dark:hidden"></i>
+                    <i data-lucide="@(IsDark ? "sun" : "moon")" class="w-4 h-4"></i>
                 </button>
 
                 <button @onclick="ToggleMobileMenu" class="lg:hidden p-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition">
@@ -212,7 +208,7 @@
                     </div>
 
                     <div class="relative z-10 mt-8 max-w-4xl">
-                        <div class="sf-glass p-2.5 rounded-2xl shadow-xl flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-2 border border-white/30 text-stone-900 dark:text-white">
+                        <div class="sf-glass p-2.5 rounded-2xl shadow-xl flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-2 border border-white/30 dark:border-transparent text-stone-900 dark:text-white">
                             <div class="flex-grow flex items-center space-x-2 px-3 py-2 w-full">
                                 <i data-lucide="search" class="w-4 h-4 text-stone-400"></i>
                                 <input type="text" @bind="SearchText" @bind:event="oninput" placeholder="Search restaurants, cuisines, or neighbourhoods..." class="bg-transparent w-full text-sm focus:outline-none placeholder-stone-400" />
@@ -1000,10 +996,7 @@
                                 {
                                     <div class="p-4 bg-[#F8F7F4] dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl space-y-2">
                                         <div class="flex items-center justify-between">
-                                            <div class="flex items-center space-x-2">
-                                                <span class="text-xs font-bold">@review.Name</span>
-                                                <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-apple-green/20 text-apple-green">Verified Diner</span>
-                                            </div>
+                                            <span class="text-xs font-bold">@review.Name</span>
                                             <span class="text-[10px] text-stone-400">@review.Date</span>
                                         </div>
                                         <div class="flex text-amber-400">
