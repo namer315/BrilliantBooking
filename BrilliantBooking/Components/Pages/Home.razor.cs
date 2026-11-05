@@ -7,42 +7,42 @@ namespace BrilliantBooking.Components.Pages;
 public partial class HomeBase : ComponentBase, IDisposable
 {
     [Inject] protected IJSRuntime JavaScript { get; set; } = null!;
-    [Inject] protected BookingUiStateService UiState { get; set; } = null!;
+    [Inject] public BookingUiStateService UiState { get; set; } = null!;
 
-    protected string View => UiState.View;
-    protected bool IsDark => UiState.IsDark;
-    protected bool MobileMenuOpen => UiState.MobileMenuOpen;
-    protected bool LocationModalOpen => UiState.LocationModalOpen;
-    protected string Location => UiState.Location;
-    protected IReadOnlyList<(string Value, string Label)> Locations { get; } = new[]
+    public string View => UiState.View;
+    public bool IsDark => UiState.IsDark;
+    public bool MobileMenuOpen => UiState.MobileMenuOpen;
+    public bool LocationModalOpen => UiState.LocationModalOpen;
+    public string Location => UiState.Location;
+    public IReadOnlyList<(string Value, string Label)> Locations { get; } = new[]
     {
         ("Cape Town, SA", "Cape Town City & Atlantic Seaboard"),
         ("Franschhoek, Winelands", "Franschhoek & Stellenbosch"),
         ("Constantia Valley", "Constantia Wine Route")
     };
-    protected IReadOnlyList<(string Value, string Label)> Cuisines { get; } = new[]
+    public IReadOnlyList<(string Value, string Label)> Cuisines { get; } = new[]
     {
         ("all", "All Cuisines"), ("Seafood", "Seafood"), ("French", "French"),
         ("Japanese", "Japanese Omakase"), ("Italian", "Artisanal Italian"), ("Farm-to-Table", "Farm-to-Table")
     };
-    protected IReadOnlyList<(string Value, string Label)> Prices { get; } = new[]
+    public IReadOnlyList<(string Value, string Label)> Prices { get; } = new[]
     {
         ("all", "All Prices"), ("$$", "$$ (Moderate)"), ("$$$", "$$$ (Fine)"), ("$$$$", "$$$$ (Luxury)")
     };
-    protected IReadOnlyList<(string Value, string Label)> Categories { get; } = new[]
+    public IReadOnlyList<(string Value, string Label)> Categories { get; } = new[]
     {
         ("all", "All Venues"), ("Seafood", "Waterfront & Seafood"), ("French", "Michelin & Fine Dining"),
         ("Japanese", "Japanese Omakase"), ("Italian", "Terrace Italian")
     };
 
-    protected string SearchText { get; set; } = "";
-    protected string CuisineFilter { get; set; } = "all";
-    protected string PriceFilter { get; set; } = "all";
-    protected bool FavoritesOnly => UiState.FavoritesOnly;
-    protected HashSet<int> Favorites => UiState.Favorites;
-    protected List<Restaurant> Restaurants { get; } = CreateRestaurants();
+    public string SearchText { get; set; } = "";
+    public string CuisineFilter { get; set; } = "all";
+    public string PriceFilter { get; set; } = "all";
+    public bool FavoritesOnly => UiState.FavoritesOnly;
+    public HashSet<int> Favorites => UiState.Favorites;
+    public List<Restaurant> Restaurants { get; } = CreateRestaurants();
 
-    protected IReadOnlyList<Restaurant> FilteredRestaurants => Restaurants.Where(r =>
+    public IReadOnlyList<Restaurant> FilteredRestaurants => Restaurants.Where(r =>
         (CuisineFilter == "all" || r.Cuisine == CuisineFilter) &&
         (PriceFilter == "all" || r.Price == PriceFilter) &&
         (!FavoritesOnly || Favorites.Contains(r.Id)) &&
@@ -50,42 +50,42 @@ public partial class HomeBase : ComponentBase, IDisposable
             new[] { r.Name, r.Cuisine, r.Location, r.Description }.Any(v => v.Contains(SearchText, StringComparison.OrdinalIgnoreCase))))
         .ToList();
 
-    protected Restaurant? ActiveModalRestaurant { get; set; }
-    protected string ModalTab { get; set; } = "overview";
-    protected bool ShowReviewForm { get; set; }
-    protected string NewReviewName { get; set; } = "";
-    protected string NewReviewComment { get; set; } = "";
-    protected int NewReviewRating { get; set; } = 5;
+    public Restaurant? ActiveModalRestaurant { get; set; }
+    public string ModalTab { get; set; } = "overview";
+    public bool ShowReviewForm { get; set; }
+    public string NewReviewName { get; set; } = "";
+    public string NewReviewComment { get; set; } = "";
+    public int NewReviewRating { get; set; } = 5;
 
-    protected Restaurant? BookingRestaurant { get; set; }
-    protected int BookingStep { get; set; } = 1;
-    protected int PartySize { get; set; } = 2;
-    protected int DateShortcut { get; set; } = 0;
-    protected string BookingDate { get; set; } = DateTime.Today.ToString("yyyy-MM-dd");
-    protected string? TimeSlot { get; set; }
-    protected FloorTable? SelectedTable { get; set; }
-    protected string Occasion { get; set; } = "";
-    protected HashSet<string> Dietary { get; } = new();
-    protected string GuestName { get; set; } = "";
-    protected string GuestPhone { get; set; } = "";
-    protected string GuestEmail { get; set; } = "";
-    protected string GuestNotes { get; set; } = "";
-    protected bool BookingConfirmed { get; set; }
-    protected string ConfirmationCode { get; set; } = "";
+    public Restaurant? BookingRestaurant { get; set; }
+    public int BookingStep { get; set; } = 1;
+    public int PartySize { get; set; } = 2;
+    public int DateShortcut { get; set; } = 0;
+    public string BookingDate { get; set; } = DateTime.Today.ToString("yyyy-MM-dd");
+    public string? TimeSlot { get; set; }
+    public FloorTable? SelectedTable { get; set; }
+    public string Occasion { get; set; } = "";
+    public HashSet<string> Dietary { get; } = new();
+    public string GuestName { get; set; } = "";
+    public string GuestPhone { get; set; } = "";
+    public string GuestEmail { get; set; } = "";
+    public string GuestNotes { get; set; } = "";
+    public bool BookingConfirmed { get; set; }
+    public string ConfirmationCode { get; set; } = "";
 
-    protected IReadOnlyList<(int Offset, string Label)> DateShortcuts { get; } = new[]
+    public IReadOnlyList<(int Offset, string Label)> DateShortcuts { get; } = new[]
     {
         (0, "Today"), (1, "Tomorrow"), (2, "This Friday")
     };
-    protected IReadOnlyList<string> Occasions { get; } = new[]
+    public IReadOnlyList<string> Occasions { get; } = new[]
     {
         "🎂 Birthday", "🥂 Anniversary", "💼 Business Meal", "❤️ Date Night"
     };
-    protected IReadOnlyList<string> DietaryOptions { get; } = new[]
+    public IReadOnlyList<string> DietaryOptions { get; } = new[]
     {
         "🌱 Vegan / Plant", "🌾 Gluten-Free", "🌙 Halal", "🥜 Nut Allergy", "🥛 Dairy Free"
     };
-    protected IReadOnlyList<FloorTable> FloorTables { get; } = new[]
+    public IReadOnlyList<FloorTable> FloorTables { get; } = new[]
     {
         new FloorTable("Table 01", "Main Dining Room • Window View", 4),
         new FloorTable("Table 04", "Ocean Window Booth • VIP Preferred", 4),
@@ -94,30 +94,30 @@ public partial class HomeBase : ComponentBase, IDisposable
         new FloorTable("Patio P2", "Outdoor Ocean Terrace • Sun Deck", 4)
     };
 
-    protected List<Booking> Bookings { get; } = new()
+    public List<Booking> Bookings { get; } = new()
     {
         new("#TBL-8942-CPT", 1, "Ocean Grill & Raw Bar", "Today", "19:30", 4, "Table 04 (Ocean Window)", "Active"),
         new("#TBL-2041-FRN", 2, "Le Petit Manoir", "14 Oct 2026", "20:00", 2, "Chef's Counter C1", "Past")
     };
-    protected string BookingsTab { get; set; } = "active";
-    protected string LookupCode { get; set; } = "";
+    public string BookingsTab { get; set; } = "active";
+    public string LookupCode { get; set; } = "";
 
-    protected List<Arrival> Arrivals { get; } = new()
+    public List<Arrival> Arrivals { get; } = new()
     {
         new("19:30", "Vance Party (4)", "Table 04 • Gluten-Free", true),
         new("19:45", "Dr. A. Smith (2)", "Table 12 (Chef Counter) • VIP", false),
         new("20:15", "Claire Dupont (6)", "Patio Booth P1 • Birthday", false)
     };
 
-    protected IEnumerable<Booking> VisibleBookings => Bookings.Where(b =>
+    public IEnumerable<Booking> VisibleBookings => Bookings.Where(b =>
         BookingsTab == "active" ? b.Status == "Active" : b.Status == "Past");
 
-    protected bool IsSelectedTable(string name) => SelectedTable?.Name == name;
+    public bool IsSelectedTable(string name) => SelectedTable?.Name == name;
 
-    protected static string MapsUrl(Restaurant r) =>
+    public static string MapsUrl(Restaurant r) =>
         $"https://www.google.com/maps/search/?api=1&query={Uri.EscapeDataString($"{r.Name}, {r.Address}")}";
 
-    protected static string SelectedRestaurantCuisineLabel(Restaurant r) => r.Cuisine;
+    public static string SelectedRestaurantCuisineLabel(Restaurant r) => r.Cuisine;
 
     protected override void OnInitialized()
     {
@@ -136,27 +136,27 @@ public partial class HomeBase : ComponentBase, IDisposable
         UiState.Changed -= OnStateChanged;
     }
 
-    protected async Task SwitchView(string view)
+    public async Task SwitchView(string view)
     {
         UiState.SetView(view);
         await JavaScript.InvokeVoidAsync("scrollTo", new { top = 0, behavior = "smooth" });
     }
 
-    protected void ToggleMobileMenu() => UiState.ToggleMobileMenu();
+    public void ToggleMobileMenu() => UiState.ToggleMobileMenu();
 
-    protected async Task ToggleTheme()
+    public async Task ToggleTheme()
     {
         UiState.ToggleTheme();
         await JavaScript.InvokeVoidAsync("setDarkMode", IsDark);
     }
 
-    protected void ToggleFavoritesOnlyFilter() => UiState.ToggleFavoritesOnlyFilter();
+    public void ToggleFavoritesOnlyFilter() => UiState.ToggleFavoritesOnlyFilter();
 
-    protected void ToggleFavorite(Restaurant restaurant) => UiState.ToggleFavorite(restaurant.Id);
+    public void ToggleFavorite(Restaurant restaurant) => UiState.ToggleFavorite(restaurant.Id);
 
-    protected void SetCuisine(string value) => CuisineFilter = value;
+    public void SetCuisine(string value) => CuisineFilter = value;
 
-    protected void ResetFilters()
+    public void ResetFilters()
     {
         SearchText = "";
         CuisineFilter = "all";
@@ -164,24 +164,29 @@ public partial class HomeBase : ComponentBase, IDisposable
         if (FavoritesOnly) UiState.ToggleFavoritesOnlyFilter();
     }
 
-    protected void ToggleLocationModal() => UiState.ToggleLocationModal();
+    public void ToggleLocationModal() => UiState.ToggleLocationModal();
 
-    protected void SetLocation(string value) => UiState.SetLocation(value);
+    public void SetLocation(string value) => UiState.SetLocation(value);
 
-    protected void OpenRestaurant(Restaurant restaurant)
+    public void OpenRestaurant(Restaurant restaurant)
     {
         ActiveModalRestaurant = restaurant;
         ModalTab = "overview";
         ShowReviewForm = false;
+        StateHasChanged();
     }
 
-    protected void CloseRestaurant() => ActiveModalRestaurant = null;
+    public void CloseRestaurant()
+    {
+        ActiveModalRestaurant = null;
+        StateHasChanged();
+    }
 
-    protected void SwitchModalTab(string tab) => ModalTab = tab;
+    public void SwitchModalTab(string tab) => ModalTab = tab;
 
-    protected void ToggleReviewForm() => ShowReviewForm = !ShowReviewForm;
+    public void ToggleReviewForm() => ShowReviewForm = !ShowReviewForm;
 
-    protected void SubmitReview()
+    public void SubmitReview()
     {
         if (ActiveModalRestaurant is null || string.IsNullOrWhiteSpace(NewReviewName)) return;
         ActiveModalRestaurant.Reviews.Insert(0, new Review(NewReviewName, "Just now", NewReviewRating, NewReviewComment));
@@ -192,13 +197,13 @@ public partial class HomeBase : ComponentBase, IDisposable
         ShowReviewForm = false;
     }
 
-    protected void TriggerBookingFromModal()
+    public void TriggerBookingFromModal()
     {
         if (ActiveModalRestaurant is null) return;
         StartBooking(ActiveModalRestaurant);
     }
 
-    protected async Task StartBooking(Restaurant restaurant)
+    public async Task StartBooking(Restaurant restaurant)
     {
         ActiveModalRestaurant = null;
         BookingRestaurant = restaurant;
@@ -215,26 +220,26 @@ public partial class HomeBase : ComponentBase, IDisposable
         await JavaScript.InvokeVoidAsync("scrollTo", new { top = 0, behavior = "smooth" });
     }
 
-    protected void GoToBookingStep(int step) => BookingStep = step;
+    public void GoToBookingStep(int step) => BookingStep = step;
 
-    protected void SelectDateShortcut(int offset)
+    public void SelectDateShortcut(int offset)
     {
         DateShortcut = offset;
         BookingDate = DateTime.Today.AddDays(offset).ToString("yyyy-MM-dd");
     }
 
-    protected void SelectFloorTable(FloorTable table) => SelectedTable = table;
+    public void SelectFloorTable(FloorTable table) => SelectedTable = table;
 
-    protected void ToggleOccasion(string occasion) => Occasion = Occasion == occasion ? "" : occasion;
+    public void ToggleOccasion(string occasion) => Occasion = Occasion == occasion ? "" : occasion;
 
-    protected void ToggleDietary(string item)
+    public void ToggleDietary(string item)
     {
         if (!Dietary.Add(item)) Dietary.Remove(item);
     }
 
-    protected void SubmitGuestDetails() => BookingStep = 4;
+    public void SubmitGuestDetails() => BookingStep = 4;
 
-    protected void ConfirmBooking()
+    public void ConfirmBooking()
     {
         if (BookingRestaurant is null) return;
         ConfirmationCode = $"#TBL-{Random.Shared.Next(1000, 9999)}-CPT";
@@ -243,29 +248,29 @@ public partial class HomeBase : ComponentBase, IDisposable
         BookingConfirmed = true;
     }
 
-    protected async Task SaveToAppleWallet() =>
+    public async Task SaveToAppleWallet() =>
         await JavaScript.InvokeVoidAsync("alert", "Added to Apple Wallet Passbook successfully!");
 
-    protected async Task ViewMyBookings()
+    public async Task ViewMyBookings()
     {
         BookingsTab = "active";
         await SwitchView("bookings");
     }
 
-    protected void SetBookingsTab(string tab) => BookingsTab = tab;
+    public void SetBookingsTab(string tab) => BookingsTab = tab;
 
-    protected void CancelBooking(Booking booking) => Bookings.Remove(booking);
+    public void CancelBooking(Booking booking) => Bookings.Remove(booking);
 
-    protected async Task ModifyBooking() =>
+    public async Task ModifyBooking() =>
         await JavaScript.InvokeVoidAsync("alert", "Modification request sent to host.");
 
-    protected async Task RebookRestaurant(int restaurantId)
+    public async Task RebookRestaurant(int restaurantId)
     {
         var restaurant = Restaurants.First(r => r.Id == restaurantId);
         await StartBooking(restaurant);
     }
 
-    protected async Task LookupBooking()
+    public async Task LookupBooking()
     {
         var query = LookupCode.Trim();
         if (string.IsNullOrEmpty(query)) return;
@@ -277,13 +282,13 @@ public partial class HomeBase : ComponentBase, IDisposable
         await JavaScript.InvokeVoidAsync("alert", message);
     }
 
-    protected async Task ToggleOpsTableStatus() =>
+    public async Task ToggleOpsTableStatus() =>
         await JavaScript.InvokeVoidAsync("alert", "Host Manager Action: Table state toggled between Seated / Cleaning / Available.");
 
-    protected async Task BlockTable() =>
+    public async Task BlockTable() =>
         await JavaScript.InvokeVoidAsync("alert", "Block Table mode toggled for staff manager.");
 
-    protected void SeatGuest(Arrival arrival) => arrival.Seated = true;
+    public void SeatGuest(Arrival arrival) => arrival.Seated = true;
 
     private static List<Restaurant> CreateRestaurants() => new()
     {
