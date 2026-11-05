@@ -1,0 +1,66 @@
+@if (Page.View == "bookings")
+{
+    <section class="space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-200 dark:border-stone-800 pb-4">
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight">My Reservations</h1>
+                <p class="text-xs text-stone-500">Manage upcoming and past restaurant table bookings</p>
+            </div>
+            <div class="flex items-center space-x-2">
+                <input type="text" @bind="Page.LookupCode" placeholder="Enter Ref Code (#TBL-...) or Phone" class="bg-[#F8F7F4] dark:bg-stone-900 border border-stone-300/80 dark:border-stone-800 rounded-xl px-3 py-2 text-xs w-56 focus:outline-none focus:ring-2 focus:ring-apple-blue" />
+                <button @onclick="Page.LookupBooking" class="px-3 py-2 bg-apple-blue text-white rounded-xl text-xs font-semibold hover:bg-apple-blue-hover transition">Lookup</button>
+            </div>
+        </div>
+
+        <div class="flex justify-center">
+            <div class="sf-segmented flex space-x-1 p-1 max-w-xs w-full">
+                <button @onclick='() => Page.SetBookingsTab("active")' class="@(Page.BookingsTab == "active" ? "active" : "text-stone-500") flex-1 py-1.5 text-xs font-semibold rounded-md">Active (@Page.Bookings.Count(b => b.Status == "Active"))</button>
+                <button @onclick='() => Page.SetBookingsTab("past")' class="@(Page.BookingsTab == "past" ? "active" : "text-stone-500") flex-1 py-1.5 text-xs font-semibold rounded-md">History (@Page.Bookings.Count(b => b.Status == "Past"))</button>
+            </div>
+        </div>
+
+        <div class="max-w-3xl mx-auto space-y-4">
+            @if (!Page.VisibleBookings.Any())
+            {
+                <div class="text-center py-12 space-y-3">
+                    <i data-lucide="calendar-x" class="w-10 h-10 text-stone-400 mx-auto"></i>
+                    <p class="text-sm font-semibold text-stone-500">No @Page.BookingsTab reservations found</p>
+                </div>
+            }
+            else
+            {
+                @foreach (var item in Page.VisibleBookings.ToList())
+                {
+                    var booking = item;
+                    <div class="sf-glass rounded-2xl p-5 shadow-apple-card border border-stone-200/80 dark:border-stone-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div class="space-y-1">
+                            <div class="flex items-center space-x-2">
+                                <span class="font-mono text-xs font-bold text-apple-blue">@booking.Ref</span>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold @(booking.Status == "Active" ? "bg-apple-green/20 text-apple-green" : "bg-stone-200 text-stone-600")">@booking.Status</span>
+                            </div>
+                            <h3 class="text-base font-bold">@booking.RestaurantName</h3>
+                            <div class="flex items-center space-x-3 text-xs text-stone-500">
+                                <span><i data-lucide="calendar" class="w-3.5 h-3.5 inline mr-1"></i>@booking.Date</span>
+                                <span><i data-lucide="clock" class="w-3.5 h-3.5 inline mr-1"></i>@booking.Time</span>
+                                <span><i data-lucide="users" class="w-3.5 h-3.5 inline mr-1"></i>@booking.Guests Guests</span>
+                            </div>
+                            <div class="text-xs text-apple-blue font-medium">@booking.Table</div>
+                        </div>
+
+                        <div class="flex items-center space-x-2">
+                            @if (booking.Status == "Active")
+                            {
+                                <button @onclick='() => Page.CancelBooking(booking)' class="px-3 py-1.5 border border-apple-red/30 text-apple-red hover:bg-apple-red/10 rounded-xl text-xs font-semibold transition">Cancel</button>
+                                <button @onclick="Page.ModifyBooking" class="px-3 py-1.5 bg-[#F0EEE9] dark:bg-stone-800 rounded-xl text-xs font-semibold hover:bg-stone-200 transition">Modify</button>
+                            }
+                            else
+                            {
+                                <button @onclick='() => Page.RebookRestaurant(booking.RestaurantId)' class="px-3 py-1.5 bg-apple-blue text-white rounded-xl text-xs font-semibold hover:bg-apple-blue-hover transition">Re-book Table</button>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </section>
+}
