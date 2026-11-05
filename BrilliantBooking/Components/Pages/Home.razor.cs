@@ -1,17 +1,19 @@
+using BrilliantBooking.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
 namespace BrilliantBooking.Components.Pages;
 
-public partial class HomeBase : ComponentBase
+public partial class HomeBase : ComponentBase, IDisposable
 {
     [Inject] protected IJSRuntime JavaScript { get; set; } = null!;
+    [Inject] protected BookingUiStateService UiState { get; set; } = null!;
 
-    protected string View { get; set; } = "explore";
-    protected bool IsDark { get; set; }
-    protected bool MobileMenuOpen { get; set; }
-    protected bool LocationModalOpen { get; set; }
-    protected string Location { get; set; } = "Cape Town, SA";
+    protected string View => UiState.View;
+    protected bool IsDark => UiState.IsDark;
+    protected bool MobileMenuOpen => UiState.MobileMenuOpen;
+    protected bool LocationModalOpen => UiState.LocationModalOpen;
+    protected string Location => UiState.Location;
     protected IReadOnlyList<(string Value, string Label)> Locations { get; } = new[]
     {
         ("Cape Town, SA", "Cape Town City & Atlantic Seaboard"),
@@ -36,8 +38,8 @@ public partial class HomeBase : ComponentBase
     protected string SearchText { get; set; } = "";
     protected string CuisineFilter { get; set; } = "all";
     protected string PriceFilter { get; set; } = "all";
-    protected bool FavoritesOnly { get; set; }
-    protected HashSet<int> Favorites { get; } = new();
+    protected bool FavoritesOnly => UiState.FavoritesOnly;
+    protected HashSet<int> Favorites => UiState.Favorites;
     protected List<Restaurant> Restaurants { get; } = CreateRestaurants();
 
     protected IReadOnlyList<Restaurant> FilteredRestaurants => Restaurants.Where(r =>
@@ -117,32 +119,40 @@ public partial class HomeBase : ComponentBase
 
     protected static string SelectedRestaurantCuisineLabel(Restaurant r) => r.Cuisine;
 
+    protected override void OnInitialized()
+    {
+        UiState.Changed += OnStateChanged;
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await JavaScript.InvokeVoidAsync("refreshReserveIcons");
     }
 
+    private void OnStateChanged() => InvokeAsync(StateHasChanged);
+
+    public void Dispose()
+    {
+        UiState.Changed -= OnStateChanged;
+    }
+
     protected async Task SwitchView(string view)
     {
-        View = view;
-        MobileMenuOpen = false;
+        UiState.SetView(view);
         await JavaScript.InvokeVoidAsync("scrollTo", new { top = 0, behavior = "smooth" });
     }
 
-    protected void ToggleMobileMenu() => MobileMenuOpen = !MobileMenuOpen;
+    protected void ToggleMobileMenu() => UiState.ToggleMobileMenu();
 
     protected async Task ToggleTheme()
     {
-        IsDark = !IsDark;
+        UiState.ToggleTheme();
         await JavaScript.InvokeVoidAsync("setDarkMode", IsDark);
     }
 
-    protected void ToggleFavoritesOnlyFilter() => FavoritesOnly = !FavoritesOnly;
+    protected void ToggleFavoritesOnlyFilter() => UiState.ToggleFavoritesOnlyFilter();
 
-    protected void ToggleFavorite(Restaurant restaurant)
-    {
-        if (!Favorites.Add(restaurant.Id)) Favorites.Remove(restaurant.Id);
-    }
+    protected void ToggleFavorite(Restaurant restaurant) => UiState.ToggleFavorite(restaurant.Id);
 
     protected void SetCuisine(string value) => CuisineFilter = value;
 
@@ -151,16 +161,12 @@ public partial class HomeBase : ComponentBase
         SearchText = "";
         CuisineFilter = "all";
         PriceFilter = "all";
-        FavoritesOnly = false;
+        if (FavoritesOnly) UiState.ToggleFavoritesOnlyFilter();
     }
 
-    protected void ToggleLocationModal() => LocationModalOpen = !LocationModalOpen;
+    protected void ToggleLocationModal() => UiState.ToggleLocationModal();
 
-    protected void SetLocation(string value)
-    {
-        Location = value;
-        LocationModalOpen = false;
-    }
+    protected void SetLocation(string value) => UiState.SetLocation(value);
 
     protected void OpenRestaurant(Restaurant restaurant)
     {
@@ -205,7 +211,7 @@ public partial class HomeBase : ComponentBase
         BookingDate = DateTime.Today.ToString("yyyy-MM-dd");
         Occasion = "";
         Dietary.Clear();
-        View = "booking";
+        UiState.SetView("booking");
         await JavaScript.InvokeVoidAsync("scrollTo", new { top = 0, behavior = "smooth" });
     }
 

@@ -1,0 +1,35 @@
+@rendermode InteractiveServer
+@using BrilliantBooking.Services
+@inject BookingUiStateService UiState
+
+<footer class="mt-16 border-t border-stone-200 dark:border-stone-800 bg-[#F8F7F4] dark:bg-stone-900 transition-colors duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="space-y-3">
+            <div class="flex items-center space-x-2 text-base font-semibold tracking-tight">
+                <span class="w-7 h-7 rounded-lg bg-apple-blue flex items-center justify-center text-white">
+                    <i data-lucide="utensils" class="w-3.5 h-3.5"></i>
+                </span>
+                <span class="font-bold">Tableau <span class="text-apple-blue font-normal">Reserve</span></span>
+            </div>
+            <p class="text-xs text-stone-500 dark:text-stone-400 leading-relaxed max-w-xs">Premium table reservations at Cape Town's finest venues.</p>
+        </div>
+
+        <nav aria-label="Footer" class="space-y-3">
+            <h2 class="text-[10px] font-bold uppercase tracking-wider text-stone-400">Quick Links</h2>
+            <ul class="space-y-2 text-xs font-medium text-stone-600 dark:text-stone-300">
+                <li><a href="/" class="hover:text-apple-blue focus:outline-none focus-visible:ring-2 focus-visible:ring-apple-blue rounded">Explore Restaurants</a></li>
+                <li><a href="/bookings" class="hover:text-apple-blue focus:outline-none focus-visible:ring-2 focus-visible:ring-apple-blue rounded">My Bookings</a></li>
+                <li><a href="/ops" class="hover:text-apple-blue focus:outline-none focus-visible:ring-2 focus-visible:ring-apple-blue rounded">Live Operations</a></li>
+            </ul>
+        </nav>
+
+        <div class="space-y-3">
+            <h2 class="text-[10px] font-bold uppercase tracking-wider text-stone-400">Region</h2>
+            <p class="flex items-center space-x-1 text-xs text-stone-600 dark:text-stone-300">
+                <i data-lucide="map-pin" class="w-3.5 h-3.5 text-apple-blue"></i>
+                <span>@UiState.Location</span>
+            </p>
+            <p class="text-[11px] text-stone-400">&copy; @DateTime.Now.Year Tableau Reserve. All rights reserved.</p>
+        </div>
+    </div>
+</footer>

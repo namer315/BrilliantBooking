@@ -1,11 +1,20 @@
 ﻿@inherits LayoutComponentBase
 
-<main class="min-h-screen w-full">
-    @Body
-</main>
+<div class="min-h-screen flex flex-col antialiased selection:bg-apple-blue selection:text-white">
+    <SiteHeader />
 
-<div id="blazor-error-ui" data-nosnippet>
-    An unhandled error has occurred.
-    <a href="." class="reload">Reload</a>
-    <span class="dismiss">🗙</span>
+    <main class="min-h-screen w-full">
+        @Body
+    </main>
 </div>
+
+<footer class="mt-auto border-t border-stone-200 dark:border-stone-800 py-6 text-center text-xs text-stone-500">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <p>© 2026 Tableau Reserve Inc. Engineered with Apple Human Interface Guidelines.</p>
+        <div class="flex space-x-4 text-stone-400">
+            <a href="#" class="hover:underline">Privacy Policy</a>
+            <a href="#" class="hover:underline">Terms of Table Service</a>
+            <a href="#" class="hover:underline">Concierge Support</a>
+        </div>
+    </div>
+</footer>
