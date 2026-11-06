@@ -1,5 +1,6 @@
 using BrilliantBooking.Components;
 using BrilliantBooking.Services;
+using Business.Services;
 
 public partial class Program
 {
@@ -11,6 +12,7 @@ public partial class Program
         builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents();
         builder.Services.AddScoped<BookingUiStateService>();
+        builder.Services.AddScoped<IRestaurantRegistrationService, RestaurantRegistrationService>();
 
         var app = builder.Build();
 

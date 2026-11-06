@@ -1,3 +1,4 @@
+using Data.VO;
 using NHibernate;
 
 namespace Data;
@@ -133,7 +134,7 @@ public class NHibernateRepository
 
     #endregion Session management
 
-    public void Persist<T>(T entity) where T : class
+    public async Task Persist<T>(T entity) where T : EntityBase
     {
         ArgumentNullException.ThrowIfNull(entity);
 
@@ -142,7 +143,7 @@ public class NHibernateRepository
 
         try
         {
-            session.Persist(entity);
+            await session.PersistAsync(entity);
             transaction.Commit();
         }
         catch

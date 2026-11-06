@@ -21,6 +21,13 @@ public class RestaurantVO : EntityBase
     public virtual string DressCode { get; set; } = string.Empty;
     public virtual string Parking { get; set; } = string.Empty;
     public virtual string Corkage { get; set; } = string.Empty;
+    public virtual string Phone { get; set; }
+    public virtual string? Email { get; set; }
+    public virtual int TableCapacity { get; set; }
+
+    public virtual RestaurantOwnerVO? Owner { get; set; }
+    public virtual IList<RestaurantHourVO> OpeningHours { get; set; } = new List<RestaurantHourVO>();
+    public virtual IList<RestaurantPhotoVO> Photos { get; set; } = new List<RestaurantPhotoVO>();
 }
 
 public class RestaurantMap : EntityWithIdMapping<RestaurantVO>
@@ -42,5 +49,12 @@ public class RestaurantMap : EntityWithIdMapping<RestaurantVO>
         Map(x => x.DressCode).Length(100).Not.Nullable();
         Map(x => x.Parking).Length(200).Not.Nullable();
         Map(x => x.Corkage).Length(200).Not.Nullable();
+        Map(x => x.Phone).Length(30).Nullable();
+        Map(x => x.Email).Length(256).Nullable();
+        Map(x => x.TableCapacity).Not.Nullable().Default("0");
+
+        HasOne(x => x.Owner).PropertyRef(o => o.Restaurant).Cascade.All();
+        HasMany(x => x.OpeningHours).KeyColumn("RestaurantId").Inverse().Cascade.AllDeleteOrphan();
+        HasMany(x => x.Photos).KeyColumn("RestaurantId").Inverse().Cascade.AllDeleteOrphan();
     }
 }

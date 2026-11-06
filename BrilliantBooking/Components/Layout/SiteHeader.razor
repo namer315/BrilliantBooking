@@ -42,7 +42,9 @@
         </nav> *@
 
         <div class="flex items-center space-x-3">
-            <button type="button" @onclick="UiState.ToggleFavoritesOnlyFilter" class="px-3 py-1.5 rounded-full bg-stone-200/60 dark:bg-stone-800 text-xs font-semibold flex items-center space-x-1 hover:bg-stone-300/60 transition @(UiState.FavoritesOnly ? "bg-apple-red/20 text-apple-red border border-apple-red/40" : "")">
+            <a href="/Add" class="hidden md:inline-flex px-3 py-1.5 rounded-full bg-apple-blue text-white text-xs font-semibold shadow-md shadow-apple-blue/30 hover:opacity-90 transition focus-visible:ring-2 focus-visible:ring-apple-blue">Register Restaurant</a>
+
+            <button type="button" @onclick="UiState.ToggleFavoritesOnlyFilter"
                 <i data-lucide="heart" class="w-3.5 h-3.5 text-apple-red"></i>
                 <span>Saved (@UiState.Favorites.Count)</span>
             </button>
@@ -62,6 +64,7 @@
         <div class="lg:hidden border-b border-stone-200 dark:border-stone-800 bg-[#F8F7F4]/95 dark:bg-stone-900/95 backdrop-blur-xl px-4 py-3 space-y-2">
             <a href="/" class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium hover:bg-stone-200/50 dark:hover:bg-stone-800">Explore Restaurants</a>
             <a href="/bookings" class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium hover:bg-stone-200/50 dark:hover:bg-stone-800">My Reservations</a>
+            <a href="/Add" class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium hover:bg-stone-200/50 dark:hover:bg-stone-800">Register Restaurant</a>
             <a href="/ops" class="flex w-full text-left px-3 py-2 rounded-lg text-sm font-medium hover:bg-stone-200/50 dark:hover:bg-stone-800 items-center justify-between">
                 <span>Restaurant Staff Operations</span>
                 <span class="text-xs bg-apple-green/20 text-apple-green font-semibold px-2 py-0.5 rounded-full">Live</span>
