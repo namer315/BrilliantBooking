@@ -24,27 +24,25 @@
             </button>
         </div>
 
-        <nav class="hidden lg:flex items-center space-x-1 sf-segmented p-1">
+        @* <nav class="hidden lg:flex items-center space-x-1 sf-segmented p-1">
             <button @onclick='() => UiState.SwitchView("explore")' class="@(UiState.View == "explore" ? "active" : "text-stone-600 dark:text-stone-300") px-4 py-1.5 text-xs font-medium rounded-md transition-all">Explore</button>
             <button @onclick='() => UiState.SwitchView("bookings")' class="@(UiState.View == "bookings" ? "active" : "text-stone-600 dark:text-stone-300") px-4 py-1.5 text-xs font-medium rounded-md transition-all">My Bookings</button>
             <button @onclick='() => UiState.SwitchView("ops")' class="@(UiState.View == "ops" ? "active" : "text-stone-600 dark:text-stone-300") px-4 py-1.5 text-xs font-medium rounded-md transition-all flex items-center space-x-1">
                 <span class="w-2 h-2 rounded-full bg-apple-green animate-pulse"></span>
                 <span>Live Operations</span>
             </button>
-        </nav>
-        @* <nav class="hidden lg:flex items-center space-x-1 sf-segmented p-1" aria-label="Main">
-            <a href="/" class="@NavClass(IsExploreActive) px-4 py-1.5 text-xs font-medium rounded-md transition-all focus-visible:ring-2 focus-visible:ring-apple-blue" aria-current="@(IsExploreActive ? "page" : null)">Explore</a>
+        </nav> *@
+        <nav class="hidden lg:flex items-center space-x-1 sf-segmented p-1" aria-label="Main">
+            <a href="/Explore" class="@NavClass(IsExploreActive) px-4 py-1.5 text-xs font-medium rounded-md transition-all focus-visible:ring-2 focus-visible:ring-apple-blue" aria-current="@(IsExploreActive ? "page" : null)">Explore</a>
             <a href="/bookings" class="@NavClass(IsActive("bookings")) px-4 py-1.5 text-xs font-medium rounded-md transition-all focus-visible:ring-2 focus-visible:ring-apple-blue" aria-current="@(IsActive("bookings") ? "page" : null)">My Bookings</a>
             <a href="/ops" class="@NavClass(IsActive("ops")) px-4 py-1.5 text-xs font-medium rounded-md transition-all flex items-center space-x-1 focus-visible:ring-2 focus-visible:ring-apple-blue" aria-current="@(IsActive("ops") ? "page" : null)">
                 <span class="w-2 h-2 rounded-full bg-apple-green animate-pulse"></span>
                 <span>Live Operations</span>
             </a>
-        </nav> *@
+        </nav>
 
         <div class="flex items-center space-x-3">
-            <a href="/Add" class="hidden md:inline-flex px-3 py-1.5 rounded-full bg-apple-blue text-white text-xs font-semibold shadow-md shadow-apple-blue/30 hover:opacity-90 transition focus-visible:ring-2 focus-visible:ring-apple-blue">Register Restaurant</a>
-
-            <button type="button" @onclick="UiState.ToggleFavoritesOnlyFilter"
+            <button type="button" @onclick="UiState.ToggleFavoritesOnlyFilter" class="px-3 py-1.5 rounded-full bg-stone-200/60 dark:bg-stone-800 text-xs font-semibold flex items-center space-x-1 hover:bg-stone-300/60 transition @(UiState.FavoritesOnly ? "bg-apple-red/20 text-apple-red border border-apple-red/40" : "")">
                 <i data-lucide="heart" class="w-3.5 h-3.5 text-apple-red"></i>
                 <span>Saved (@UiState.Favorites.Count)</span>
             </button>
@@ -64,7 +62,6 @@
         <div class="lg:hidden border-b border-stone-200 dark:border-stone-800 bg-[#F8F7F4]/95 dark:bg-stone-900/95 backdrop-blur-xl px-4 py-3 space-y-2">
             <a href="/" class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium hover:bg-stone-200/50 dark:hover:bg-stone-800">Explore Restaurants</a>
             <a href="/bookings" class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium hover:bg-stone-200/50 dark:hover:bg-stone-800">My Reservations</a>
-            <a href="/Add" class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium hover:bg-stone-200/50 dark:hover:bg-stone-800">Register Restaurant</a>
             <a href="/ops" class="flex w-full text-left px-3 py-2 rounded-lg text-sm font-medium hover:bg-stone-200/50 dark:hover:bg-stone-800 items-center justify-between">
                 <span>Restaurant Staff Operations</span>
                 <span class="text-xs bg-apple-green/20 text-apple-green font-semibold px-2 py-0.5 rounded-full">Live</span>
@@ -87,8 +84,8 @@
         await JavaScript.InvokeVoidAsync("refreshReserveIcons");
     }
 
-    private bool IsActive(string route) =>
-        string.Equals(Navigation.ToBaseRelativePath(Navigation.Uri).TrimEnd('/'), route, StringComparison.OrdinalIgnoreCase);
+    private bool IsActive(string route) => Navigation.ToBaseRelativePath(Navigation.Uri).TrimEnd('/').Contains(route);
+    // string.Equals(Navigation.ToBaseRelativePath(Navigation.Uri).TrimEnd('/') , route , StringComparison.OrdinalIgnoreCase);
 
     private static string NavClass(bool active) =>
         active ? "active" : "text-stone-600 dark:text-stone-300";
@@ -96,12 +93,12 @@
     private async Task ToggleTheme()
     {
         UiState.ToggleTheme();
-        await JavaScript.InvokeVoidAsync("setDarkMode", UiState.IsDark);
+        await JavaScript.InvokeVoidAsync("setDarkMode" , UiState.IsDark);
     }
 
     private void OnStateChanged() => InvokeAsync(StateHasChanged);
 
-    private void OnLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e) =>
+    private void OnLocationChanged(object? sender , Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e) =>
         InvokeAsync(StateHasChanged);
 
     public void Dispose()
