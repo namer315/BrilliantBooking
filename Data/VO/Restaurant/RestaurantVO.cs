@@ -1,3 +1,5 @@
+using Data.VO.Operations;
+
 namespace Data.VO.Restaurant;
 
 /// <summary>
@@ -28,6 +30,7 @@ public class RestaurantVO : EntityBase
     public virtual RestaurantOwnerVO? Owner { get; set; }
     public virtual IList<RestaurantHourVO> OpeningHours { get; set; } = new List<RestaurantHourVO>();
     public virtual IList<RestaurantPhotoVO> Photos { get; set; } = new List<RestaurantPhotoVO>();
+    public virtual IList<TableVO> TableList { get; set; } = new List<TableVO>();
 }
 
 public class RestaurantMap : EntityWithIdMapping<RestaurantVO>

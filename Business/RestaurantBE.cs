@@ -1,5 +1,6 @@
 ﻿using Data.DAO;
 using Data.Search;
+using Data.VO.Operations;
 using Data.VO.Restaurant;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,7 @@ public class RestaurantBE
         {
             new RestaurantVO
             {
-                Id = Guid.Empty, 
+                Id = Guid.Empty,
                 Slug = "ocean-grill-raw-bar", Name = "Ocean Grill & Raw Bar", Cuisine = "Seafood", PriceLevel = 3,
                 Rating = 4.9m, ReviewsCount = 420,
                 Location = "V&A Waterfront, Cape Town", Address = "10 Breakwater Blvd, V&A Waterfront, Cape Town, 8001",
@@ -26,7 +27,8 @@ public class RestaurantBE
                 ImageUrl = "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80",
                 Badge = "Michelin Guide 2026",
                 Description = "Panoramic oceanfront views serving fresh line-caught oysters, prime dry-aged seafood, and handcrafted coastal cocktails.",
-                DressCode = "Smart Casual", Parking = "Complimentary Valet at Victoria Mall", Corkage = "R150 per bottle"
+                DressCode = "Smart Casual", Parking = "Complimentary Valet at Victoria Mall", Corkage = "R150 per bottle",
+                TableList = GetTableList(25)
             },
             new RestaurantVO
             {
@@ -74,13 +76,38 @@ public class RestaurantBE
                 ImageUrl = "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=800&q=80",
                 Badge = "Sustainable Winner",
                 Description = "Organic greenhouse cuisine surrounded by flora, featuring hyper-seasonal zero-waste tasting menus.",
-                DressCode = "Smart Casual", Parking = "Estate Gate Parking", Corkage = "R120 per bottle"
+                DressCode = "Smart Casual", Parking = "Estate Gate Parking", Corkage = "R120 per bottle",
+                TableList = GetTableList(15)
             }
         };
 
         return restaurantList;
     }
 
+    private IList<TableVO> GetTableList(int v)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(v);
+
+        string[] zones = { "Indoor" , "Terrace" , "Bar" , "Private Room" };
+
+        IList<TableVO> tables = new List<TableVO>(v);
+
+        for (int i = 0 ; i < v ; i++)
+        {
+            int seats = Random.Shared.Next(2 , 9);
+
+            tables.Add(new TableVO
+            {
+                Name = $"T{i + 1}" ,
+                Seats = seats ,
+                Capacity = seats ,
+                Zone = zones[Random.Shared.Next(zones.Length)] ,
+                Status = "Available"
+            });
+        }
+
+        return tables;
+    }
     public async Task Persist(RestaurantVO restaurant)
     {
         Validation(restaurant);

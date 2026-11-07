@@ -1,4 +1,7 @@
 ﻿@page "/Explore"
+
+@rendermode @(new InteractiveServerRenderMode(false))
+@inherits PageBase
 @using Data.VO.Restaurant
 
 <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -42,7 +45,8 @@
     <div class="flex items-center space-x-2 overflow-x-auto pb-2 scrollbar-none">
         @foreach (var category in Categories)
         {
-            <button @*onclick='() => Page.SetCuisine(category.Value)'*@ class="px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition shadow-sm border @(Search.Cuisine == category.Value ? "border-apple-blue bg-apple-blue text-white" : "border-stone-300/60 dark:border-stone-800 bg-[#F8F7F4] dark:bg-stone-900 text-stone-700 dark:text-stone-300 hover:border-apple-blue")">@category.Label</button>
+                @*onclick='() => Page.SetCuisine(category.Value)'*@
+            <button class="px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition shadow-sm border @(Search.Cuisine == category.Value ? "border-apple-blue bg-apple-blue text-white" : "border-stone-300/60 dark:border-stone-800 bg-[#F8F7F4] dark:bg-stone-900 text-stone-700 dark:text-stone-300 hover:border-apple-blue")">@category.Label</button>
         }
     </div>
 

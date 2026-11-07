@@ -1,4 +1,5 @@
 ﻿@page "/Booking"
+@page "/Booking/{Restaurant}"
 
 @rendermode @(new InteractiveServerRenderMode(false))
 
@@ -52,7 +53,8 @@
                     <div class="grid grid-cols-3 gap-2 mb-3">
                         @foreach (var shortcut in DateShortcuts)
                         {
-                            <button @*"onclick='() => Page.SelectDateShortcut(shortcut.Offset)'*@ class="py-2.5 px-3 rounded-xl text-xs font-semibold text-center border @(DateShortcuts[0].Offset == shortcut.Offset ? "border-apple-blue bg-apple-blue/10 text-apple-blue" : "border-stone-300/80 dark:border-stone-700 hover:border-apple-blue")">@shortcut.Label</button>
+                            @*"onclick='() => Page.SelectDateShortcut(shortcut.Offset)'*@
+                            <button class="py-2.5 px-3 rounded-xl text-xs font-semibold text-center border @(DateShortcuts[0].Offset == shortcut.Offset ? "border-apple-blue bg-apple-blue/10 text-apple-blue" : "border-stone-300/80 dark:border-stone-700 hover:border-apple-blue")">@shortcut.Label</button>
                         }
                     </div>
                     <input type="date" value="@Booking.Date" @onchange="e => Booking.Date = DateOnly.FromDateTime(Convert.ToDateTime(e.Value ?? DateTime.UtcNow))" class="w-full bg-[#F0EEE9] dark:bg-stone-800 border border-stone-300/80 dark:border-stone-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-apple-blue" />
@@ -60,25 +62,35 @@
 
                 <div>
                     <div class="flex items-center justify-between mb-2">
-                        <label class="text-xs font-semibold text-stone-500 uppercase tracking-wider">Available Timeslots</label>
+                        <label class="text-xs font-semibold text-stone-500 uppercase tracking-wider">Dining Window</label>
                         <span class="text-xs text-apple-green font-medium flex items-center space-x-1">
-                            <span class="w-1.5 h-1.5 rounded-full bg-apple-green animate-ping"></span>
-                            <span>Real-time availability</span>
+                            <span class="w-1.5 h-1.5 rounded-full bg-apple-green"></span>
+                            <span>Choose your dining window</span>
                         </span>
                     </div>
-                    <div class="grid grid-cols-3 sm:grid-cols-4 gap-2.5">
-                        @* @for (var idx = 0 ; idx < Booking.Restaurant.Slots.Length ; idx++)
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label for="booking-from-time" class="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">From Time</label>
+                            <input id="booking-from-time" type="time" value="@Booking.FromTime.ToString(@"hh\:mm")" @onchange="e => { if (TimeSpan.TryParse(e.Value?.ToString() , out var from)) Booking.FromTime = from; }" class="w-full bg-[#F0EEE9] dark:bg-stone-800 border border-stone-300/80 dark:border-stone-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-apple-blue" />
+                        </div>
+                        <div>
+                            <label for="booking-to-time" class="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">To Time</label>
+                            <input id="booking-to-time" type="time" value="@Booking.ToTime.ToString(@"hh\:mm")" @onchange="e => { if (TimeSpan.TryParse(e.Value?.ToString() , out var to)) Booking.ToTime = to; }" class="w-full bg-[#F0EEE9] dark:bg-stone-800 border border-stone-300/80 dark:border-stone-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-apple-blue" />
+                        </div>
+                    </div>
+                    @*<div class="grid grid-cols-3 sm:grid-cols-4 gap-2.5">
+                         @for (var idx = 0 ; idx < Booking.Restaurant.Slots.Length ; idx++)
                         {
                             var slot = Page.BookingRestaurant.Slots[idx];
                             <button @onclick='() => Page.TimeSlot = slot' class="py-3 px-3 rounded-xl border text-xs font-bold text-center transition @(Page.TimeSlot == slot ? "border-apple-blue bg-apple-blue text-white" : "border-stone-300/80 dark:border-stone-700 hover:border-apple-blue")">
                                 <div>@slot</div>
                                 <div class="text-[9px] font-normal opacity-80">@(idx % 2 == 0 ? "High Demand" : "3 Tables Left")</div>
                             </button>
-                        } *@
-                    </div>
+                        } 
+                    </div>*@
                 </div>
-
-                <button @onclick='() => GoToBookingStep(2)' class="w-full py-3.5 bg-apple-blue hover:bg-apple-blue-hover text-white font-semibold rounded-2xl shadow-lg shadow-apple-blue/20 transition flex items-center justify-center space-x-2 text-sm" @*disabled="(Page.TimeSlot is null)"*@>
+                @*disabled="(Page.TimeSlot is null)"*@
+                <button @onclick='() => GoToBookingStep(2)' class="w-full py-3.5 bg-apple-blue hover:bg-apple-blue-hover text-white font-semibold rounded-2xl shadow-lg shadow-apple-blue/20 transition flex items-center justify-center space-x-2 text-sm" >
                     <span>Continue to Table Selection</span>
                     <i data-lucide="arrow-right" class="w-4 h-4"></i>
                 </button>
@@ -103,10 +115,49 @@
                             <span class="flex items-center space-x-1"><span class="w-3 h-3 rounded-full bg-stone-400"></span> <span>Reserved</span></span>
                         </div>
                     </div>
+                    
+                    <div class="relative w-full border border-stone-300/70 dark:border-stone-800 rounded-2xl bg-[#EFECE6] dark:bg-stone-950 p-4 overflow-auto h-[420px]">
+                        @if (Booking.Restaurant?.TableList is { Count: > 0 } tables)
+                        {
+                            var (layout, canvasHeight) = BuildFloorLayout(tables);
+                            <svg viewBox="0 0 800 @canvasHeight" class="w-full h-auto select-none" role="group" aria-label="Floor plan">
+                                @foreach (var (table, cx, cy, _) in layout)
+                                {
+                                    var seats = Math.Max(table.Seats, 1);
+                                    var isSelected = Booking.TableName == table.Name;
+                                    var tooSmall = seats < Booking.GuestCount;
+                                    var fill = isSelected ? "#0A84FF" : tooSmall ? "#9CA3AF" : "#34C759";
+                                    var stroke = isSelected ? "#0A84FF" : tooSmall ? "#9CA3AF" : "#34C759";
+                                    var width = 60 + seats * 10;
+                                    var radius = 22 + seats * 3;
+                                    var textColor = isSelected ? "#FFFFFF" : "#1F2937";
+                                    var subColor = isSelected ? "#FFFFFF" : "#6B7280";
 
-                    <div class="relative w-full border border-stone-300/70 dark:border-stone-800 rounded-2xl bg-[#EFECE6] dark:bg-stone-950 p-4 overflow-hidden min-h-[340px] flex items-center justify-center">
-                        <svg viewBox="0 0 800 450" class="w-full h-auto max-h-[420px] select-none">
-                            @* <rect x="20" y="20" width="460" height="410" rx="20" fill="none" stroke="#E5E7EB" stroke-dasharray="4" stroke-width="2" />
+                                    <g @onclick="() => SelectTable(table)"
+                                       class="@(tooSmall ? "cursor-not-allowed" : "cursor-pointer") transition"
+                                       opacity="@(tooSmall ? "0.5" : "1")"
+                                       role="button"
+                                       aria-disabled="@tooSmall.ToString().ToLower()">
+                                        @if (seats <= 2)
+                                        {
+                                            <circle cx="@cx" cy="@cy" r="@radius" fill="@fill" fill-opacity="@(isSelected ? "1" : "0.2")" stroke="@stroke" stroke-width="3" />
+                                        }
+                                        else
+                                        {
+                                            <rect x="@(cx - width / 2)" y="@(cy - 35)" width="@width" height="70" rx="14" fill="@fill" fill-opacity="@(isSelected ? "1" : "0.2")" stroke="@stroke" stroke-width="3" />
+                                        }
+                                        <text x="@cx" y="@(cy - 2)" text-anchor="middle" font-size="13" font-weight="bold" fill="@textColor">@table.Name</text>
+                                        <text x="@cx" y="@(cy + 16)" text-anchor="middle" font-size="11" fill="@subColor">@table.Seats seats</text>
+                                    </g>
+                                }
+                            </svg>
+                        }
+                        else
+                        {
+                            <p class="text-center text-xs text-stone-500">No tables are available for this restaurant.</p>
+                        }
+                        @*<svg viewBox="0 0 800 450" class="w-full h-auto max-h-[420px] select-none">
+                             <rect x="20" y="20" width="460" height="410" rx="20" fill="none" stroke="#E5E7EB" stroke-dasharray="4" stroke-width="2" />
                             <text x="40" y="45" font-size="12" font-weight="bold" fill="#9CA3AF">MAIN DINING ROOM</text>
 
                             <rect x="510" y="20" width="270" height="410" rx="20" fill="none" stroke="#E5E7EB" stroke-dasharray="4" stroke-width="2" />
@@ -143,8 +194,8 @@
                             <g class="table-node @(Page.IsSelectedTable("Patio P2") ? "selected" : "")" @onclick='() => Page.SelectFloorTable(Page.FloorTables[4])'>
                                 <circle cx="700" cy="260" r="38" fill="#34C759" fill-opacity="0.2" stroke="#34C759" stroke-width="3" />
                                 <text x="700" y="264" text-anchor="middle" font-size="12" font-weight="bold" fill="#1F2937">Patio P2</text>
-                            </g> *@
-                        </svg>
+                            </g> 
+                        </svg>*@
                     </div>
 
                     <div class="bg-apple-blue/5 border border-apple-blue/20 rounded-2xl p-4 flex items-center justify-between">
@@ -162,8 +213,8 @@
 
                     <div class="flex items-center justify-between pt-2">
                         <button @onclick='() => GoToBookingStep(1)' class="px-5 py-2.5 border border-stone-300/80 dark:border-stone-700 text-xs font-semibold rounded-xl hover:bg-stone-200/50 dark:hover:bg-stone-800 transition">Back</button>
-                        <button @onclick='() => GoToBookingStep(3)' @*disabled="@(Page.SelectedTable is null)"*@ class="px-6 py-2.5 bg-apple-blue disabled:opacity-50 hover:bg-apple-blue-hover text-white text-xs font-semibold rounded-xl shadow-md transition flex items-center space-x-1.5">
-                            <span>Proceed to Guest Details</span>
+                        <button @onclick='() => GoToBookingStep(3)' class="px-6 py-2.5 bg-apple-blue disabled:opacity-50 hover:bg-apple-blue-hover text-white text-xs font-semibold rounded-xl shadow-md transition flex items-center space-x-1.5">
+                            <span>Proceed to Guest Details</span>@*disabled="@(Page.SelectedTable is null)"*@
                             <i data-lucide="chevron-right" class="w-4 h-4"></i>
                         </button>
                     </div>
@@ -256,9 +307,13 @@
                                 <span class="text-stone-500 text-xs">Restaurant</span>
                                 <span class="font-bold text-xs">@Booking.Restaurant.Name</span>
                             </div>
-                            <div class="flex justify-between pb-2 border-b border-stone-200 dark:border-stone-700">
+                            @* <div class="flex justify-between pb-2 border-b border-stone-200 dark:border-stone-700">
                                 <span class="text-stone-500 text-xs">Date &amp; Time</span>
                                 <span class="font-semibold text-xs">@Booking.Date at @Booking.Time</span>
+                            </div> *@
+                            <div class="flex justify-between pb-2 border-b border-stone-200 dark:border-stone-700">
+                                <span class="text-stone-500 text-xs">Date &amp; Time</span>
+                                <dd class="font-semibold text-xs text-right m-0">@Booking.Date.ToString("dddd, MMM d") <span class="font-normal text-stone-500">@TimeOnly.FromTimeSpan(Booking.FromTime).ToString("h:mm tt") – @TimeOnly.FromTimeSpan(Booking.ToTime).ToString("h:mm tt")</span></dd>
                             </div>
                             <div class="flex justify-between pb-2 border-b border-stone-200 dark:border-stone-700">
                                 <span class="text-stone-500 text-xs">Party Size</span>

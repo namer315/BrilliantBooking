@@ -19,6 +19,8 @@ public class BookingVO : EntityBase
 
     public virtual DateOnly Date { get; set; }
     public virtual TimeSpan Time { get; set; }
+    public virtual TimeSpan FromTime { get; set; }
+    public virtual TimeSpan ToTime { get; set; }
     public virtual int GuestCount { get; set; }
     public virtual string TableName { get; set; } = string.Empty;
     public virtual string Status { get; set; } = string.Empty;

@@ -33,7 +33,7 @@ public partial class PageExplore
     {
         try
         {
-            dgSearch();
+            await dgSearch();
         }
         catch(Exception ex)
         {
@@ -66,5 +66,6 @@ public partial class PageExplore
 
     private void StartBooking(RestaurantVO item)
     {
+        NavigationManager.NavigateTo($"/Booking/{item.Id}");
     }
 }
