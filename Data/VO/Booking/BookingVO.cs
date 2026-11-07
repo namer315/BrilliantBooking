@@ -13,8 +13,8 @@ public class BookingVO : EntityBase
 {
     //public int PartySize { get; set; } = 2
     public virtual string GuestName { get; set; }
-    public string GuestPhone { get; set; }
-    public string GuestEmail { get; set; }
+    public virtual string GuestPhone { get; set; }
+    public virtual string GuestEmail { get; set; }
     public virtual string Reference { get; set; } = string.Empty;
 
     public virtual DateOnly Date { get; set; }
@@ -32,9 +32,9 @@ public class BookingVO : EntityBase
     /// read-only
     /// </summary>
     public virtual int Step { get; set; } = 1;
-    public string Note { get; set; }
-    public bool BookingConfirmed { get; set; } = false;
-    public string ConfirmationCode { get; set; } = string.Empty;
+    public virtual string Note { get; set; }
+    public virtual bool BookingConfirmed { get; set; } = false;
+    public virtual string ConfirmationCode { get; set; } = string.Empty;
 
     public virtual RestaurantVO Restaurant { get; set; } = null!;
     public virtual CustomerVO Customer { get; set; } = null!;
