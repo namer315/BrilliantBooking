@@ -22,7 +22,7 @@ public class RestaurantVO : EntityBase
     public virtual string Parking { get; set; } = string.Empty;
     public virtual string Corkage { get; set; } = string.Empty;
     public virtual string Phone { get; set; }
-    public virtual string? Email { get; set; }
+    public virtual string Email { get; set; }
     public virtual int TableCapacity { get; set; }
 
     public virtual RestaurantOwnerVO? Owner { get; set; }

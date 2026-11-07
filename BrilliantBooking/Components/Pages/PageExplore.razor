@@ -1,0 +1,117 @@
+﻿@page "/Explore"
+@using Data.VO.Restaurant
+
+<main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+<section class="space-y-8">
+    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-stone-900 via-stone-800 to-black text-white p-8 md:p-12 shadow-2xl">
+        <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
+
+        <div class="relative z-10 max-w-2xl space-y-4">
+            <span class="inline-flex items-center space-x-1 px-3 py-1 rounded-full bg-white/10 text-xs font-semibold tracking-wide backdrop-blur-md border border-white/20">
+                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-apple-orange"></i>
+                <span>Curated Fine Dining Experiences</span>
+            </span>
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight">Reserve tables at @UiState.Location's finest venues.</h1>
+            <p class="text-stone-300 text-sm sm:text-base leading-relaxed">Experience effortless real-time table layout selection, instant confirmations, verified diner reviews, and concierge directions.</p>
+        </div>
+
+        <div class="relative z-10 mt-8 max-w-4xl">
+            <div class="sf-glass p-2.5 rounded-2xl shadow-xl flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-2 border border-white/30 dark:border-transparent text-stone-900 dark:text-white">
+                <div class="flex-grow flex items-center space-x-2 px-3 py-2 w-full">
+                    <i data-lucide="search" class="w-4 h-4 text-stone-400"></i>
+                    <input type="text" @bind="Search.Text" @bind:event="oninput" placeholder="Search restaurants, cuisines, or neighbourhoods..." class="bg-transparent w-full text-sm focus:outline-none placeholder-stone-400" />
+                </div>
+                <div class="flex items-center space-x-2 w-full md:w-auto">
+                    <select @bind="Search.Cuisine" class="bg-[#F0EEE9] dark:bg-stone-800 text-xs font-semibold py-2.5 px-3 rounded-xl focus:outline-none cursor-pointer border border-stone-200 dark:border-stone-700">
+                        @foreach (var cuisine in CuisineList)
+                        {
+                            <option value="@cuisine">@cuisine</option>
+                        }
+                    </select>
+                    <select @bind="Search.Price" class="bg-[#F0EEE9] dark:bg-stone-800 text-xs font-semibold py-2.5 px-3 rounded-xl focus:outline-none cursor-pointer border border-stone-200 dark:border-stone-700">
+                        @foreach (var price in Prices)
+                        {
+                            <option value="@price.Value">@price.Label</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex items-center space-x-2 overflow-x-auto pb-2 scrollbar-none">
+        @foreach (var category in Categories)
+        {
+            <button @*onclick='() => Page.SetCuisine(category.Value)'*@ class="px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition shadow-sm border @(Search.Cuisine == category.Value ? "border-apple-blue bg-apple-blue text-white" : "border-stone-300/60 dark:border-stone-800 bg-[#F8F7F4] dark:bg-stone-900 text-stone-700 dark:text-stone-300 hover:border-apple-blue")">@category.Label</button>
+        }
+    </div>
+
+    <div>
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-bold tracking-tight">Available Restaurants</h2>
+            <span class="text-xs text-stone-500 dark:text-stone-400 font-medium">Showing @RestaurantLsit.Count venue@(RestaurantLsit.Count == 1 ? "" : "s")</span>
+        </div>
+
+        @if (!RestaurantLsit.Any())
+        {
+            <div class="text-center py-16 space-y-3">
+                <i data-lucide="search-x" class="w-12 h-12 text-stone-400 mx-auto"></i>
+                <p class="text-base font-bold text-stone-600 dark:text-stone-300">No restaurants found matching your criteria.</p>
+                <button @onclick="Reset" class="px-4 py-2 bg-apple-blue text-white text-xs font-semibold rounded-xl">Clear All Filters</button>
+            </div>
+        }
+        else
+        {
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                @foreach (RestaurantVO item in RestaurantLsit)
+                {
+                    <div class="sf-glass rounded-3xl overflow-hidden shadow-apple-card hover:shadow-apple-hover transition-all duration-300 transform hover:-translate-y-1 flex flex-col justify-between border border-stone-200/80 dark:border-stone-800 cursor-pointer group" @onclick='() => OpenRestaurant(item)'>
+                        <div>
+                            <div class="relative h-52 w-full overflow-hidden">
+                                <img src="@item.ImageUrl" alt="@item.Name" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
+
+                                <span class="absolute top-3 left-3 bg-black/60 backdrop-blur-md text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider border border-white/20">@item.Badge</span>
+
+                                <button @onclick='() => ToggleFavorite(item)' @onclick:stopPropagation class="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/50 text-white backdrop-blur-md flex items-center justify-center hover:scale-110 transition">
+                                    <i data-lucide="heart" class="w-4 h-4 @(/*Page.Favorites.Contains(item.Id)*/ false ? "text-apple-red fill-apple-red" : "text-white")"></i>
+                                </button>
+
+                                <span class="absolute bottom-3 right-3 bg-[#F8F7F4]/90 dark:bg-black/90 backdrop-blur-md text-stone-900 dark:text-white text-xs font-bold px-2.5 py-1 rounded-full">@item.PriceLevel</span>
+                            </div>
+
+                            <div class="p-5 space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-semibold text-apple-blue uppercase tracking-wide">@item.Cuisine</span>
+                                    <div class="flex items-center space-x-1 text-xs font-bold text-amber-500">
+                                        <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400"></i>
+                                        <span>@item.Rating</span>
+                                        <span class="text-stone-400 font-normal">(@item.ReviewsCount)</span>
+                                    </div>
+                                </div>
+                                <h3 class="text-lg font-bold tracking-tight">@item.Name</h3>
+                                <p class="text-xs text-stone-500 dark:text-stone-400 line-clamp-2">@item.Description</p>
+                                <div class="flex items-center space-x-1.5 text-xs text-stone-400 pt-1">
+                                    <i data-lucide="map-pin" class="w-3.5 h-3.5 text-apple-blue"></i>
+                                    <span>@item.Location</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-5 pt-0 border-t border-stone-200/50 dark:border-stone-800/50 mt-4 flex items-center justify-between">
+                            <div>
+                                <span class="block text-[10px] text-stone-400 font-medium">AVAILABLE SLOTS</span>
+                                <span class="text-xs font-bold text-apple-green">@*item.Slots.Length*@3 shifts today</span>
+                            </div>
+                            <button @onclick='() => StartBooking(item)' @onclick:stopPropagation class="px-4 py-2 bg-apple-blue hover:bg-apple-blue-hover text-white text-xs font-semibold rounded-xl shadow-md transition flex items-center space-x-1">
+                                <span>Reserve</span>
+                                <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</section>
+</main>

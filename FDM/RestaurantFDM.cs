@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Business;
+using Data.Search;
 using Data.VO.Restaurant;
 
 namespace FDM;
@@ -9,6 +10,9 @@ namespace FDM;
 public class RestaurantFDM
 {
     private RestaurantBE _be = new();
+
+    public async Task<IList<RestaurantVO>> GetRestaurantLsitBy(RestaurantSH search)
+        => await _be.GetRestaurantLsitBy(search);
 
     public async Task Persist(RestaurantVO restaurant)
         => await _be.Persist(restaurant);
