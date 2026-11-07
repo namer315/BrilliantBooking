@@ -1,9 +1,10 @@
 using BrilliantBooking.Components;
 using BrilliantBooking.Services;
+using CommonData.Session;
 
 public partial class Program
 {
-    private static void Main(string[] args)
+    private static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,15 @@ public partial class Program
         builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents();
         builder.Services.AddScoped<BookingUiStateService>();
+
+        Connection connection = new()
+        {
+            DataBaseName = "BrilliantBooking" ,
+            User = "" ,
+            Password = ""
+        };
+        await connection.SessionConnect();
+        // update DB
 
         var app = builder.Build();
 
