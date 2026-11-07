@@ -13,6 +13,8 @@ public class TableVO : EntityBase
     public virtual int Seats { get; set; }
     public virtual string Zone { get; set; } = string.Empty;
     public virtual string Status { get; set; } = string.Empty;
+    public string Description { get; set; }
+    public int Capacity { get; set; }
     public virtual RestaurantVO Restaurant { get; set; } = null!;
 }
 
