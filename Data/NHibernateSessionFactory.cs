@@ -4,6 +4,7 @@ using NHibernate;
 using NHibernate.Cfg;
 using NHibernate.Dialect;
 using NHibernate.Driver;
+using NHibernate.Tool.hbm2ddl;
 
 namespace Data;
 
@@ -45,6 +46,11 @@ public sealed class NHibernateSessionFactory : IDisposable
 
         var configuration = new Configuration();
         configure(configuration);
+
+        // Synchronous Execute is used because constructors cannot await ExecuteAsync without blocking.
+        var schemaUpdate = new SchemaUpdate(configuration);
+        schemaUpdate.Execute(true, true);
+
         _sessionFactory = configuration.BuildSessionFactory();
     }
 
