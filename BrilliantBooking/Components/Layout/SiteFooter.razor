@@ -1,6 +1,8 @@
-@rendermode InteractiveServer
-@using BrilliantBooking.Services
+@rendermode @(new InteractiveServerRenderMode(false))
+
 @inject BookingUiStateService UiState
+
+@using BrilliantBooking.Services
 
 <footer class="mt-16 border-t border-stone-200 dark:border-stone-800 bg-[#F8F7F4] dark:bg-stone-900 transition-colors duration-300">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid grid-cols-1 md:grid-cols-3 gap-8">

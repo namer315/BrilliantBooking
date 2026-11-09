@@ -1,8 +1,10 @@
 @page "/"
 @page "/reserve"
-@using BrilliantBooking.Components.Sections
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(false))
+
 @inherits HomeBase
+
+@using BrilliantBooking.Components.Sections
 
 <PageTitle>Tableau Reserve — Premium Table Reservations</PageTitle>
 

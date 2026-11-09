@@ -1,9 +1,11 @@
-@rendermode InteractiveServer
-@implements IDisposable
-@using BrilliantBooking.Services
+@rendermode @(new InteractiveServerRenderMode(false))
+
 @inject BookingUiStateService UiState
 @inject NavigationManager Navigation
 @inject IJSRuntime JavaScript
+
+@implements IDisposable
+@using BrilliantBooking.Services
 
 <header class="sticky top-0 z-40 sf-glass-nav transition-colors duration-300">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
