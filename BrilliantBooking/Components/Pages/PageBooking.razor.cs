@@ -93,9 +93,16 @@ public partial class PageBooking
         StateHasChanged();
     }
 
-    private void ConfirmBooking()
+    private async Task ConfirmBooking()
     {
+        try
+        {
+            string s = await _fdm.Persist(Booking);
+        }
+        catch(Exception ex)
+        {
 
+        }
     }
     private void Save()
     {

@@ -16,8 +16,6 @@ public class RestaurantOwnerMap : EntityWithIdMapping<RestaurantOwnerVO>
 {
     public RestaurantOwnerMap()
     {
-        Table("RestaurantOwners");
-
         Map(x => x.FullName).Length(100).Not.Nullable();
         Map(x => x.Email).Length(256).Nullable();
         Map(x => x.Phone).Length(30).Nullable();

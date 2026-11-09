@@ -6,16 +6,15 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BrilliantBooking.Components.Pages;
 
-public partial class AddBase : ComponentBase
+public partial class PageRegister
 {
+    protected RestaurantVO Restaurant = new();
     private RestaurantFDM _fdm = new();
 
     protected const string InputClass = "w-full rounded-xl border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-800 px-4 py-2.5 text-sm text-stone-900 dark:text-stone-100 placeholder:text-stone-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-apple-blue";
 
     protected static readonly string[] StepTitles = ["Basics", "Location", "Hours", "Capacity", "Owner", "Review"];
     protected static readonly string[] CuisineOptions = ["Seafood", "French", "Japanese", "Italian", "Farm-to-Table"];
-
-    protected RestaurantVO Model { get; } = new();
     protected Dictionary<string, string> Errors { get; } = new();
     protected List<string> SubmitErrors { get; } = new();
     protected int CurrentStep { get; set; }
@@ -24,19 +23,19 @@ public partial class AddBase : ComponentBase
 
     protected override void OnInitialized()
     {
-        Model.Owner = new RestaurantOwnerVO();
-        Model.OpeningHours = new[]
-            {
-                DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday,
-                DayOfWeek.Friday, DayOfWeek.Saturday, DayOfWeek.Sunday
-            }
-            .Select(day => new RestaurantHourVO
-            {
-                Day = day,
-                Open = new TimeOnly(12, 0),
-                Close = new TimeOnly(22, 0)
-            })
-            .ToList();
+        try
+        {
+            beginEdit();
+        }
+        catch(Exception ex)
+        {
+            ShowException(ex);
+        }
+    }
+
+    private async Task beginEdit()
+    {
+        Restaurant = await _fdm.GetNew();
     }
 
     protected string? ErrorText(string key) => Errors.GetValueOrDefault(key);
@@ -67,9 +66,29 @@ public partial class AddBase : ComponentBase
         }
     }
 
-    protected void OnPhotosSelected(InputFileChangeEventArgs e)
+    protected async Task OnPhotosSelected(InputFileChangeEventArgs e)
     {
-        Model.Photos = e.GetMultipleFiles(5).Select(file => new RestaurantPhotoVO { FileName = file.Name }).ToList();
+        //Restaurant.Photos = e.GetMultipleFiles(5)
+        //    .Select(file => new RestaurantPhotoVO { 
+        //        Name = file.Name,
+        //        Photo = file., 
+        //        Restaurant = Restaurant}).ToList();
+
+        IList<RestaurantPhotoVO> photoList = new List<RestaurantPhotoVO>();
+
+        foreach (var file in e.GetMultipleFiles(5))
+        {
+            using var stream = file.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024);
+            using var memory = new MemoryStream();
+            await stream.CopyToAsync(memory);
+
+            Restaurant.PhotoList.Add(new RestaurantPhotoVO
+            {
+                Name = file.Name ,
+                Photo = memory.ToArray() ,
+                Restaurant = Restaurant
+            });
+        }
     }
 
     protected async Task HandleFormSubmit()
@@ -89,10 +108,17 @@ public partial class AddBase : ComponentBase
 
     private async Task Submit()
     {
-        SubmitErrors.Clear();
-        await _fdm.Persist(Model);
-        SubmittedName = Model.Name;
-        Submitted = true;
+        try
+        {
+            SubmitErrors.Clear();
+            await _fdm.Persist(Restaurant);
+            SubmittedName = Restaurant.Name;
+            Submitted = true;
+        }
+        catch (Exception ex)
+        {
+
+        }
     }
 
     private bool ValidateStep(int step)
@@ -102,31 +128,31 @@ public partial class AddBase : ComponentBase
         switch (step)
         {
             case 0:
-                ValidateMember(Model, nameof(Model.Name));
-                ValidateMember(Model, nameof(Model.Cuisine));
-                ValidateMember(Model, nameof(Model.Description));
+                ValidateMember(Restaurant, nameof(Restaurant.Name));
+                ValidateMember(Restaurant, nameof(Restaurant.Cuisine));
+                ValidateMember(Restaurant, nameof(Restaurant.Description));
                 break;
             case 1:
-                ValidateMember(Model, nameof(Model.Address));
-                ValidateMember(Model, nameof(Model.Phone));
-                ValidateMember(Model, nameof(Model.Email));
+                ValidateMember(Restaurant, nameof(Restaurant.Address));
+                ValidateMember(Restaurant, nameof(Restaurant.Phone));
+                ValidateMember(Restaurant, nameof(Restaurant.Email));
                 break;
             case 2:
-                foreach (var hour in Model.OpeningHours.Where(h => !h.IsClosed))
+                foreach (var hour in Restaurant.OpeningHourList.Where(h => !h.IsClosed))
                 {
-                    if (hour.Open is null || hour.Close is null || hour.Open >= hour.Close)
+                    if (hour.OpenTime is null || hour.CloseTime is null || hour.OpenTime >= hour.CloseTime)
                     {
                         Errors[$"hours-{hour.Day}"] = "Opening time must be before closing time.";
                     }
                 }
                 break;
             case 3:
-                ValidateMember(Model, nameof(Model.TableCapacity));
+                ValidateMember(Restaurant, nameof(Restaurant.TableCapacity));
                 break;
             case 4:
-                ValidateMember(Model.Owner, nameof(Model.Owner.FullName));
-                ValidateMember(Model.Owner, nameof(Model.Owner.Email));
-                ValidateMember(Model.Owner, nameof(Model.Owner.Phone));
+                ValidateMember(Restaurant.Owner, nameof(Restaurant.Owner.FullName));
+                ValidateMember(Restaurant.Owner, nameof(Restaurant.Owner.Email));
+                ValidateMember(Restaurant.Owner, nameof(Restaurant.Owner.Phone));
                 break;
         }
 

@@ -2,10 +2,6 @@
 using Data.Search;
 using Data.VO.Operations;
 using Data.VO.Restaurant;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace Business;
 
@@ -112,11 +108,32 @@ public class RestaurantBE
     {
         Validation(restaurant);
 
-        await _dao.Persist(restaurant);
+        var a = await _dao.Merge(restaurant);
     }
 
     private void Validation(RestaurantVO restaurant)
     {
 
+    }
+
+    public RestaurantVO GetNew()
+    {
+        RestaurantVO restaurant = new RestaurantVO();
+        restaurant.Owner = new RestaurantOwnerVO() { Restaurant = restaurant };
+        restaurant.OpeningHourList = new[]
+            {
+                DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday,
+                DayOfWeek.Friday, DayOfWeek.Saturday, DayOfWeek.Sunday
+            }
+            .Select(day => new RestaurantHourVO
+            {
+                Day = day ,
+                OpenTime = new TimeOnly(12 , 0) ,
+                CloseTime = new TimeOnly(22 , 0) ,
+                Restaurant = restaurant
+            })
+            .ToList();
+
+        return restaurant;
     }
 }

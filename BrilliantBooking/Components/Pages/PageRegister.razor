@@ -1,5 +1,5 @@
 @page "/Add"
-@inherits AddBase
+@inherits PageBase
 @rendermode InteractiveServer
 
 <PageTitle>Register Your Restaurant — Tableau Reserve</PageTitle>
@@ -54,25 +54,25 @@
                         <legend class="text-lg font-semibold text-stone-900 dark:text-white">The basics</legend>
                         <div>
                             <label for="name" class="block text-sm font-medium mb-1.5">Restaurant name</label>
-                            <InputText id="name" class="@InputClass" @bind-Value="Model.Name" placeholder="e.g. Table Bay Bistro" />
-                            @if (ErrorText(nameof(Model.Name)) is { } nameErr) { <p class="mt-1 text-xs text-apple-red" role="alert">@nameErr</p> }
+                            <InputText id="name" class="@InputClass" @bind-Value="Restaurant.Name" placeholder="e.g. Table Bay Bistro" />
+                            @if (ErrorText(nameof(Restaurant.Name)) is { } nameErr) { <p class="mt-1 text-xs text-apple-red" role="alert">@nameErr</p> }
                         </div>
                         <div>
                             <label for="cuisine" class="block text-sm font-medium mb-1.5">Cuisine</label>
-                            <InputSelect id="cuisine" class="@InputClass" @bind-Value="Model.Cuisine">
+                            <InputSelect id="cuisine" class="@InputClass" @bind-Value="Restaurant.Cuisine">
                                 <option value="">Select a cuisine</option>
                                 @foreach (var c in CuisineOptions)
                                 {
                                     <option value="@c">@c</option>
                                 }
                             </InputSelect>
-                            @if (ErrorText(nameof(Model.Cuisine)) is { } cuisineErr) { <p class="mt-1 text-xs text-apple-red" role="alert">@cuisineErr</p> }
+                            @if (ErrorText(nameof(Restaurant.Cuisine)) is { } cuisineErr) { <p class="mt-1 text-xs text-apple-red" role="alert">@cuisineErr</p> }
                         </div>
                         <div>
                             <label for="description" class="block text-sm font-medium mb-1.5">Description</label>
-                            <InputTextArea id="description" rows="4" class="@InputClass" @bind-Value="Model.Description" placeholder="Tell guests what makes your restaurant special." />
+                            <InputTextArea id="description" rows="4" class="@InputClass" @bind-Value="Restaurant.Description" placeholder="Tell guests what makes your restaurant special." />
                             <p class="mt-1 text-xs text-stone-500">Up to 1000 characters.</p>
-                            @if (ErrorText(nameof(Model.Description)) is { } descErr) { <p class="mt-1 text-xs text-apple-red" role="alert">@descErr</p> }
+                            @if (ErrorText(nameof(Restaurant.Description)) is { } descErr) { <p class="mt-1 text-xs text-apple-red" role="alert">@descErr</p> }
                         </div>
                     </fieldset>
                     break;
@@ -82,19 +82,19 @@
                         <legend class="text-lg font-semibold text-stone-900 dark:text-white">Location and contact</legend>
                         <div>
                             <label for="address" class="block text-sm font-medium mb-1.5">Address</label>
-                            <InputText id="address" class="@InputClass" @bind-Value="Model.Address" placeholder="Street, suburb, city" />
-                            @if (ErrorText(nameof(Model.Address)) is { } addrErr) { <p class="mt-1 text-xs text-apple-red" role="alert">@addrErr</p> }
+                            <InputText id="address" class="@InputClass" @bind-Value="Restaurant.Address" placeholder="Street, suburb, city" />
+                            @if (ErrorText(nameof(Restaurant.Address)) is { } addrErr) { <p class="mt-1 text-xs text-apple-red" role="alert">@addrErr</p> }
                         </div>
                         <div class="grid sm:grid-cols-2 gap-5">
                             <div>
                                 <label for="phone" class="block text-sm font-medium mb-1.5">Phone</label>
-                                <InputText id="phone" type="tel" class="@InputClass" @bind-Value="Model.Phone" placeholder="+27 21 000 0000" />
-                                @if (ErrorText(nameof(Model.Phone)) is { } phoneErr) { <p class="mt-1 text-xs text-apple-red" role="alert">@phoneErr</p> }
+                                <InputText id="phone" type="tel" class="@InputClass" @bind-Value="Restaurant.Phone" placeholder="+27 21 000 0000" />
+                                @if (ErrorText(nameof(Restaurant.Phone)) is { } phoneErr) { <p class="mt-1 text-xs text-apple-red" role="alert">@phoneErr</p> }
                             </div>
                             <div>
                                 <label for="email" class="block text-sm font-medium mb-1.5">Email</label>
-                                <InputText id="email" type="email" class="@InputClass" @bind-Value="Model.Email" placeholder="hello@restaurant.com" />
-                                @if (ErrorText(nameof(Model.Email)) is { } emailErr) { <p class="mt-1 text-xs text-apple-red" role="alert">@emailErr</p> }
+                                <InputText id="email" type="email" class="@InputClass" @bind-Value="Restaurant.Email" placeholder="hello@restaurant.com" />
+                                @if (ErrorText(nameof(Restaurant.Email)) is { } emailErr) { <p class="mt-1 text-xs text-apple-red" role="alert">@emailErr</p> }
                             </div>
                         </div>
                     </fieldset>
@@ -103,7 +103,7 @@
                 case 2:
                     <fieldset class="space-y-4">
                         <legend class="text-lg font-semibold text-stone-900 dark:text-white">Opening hours</legend>
-                        @foreach (var hour in Model.OpeningHours)
+                        @foreach (var hour in Restaurant.OpeningHourList)
                         {
                             var h = hour;
                             <div class="flex flex-wrap items-center gap-3 p-3 rounded-xl bg-black/[0.03] dark:bg-white/[0.04]">
@@ -113,9 +113,9 @@
                                 </label>
                                 @if (!h.IsClosed)
                                 {
-                                    <input type="time" class="@InputClass !w-auto" aria-label="@($"{h.Day} open")" value="@h.Open?.ToString("HH:mm")" @onchange="e => h.Open = ParseTime(e.Value)" />
+                                    <input type="time" class="@InputClass !w-auto" aria-label="@($"{h.Day} open")" value="@h.OpenTime?.ToString("HH:mm")" @onchange="e => h.OpenTime = ParseTime(e.Value)" />
                                     <span class="text-stone-400">to</span>
-                                    <input type="time" class="@InputClass !w-auto" aria-label="@($"{h.Day} close")" value="@h.Close?.ToString("HH:mm")" @onchange="e => h.Close = ParseTime(e.Value)" />
+                                    <input type="time" class="@InputClass !w-auto" aria-label="@($"{h.Day} close")" value="@h.CloseTime?.ToString("HH:mm")" @onchange="e => h.CloseTime = ParseTime(e.Value)" />
                                 }
                             </div>
                             @if (ErrorText($"hours-{h.Day}") is { } hourErr) { <p class="text-xs text-apple-red" role="alert">@hourErr</p> }
@@ -128,18 +128,18 @@
                         <legend class="text-lg font-semibold text-stone-900 dark:text-white">Capacity and photos</legend>
                         <div>
                             <label for="capacity" class="block text-sm font-medium mb-1.5">Total table capacity (seats)</label>
-                            <InputNumber id="capacity" class="@InputClass" @bind-Value="Model.TableCapacity" />
-                            @if (ErrorText(nameof(Model.TableCapacity)) is { } capErr) { <p class="mt-1 text-xs text-apple-red" role="alert">@capErr</p> }
+                            <InputNumber id="capacity" class="@InputClass" @bind-Value="Restaurant.TableCapacity" />
+                            @if (ErrorText(nameof(Restaurant.TableCapacity)) is { } capErr) { <p class="mt-1 text-xs text-apple-red" role="alert">@capErr</p> }
                         </div>
                         <div>
                             <label for="photos" class="block text-sm font-medium mb-1.5">Photos (up to 5)</label>
                             <InputFile id="photos" multiple accept="image/*" OnChange="OnPhotosSelected" class="block w-full text-sm text-stone-500 file:mr-4 file:rounded-full file:border-0 file:bg-apple-blue/10 file:px-4 file:py-2 file:text-apple-blue" />
-                            @if (Model.Photos.Count > 0)
+                            @if (Restaurant.PhotoList.Count > 0)
                             {
                                 <ul class="mt-2 flex flex-wrap gap-2 text-xs text-stone-500">
-                                    @foreach (var photo in Model.Photos)
+                                    @foreach (var photo in Restaurant.PhotoList)
                                     {
-                                        <li class="px-2.5 py-1 rounded-full bg-stone-200/60 dark:bg-stone-800">@photo.FileName</li>
+                                        <li class="px-2.5 py-1 rounded-full bg-stone-200/60 dark:bg-stone-800">@photo.Name</li>
                                     }
                                 </ul>
                             }
@@ -152,19 +152,19 @@
                         <legend class="text-lg font-semibold text-stone-900 dark:text-white">Owner account</legend>
                         <div>
                             <label for="owner-name" class="block text-sm font-medium mb-1.5">Full name</label>
-                            <InputText id="owner-name" class="@InputClass" @bind-Value="Model.Owner.FullName" />
-                            @if (ErrorText(nameof(Model.Owner.FullName)) is { } ownerNameErr) { <p class="mt-1 text-xs text-apple-red" role="alert">@ownerNameErr</p> }
+                            <InputText id="owner-name" class="@InputClass" @bind-Value="Restaurant.Owner.FullName" />
+                            @if (ErrorText(nameof(Restaurant.Owner.FullName)) is { } ownerNameErr) { <p class="mt-1 text-xs text-apple-red" role="alert">@ownerNameErr</p> }
                         </div>
                         <div class="grid sm:grid-cols-2 gap-5">
                             <div>
                                 <label for="owner-email" class="block text-sm font-medium mb-1.5">Email</label>
-                                <InputText id="owner-email" type="email" class="@InputClass" @bind-Value="Model.Owner.Email" />
-                                @if (ErrorText(nameof(Model.Owner.Email)) is { } ownerEmailErr) { <p class="mt-1 text-xs text-apple-red" role="alert">@ownerEmailErr</p> }
+                                <InputText id="owner-email" type="email" class="@InputClass" @bind-Value="Restaurant.Owner.Email" />
+                                @if (ErrorText(nameof(Restaurant.Owner.Email)) is { } ownerEmailErr) { <p class="mt-1 text-xs text-apple-red" role="alert">@ownerEmailErr</p> }
                             </div>
                             <div>
                                 <label for="owner-phone" class="block text-sm font-medium mb-1.5">Phone</label>
-                                <InputText id="owner-phone" type="tel" class="@InputClass" @bind-Value="Model.Owner.Phone" />
-                                @if (ErrorText(nameof(Model.Owner.Phone)) is { } ownerPhoneErr) { <p class="mt-1 text-xs text-apple-red" role="alert">@ownerPhoneErr</p> }
+                                <InputText id="owner-phone" type="tel" class="@InputClass" @bind-Value="Restaurant.Owner.Phone" />
+                                @if (ErrorText(nameof(Restaurant.Owner.Phone)) is { } ownerPhoneErr) { <p class="mt-1 text-xs text-apple-red" role="alert">@ownerPhoneErr</p> }
                             </div>
                         </div>
                     </fieldset>
@@ -174,14 +174,14 @@
                     <section class="space-y-4">
                         <h2 class="text-lg font-semibold text-stone-900 dark:text-white">Review</h2>
                         <dl class="grid sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
-                            <div><dt class="text-stone-500">Name</dt><dd class="font-medium">@Model.Name</dd></div>
-                            <div><dt class="text-stone-500">Cuisine</dt><dd class="font-medium">@Model.Cuisine</dd></div>
-                            <div class="sm:col-span-2"><dt class="text-stone-500">Address</dt><dd class="font-medium">@Model.Address</dd></div>
-                            <div><dt class="text-stone-500">Phone</dt><dd class="font-medium">@Model.Phone</dd></div>
-                            <div><dt class="text-stone-500">Email</dt><dd class="font-medium">@Model.Email</dd></div>
-                            <div><dt class="text-stone-500">Capacity</dt><dd class="font-medium">@Model.TableCapacity seats</dd></div>
-                            @Model.Photos.Count selected
-                            <div class="sm:col-span-2"><dt class="text-stone-500">Owner</dt><dd class="font-medium">@Model.Owner.FullName (@Model.Owner.Email)</dd></div>
+                            <div><dt class="text-stone-500">Name</dt><dd class="font-medium">@Restaurant.Name</dd></div>
+                            <div><dt class="text-stone-500">Cuisine</dt><dd class="font-medium">@Restaurant.Cuisine</dd></div>
+                            <div class="sm:col-span-2"><dt class="text-stone-500">Address</dt><dd class="font-medium">@Restaurant.Address</dd></div>
+                            <div><dt class="text-stone-500">Phone</dt><dd class="font-medium">@Restaurant.Phone</dd></div>
+                            <div><dt class="text-stone-500">Email</dt><dd class="font-medium">@Restaurant.Email</dd></div>
+                            <div><dt class="text-stone-500">Capacity</dt><dd class="font-medium">@Restaurant.TableCapacity seats</dd></div>
+                            @Restaurant.PhotoList.Count selected
+                            <div class="sm:col-span-2"><dt class="text-stone-500">Owner</dt><dd class="font-medium">@Restaurant.Owner.FullName (@Restaurant.Owner.Email)</dd></div>
                         </dl>
                         @foreach (var err in SubmitErrors)
                         {

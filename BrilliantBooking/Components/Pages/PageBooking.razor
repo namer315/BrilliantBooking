@@ -335,9 +335,10 @@
                         </div>
 
                         <div class="space-y-2">
+                            <p class="text-xs text-stone-500 text-center leading-relaxed">Review your details above. Once confirmed, your table is held instantly and a confirmation will be sent to you.</p>
                             <button @onclick="ConfirmBooking" class="w-full py-3.5 bg-black dark:bg-white text-white dark:text-black font-semibold rounded-2xl shadow-xl hover:opacity-90 transition flex items-center justify-center space-x-2 text-sm">
-                                <i data-lucide="apple" class="w-5 h-5 mb-0.5"></i>
-                                <span>Confirm with Apple Pay / Instant Reserve</span>
+                                <i data-lucide="calendar-check" class="w-5 h-5 mb-0.5"></i>
+                                <span>Confirm Booking</span>
                             </button>
                             <button @onclick='() => GoToBookingStep(3)' class="w-full py-2.5 text-xs text-stone-500 font-medium hover:underline">Modify Information</button>
                         </div>

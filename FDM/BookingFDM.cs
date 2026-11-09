@@ -12,4 +12,7 @@ public class BookingFDM
 
     public async Task<BookingVO> GetNew()
         => await _be.GetNew();
+
+    public async Task<string> Persist(BookingVO booking)
+        => await _be.Persist(booking);
 }

@@ -1,12 +1,12 @@
-﻿using Data.VO.Booking;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Data.DAO;
+using Data.VO.Booking;
 
 namespace Business;
 
 public class BookingBE
 {
+    private BookingDAO _dao = new BookingDAO();
+
     public async Task<BookingVO> GetNew()
     {
         BookingVO booking = new();
@@ -19,5 +19,18 @@ public class BookingBE
         booking.Restaurant = (await new RestaurantBE().GetRestaurantLsitBy(new()))[0];
 
         return booking;
+    }
+
+    public async Task<string> Persist(BookingVO booking)
+    {
+        Validation(booking);
+
+        var a = await _dao.Merge(booking);
+        return "";
+    }
+
+    private void Validation(BookingVO booking)
+    {
+
     }
 }
