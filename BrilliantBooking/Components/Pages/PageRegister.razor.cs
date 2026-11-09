@@ -2,6 +2,7 @@ using Data.VO.Restaurant;
 using FDM;
 using Microsoft.AspNetCore.Components.Forms;
 using System.ComponentModel.DataAnnotations;
+using BrilliantBooking.Extensions;
 
 namespace BrilliantBooking.Components.Pages;
 
@@ -110,7 +111,7 @@ public partial class PageRegister
         try
         {
             SubmitErrors.Clear();
-            Restaurant = await _fdm.Persist(Restaurant);
+            Restaurant = await _fdm.Persist(Restaurant).ShowProcessing(this);
             SubmittedName = Restaurant.Name;
             Submitted = true;
         }

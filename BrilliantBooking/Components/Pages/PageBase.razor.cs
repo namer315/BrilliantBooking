@@ -11,6 +11,7 @@ public partial class PageBase
     [Inject] public IJSRuntime JS { get; set; }
 
     [Inject] private IMessageBoxService MessageBoxService { get; set; } = default!;
+    [Inject] public LoadingService LoadingService { get; set; } = default!;
 
     #region IMessageBoxService
     public void ShowMessage(string text , string title = "Confirmation")
