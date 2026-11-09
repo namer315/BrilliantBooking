@@ -11,7 +11,14 @@ public class RestaurantBE
 
     public async Task<IList<RestaurantVO>> GetRestaurantLsitBy(RestaurantSH search)
     {
-        IList<RestaurantVO> restaurantList = new List<RestaurantVO>
+        IList<RestaurantVO> restaurantList = GetSampleRestaurantList();
+
+        return restaurantList;
+    }
+
+    private IList<RestaurantVO> GetSampleRestaurantList()
+        {
+        return new List<RestaurantVO>
         {
             new RestaurantVO
             {
