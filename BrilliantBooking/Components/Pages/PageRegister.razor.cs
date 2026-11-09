@@ -111,7 +111,7 @@ public partial class PageRegister
         try
         {
             SubmitErrors.Clear();
-            await _fdm.Persist(Restaurant);
+            Restaurant = await _fdm.Persist(Restaurant);
             SubmittedName = Restaurant.Name;
             Submitted = true;
         }

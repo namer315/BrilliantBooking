@@ -37,7 +37,7 @@ public class RestaurantMap : EntityWithIdMapping<RestaurantVO>
 {
     public RestaurantMap()
     {
-        Map(x => x.Slug).Length(100).Not.Nullable().Unique();
+        //Map(x => x.Slug).Length(100).Not.Nullable().Unique();
         Map(x => x.Name).Length(200).Not.Nullable();
         Map(x => x.Cuisine).Length(100).Not.Nullable();
         Map(x => x.PriceLevel).Not.Nullable();

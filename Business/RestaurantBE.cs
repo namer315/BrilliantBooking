@@ -104,16 +104,16 @@ public class RestaurantBE
 
         return tables;
     }
-    public async Task Persist(RestaurantVO restaurant)
+    public async Task<RestaurantVO> Persist(RestaurantVO restaurant)
     {
         Validation(restaurant);
 
-        var a = await _dao.Merge(restaurant);
+        return await _dao.Merge(restaurant);
     }
 
     private void Validation(RestaurantVO restaurant)
     {
-
+        //if(string.IsNullOrEmpty(restaurant.Name)
     }
 
     public RestaurantVO GetNew()

@@ -17,6 +17,6 @@ public class RestaurantFDM
     public async Task<IList<RestaurantVO>> GetRestaurantLsitBy(RestaurantSH search)
         => await _be.GetRestaurantLsitBy(search);
 
-    public async Task Persist(RestaurantVO restaurant)
+    public async Task<RestaurantVO> Persist(RestaurantVO restaurant)
         => await _be.Persist(restaurant);
 }
