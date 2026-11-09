@@ -1,5 +1,8 @@
+using Data.Search;
 using Data.VO;
 using NHibernate;
+using System.Collections;
+using System.Text.RegularExpressions;
 
 namespace Data;
 
@@ -222,5 +225,63 @@ public class NHibernateRepository
         }
 
         return query.List<T>().ToArray();
+    }
+
+    public string ToCountQuery(string hql)
+    {
+        if (string.IsNullOrWhiteSpace(hql))
+            throw new ArgumentNullException(nameof(hql));
+
+        // Remove ORDER BY
+        hql = Regex.Replace(
+            hql ,
+            @"ORDER\s+BY[\s\S]*$" ,
+            string.Empty ,
+            RegexOptions.IgnoreCase);
+
+        // Find FROM clause
+        Match fromMatch = Regex.Match(
+            hql ,
+            @"\bFROM\s+(\w+)\s+(?:AS\s+)?(\w+)" ,
+            RegexOptions.IgnoreCase);
+
+        if (!fromMatch.Success)
+            throw new InvalidOperationException("Unable to locate FROM clause.");
+
+        string alias = fromMatch.Groups[2].Value;
+
+        int fromIndex = fromMatch.Index;
+
+        string fromPart = hql.Substring(fromIndex);
+
+        return $"SELECT COUNT(DISTINCT {alias}.Id) {fromPart}";
+    }
+
+    public async Task<IList> RunHQLAsync(string hqlQuery , IList<(string , object)> parameters , Pagination pagination)
+    {
+        using var currentSession = GetSession();
+        using var transaction = currentSession.BeginTransaction();
+
+        IQuery q = currentSession.CreateQuery(ToCountQuery(hqlQuery));
+        BindHqlParameters(q , parameters);
+        pagination.TotalRecords = await q.UniqueResultAsync<long>();
+
+        q = currentSession.CreateQuery(hqlQuery);
+        BindHqlParameters(q , parameters);
+
+        q.SetFirstResult(pagination.Offset);       // use model property
+        q.SetMaxResults(pagination.PageSize);     // use model property
+
+        return await q.ListAsync();
+    }
+    private static void BindHqlParameters(IQuery query , IEnumerable<(string , object)> parameters)
+    {
+        foreach (var (name , value) in parameters)
+        {
+            if (value is IEnumerable enumerable && value is not string)
+                query.SetParameterList(name , enumerable);
+            else
+                query.SetParameter(name , value);
+        }
     }
 }
