@@ -1,6 +1,5 @@
 using Data.VO.Restaurant;
 using FDM;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using System.ComponentModel.DataAnnotations;
 
@@ -117,7 +116,8 @@ public partial class PageRegister
         }
         catch (Exception ex)
         {
-
+            //await MessageBoxService.ShowAsync("Registration failed", ex.Message, MessageBox.MessageBoxType.Danger);
+            ShowException(ex);
         }
     }
 
