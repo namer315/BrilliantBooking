@@ -274,6 +274,23 @@ public class NHibernateRepository
 
         return await q.ListAsync();
     }
+    public async Task<IList<T>> RunHQLAsync<T>(string hqlQuery , IList<(string , object)> parameters , Pagination pagination) where T : EntityBase
+    {
+        using var currentSession = GetSession();
+        using var transaction = currentSession.BeginTransaction();
+
+        IQuery q = currentSession.CreateQuery(ToCountQuery(hqlQuery));
+        BindHqlParameters(q , parameters);
+        pagination.TotalRecords = await q.UniqueResultAsync<long>();
+
+        q = currentSession.CreateQuery(hqlQuery);
+        BindHqlParameters(q , parameters);
+
+        q.SetFirstResult(pagination.Offset);       // use model property
+        q.SetMaxResults(pagination.PageSize);     // use model property
+
+        return await q.ListAsync<T>();
+    }
     private static void BindHqlParameters(IQuery query , IEnumerable<(string , object)> parameters)
     {
         foreach (var (name , value) in parameters)

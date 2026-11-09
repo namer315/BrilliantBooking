@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Data.Search;
 
-public class RestaurantSH : SearchBase
+public class RestaurantSH : Pagination
 {
     public string Cuisine { get; set; }
     public string? Price { get; set; }

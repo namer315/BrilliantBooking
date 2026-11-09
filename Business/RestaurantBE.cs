@@ -2,6 +2,7 @@
 using Data.Search;
 using Data.VO.Operations;
 using Data.VO.Restaurant;
+using System.Collections;
 
 namespace Business;
 
@@ -11,13 +12,21 @@ public class RestaurantBE
 
     public async Task<IList<RestaurantVO>> GetRestaurantLsitBy(RestaurantSH search)
     {
-        IList<RestaurantVO> restaurantList = GetSampleRestaurantList();
+        IList<RestaurantVO> rawData = await _dao.GetRestaurantListBy(search);
+        IList<RestaurantVO> restaurantList = rawData;
+        //int index = 0;
+        //IList<RestaurantVO> restaurantList = GetSampleRestaurantList();
+        //foreach (RestaurantVO restaurant in restaurantList)
+        //{
+        //    restaurant.Id = Guid.NewGuid();
+        //    restaurant.Slug = $"restaurant-{index++}";
+        //}
 
         return restaurantList;
     }
 
     private IList<RestaurantVO> GetSampleRestaurantList()
-        {
+    {
         return new List<RestaurantVO>
         {
             new RestaurantVO
@@ -83,8 +92,6 @@ public class RestaurantBE
                 TableList = GetTableList(15)
             }
         };
-
-        return restaurantList;
     }
 
     private IList<TableVO> GetTableList(int v)
@@ -113,6 +120,7 @@ public class RestaurantBE
     }
     public async Task<RestaurantVO> Persist(RestaurantVO restaurant)
     {
+        await Task.Delay(1000 * 5);
         Validation(restaurant);
 
         return await _dao.Merge(restaurant);
@@ -122,10 +130,20 @@ public class RestaurantBE
     {
         //if(string.IsNullOrEmpty(restaurant.Name)
     }
-
-    public RestaurantVO GetNew()
+    public static int index = 0;
+    public async Task<RestaurantVO> GetNew()
     {
-        RestaurantVO restaurant = new RestaurantVO();
+        //RestaurantVO restaurant = new RestaurantVO();
+        RestaurantVO restaurant = (await GetRestaurantLsitBy(new()))[index++];
+        RestaurantPhotoVO restaurantPhoto = new RestaurantPhotoVO
+        {
+            Name = restaurant.Name ,
+            Photo = await GetImageBytesAsync(restaurant.ImageUrl) ,
+            Restaurant = restaurant
+        };
+
+        restaurant.PhotoList.Add(restaurantPhoto);
+        await Task.Delay(1000 * 5);
         restaurant.Owner = new RestaurantOwnerVO() { Restaurant = restaurant };
         restaurant.OpeningHourList = new[]
             {
@@ -142,5 +160,11 @@ public class RestaurantBE
             .ToList();
 
         return restaurant;
+    }
+    public static async Task<byte[]> GetImageBytesAsync(string imageUrl)
+    {
+        using HttpClient client = new();
+
+        return await client.GetByteArrayAsync(imageUrl);
     }
 }

@@ -12,7 +12,7 @@ public class RestaurantFDM
     private RestaurantBE _be = new();
 
     public async Task<RestaurantVO> GetNew() 
-        => _be.GetNew();
+        => await _be.GetNew();
 
     public async Task<IList<RestaurantVO>> GetRestaurantLsitBy(RestaurantSH search)
         => await _be.GetRestaurantLsitBy(search);

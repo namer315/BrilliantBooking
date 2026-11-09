@@ -35,7 +35,7 @@ public partial class PageRegister
 
     private async Task beginEdit()
     {
-        Restaurant = await _fdm.GetNew();
+        Restaurant = await _fdm.GetNew().ShowProcessing(this);
     }
 
     protected string? ErrorText(string key) => Errors.GetValueOrDefault(key);

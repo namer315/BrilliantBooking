@@ -37,7 +37,7 @@ public partial class PageExplore
         }
         catch(Exception ex)
         {
-
+            ShowException(ex);
         }
     }
 
