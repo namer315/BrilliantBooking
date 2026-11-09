@@ -95,7 +95,7 @@ public partial class PageRegister
     {
         if (CurrentStep == StepTitles.Length - 1)
         {
-            await Submit();
+            await endEdit();
         }
         else
         {
@@ -106,7 +106,7 @@ public partial class PageRegister
     protected static TimeOnly? ParseTime(object? value) =>
         TimeOnly.TryParse(value?.ToString(), out var time) ? time : null;
 
-    private async Task Submit()
+    private async Task endEdit()
     {
         try
         {
@@ -117,7 +117,6 @@ public partial class PageRegister
         }
         catch (Exception ex)
         {
-            //await MessageBoxService.ShowAsync("Registration failed", ex.Message, MessageBox.MessageBoxType.Danger);
             ShowException(ex);
         }
     }
