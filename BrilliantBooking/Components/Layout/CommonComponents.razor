@@ -1,0 +1,7 @@
+@rendermode InteractiveServer
+
+<MessageBox IsVisible="@MessageBoxService.IsVisible"
+            Title="@MessageBoxService.Title"
+            Message="@MessageBoxService.Message"
+            Type="@MessageBoxService.Type"
+            OnClose="@(() => MessageBoxService.Close())" />

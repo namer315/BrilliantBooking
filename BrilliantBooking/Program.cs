@@ -14,6 +14,7 @@ public partial class Program
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
             builder.Services.AddScoped<BookingUiStateService>();
+            builder.Services.AddScoped<IMessageBoxService, MessageBoxService>();
 
             //Connection connection = new()
             //{
