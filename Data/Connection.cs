@@ -147,7 +147,7 @@ public class Connection
         Connection connection = LoadOrCreateConfig(defaultConnection: defaultConnection);
         //connection.SessionConnect_Login();
         await connection.SessionConnect();
-        await DataBaseUpdate(connection);
+        //await DataBaseUpdate(connection);
     }
 
     #endregion
