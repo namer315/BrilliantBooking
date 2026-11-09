@@ -1,0 +1,39 @@
+@if (Loader.IsLoading)
+{
+    <div class="loading-overlay fixed inset-0 z-[9999] flex items-center justify-center bg-stone-100/70 dark:bg-stone-950/75 backdrop-blur-sm"
+         role="status"
+         aria-live="polite"
+         aria-busy="true">
+        <div class="flex flex-col items-center gap-6 rounded-3xl bg-white/90 dark:bg-stone-900/90 px-10 py-8 shadow-2xl ring-1 ring-stone-200 dark:ring-stone-800">
+            <div class="loading-scene relative h-32 w-32" aria-hidden="true">
+                <div class="loading-steam absolute -top-4 left-1/2 flex -translate-x-1/2 gap-1">
+                    <span class="steam-wisp"></span>
+                    <span class="steam-wisp steam-wisp--delay"></span>
+                    <span class="steam-wisp steam-wisp--late"></span>
+                </div>
+
+                <div class="loading-plate absolute inset-6 rounded-full bg-white dark:bg-stone-200 shadow-inner ring-4 ring-stone-200 dark:ring-stone-400">
+                    <div class="absolute inset-3 rounded-full border-2 border-stone-200 dark:border-stone-400"></div>
+                </div>
+
+                <div class="loading-cutlery absolute inset-0">
+                    <div class="cutlery-item cutlery-fork absolute left-0 top-1/2 h-10 w-4 text-apple-blue">
+                        <span class="block h-full w-full rounded-sm bg-current"></span>
+                    </div>
+                    <div class="cutlery-item cutlery-spoon absolute right-0 top-1/2 h-10 w-4 text-apple-blue">
+                        <span class="block h-full w-full rounded-full bg-current"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <p class="text-lg font-semibold text-stone-900 dark:text-stone-100">
+                    @(Loader.MainText ?? MainText)
+                </p>
+                <p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
+                    @(Loader.SubText ?? SubText)
+                </p>
+            </div>
+        </div>
+    </div>
+}
