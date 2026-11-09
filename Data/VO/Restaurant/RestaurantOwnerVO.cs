@@ -20,6 +20,6 @@ public class RestaurantOwnerMap : EntityWithIdMapping<RestaurantOwnerVO>
         Map(x => x.Email).Length(256).Nullable();
         Map(x => x.Phone).Length(30).Nullable();
 
-        References(x => x.Restaurant, "RestaurantId").Not.Nullable().Unique();
+        References(x => x.Restaurant, "Restaurant").Not.Nullable().Unique();
     }
 }

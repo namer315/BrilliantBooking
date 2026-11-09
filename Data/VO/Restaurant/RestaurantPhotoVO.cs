@@ -20,6 +20,6 @@ public class RestaurantPhotoMap : EntityWithIdMapping<RestaurantPhotoVO>
         Map(x => x.Photo).Length(int.MaxValue).Not.Nullable();
         Map(x => x.Url).Length(1000).Not.Nullable();
 
-        References(x => x.Restaurant, "RestaurantId").Not.Nullable().Index("IX_RestaurantPhotos_RestaurantId");
+        References(x => x.Restaurant, "Restaurant").Not.Nullable().Index("IX_RestaurantPhotos_RestaurantId");
     }
 }

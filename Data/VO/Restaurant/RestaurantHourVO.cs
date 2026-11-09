@@ -22,6 +22,6 @@ public class RestaurantHourMap : EntityWithIdMapping<RestaurantHourVO>
         Map(x => x.OpenTime).Nullable();
         Map(x => x.CloseTime).Nullable();
 
-        References(x => x.Restaurant, "RestaurantId").Not.Nullable().Index("IX_RestaurantHours_RestaurantId");
+        References(x => x.Restaurant, "Restaurant").Not.Nullable().Index("IX_RestaurantHours_RestaurantId");
     }
 }
