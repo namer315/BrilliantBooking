@@ -1,5 +1,6 @@
 ﻿using BrilliantBooking.Components.Pages;
 using BrilliantBooking.Services;
+using Data.VO.Restaurant;
 
 namespace BrilliantBooking.Extensions;
 
@@ -34,4 +35,7 @@ public static class ComponentExtensions
             loadingService.Hide();
         }
     }
+
+    public static string ToImage(this byte[] bytes , string imageType = "jpeg")
+        => $"data:image/jpeg;base64,{Convert.ToBase64String(bytes)}";
 }

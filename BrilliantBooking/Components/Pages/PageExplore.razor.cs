@@ -64,7 +64,8 @@ public partial class PageExplore
     {
         var photo = restaurant.PhotoList.FirstOrDefault();
         return photo?.Photo is { Length: > 0 } bytes
-            ? $"data:image/jpeg;base64,{Convert.ToBase64String(bytes)}"
+            ? bytes.ToImage()
+            //? $"data:image/jpeg;base64,{Convert.ToBase64String(bytes)}"
             : restaurant.ImageUrl;
     }
 
