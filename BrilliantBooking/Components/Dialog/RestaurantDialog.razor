@@ -1,4 +1,5 @@
 @using Data.VO.Restaurant
+@inject IJSRuntime JS
 
 <div class="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto" @onclick="OnClose">
     <div class="bg-[#F8F7F4] dark:bg-stone-900 w-full max-w-4xl rounded-3xl shadow-2xl border border-stone-200 dark:border-stone-800 overflow-hidden my-auto max-h-[92vh] flex flex-col" @onclick:stopPropagation>
@@ -6,7 +7,7 @@
             <img src="@Restaurant.ImageUrl" alt="@Restaurant.Name" class="w-full h-full object-cover">
             <div class="absolute inset-0 bg-gradient-to-t from-stone-950/90 via-black/30 to-black/20"></div>
 
-            <button @onclick="OnClose" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-black/50 text-white backdrop-blur-md flex items-center justify-center hover:bg-black/70 transition" aria-label="Close">
+            <button @onclick="OnClose" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-black/50 text-white backdrop-blur-md flex items-center justify-center hover:bg-black/70 transition">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
 
@@ -40,6 +41,7 @@
             <div class="flex space-x-4 border-b border-transparent">
                 <button @onclick='() => SwitchTab("overview")' class="@(_tab == "overview" ? "border-apple-blue text-apple-blue" : "border-transparent text-stone-500") border-b-2 pb-3 text-xs font-bold transition">Overview</button>
                 <button @onclick='() => SwitchTab("map")' class="@(_tab == "map" ? "border-apple-blue text-apple-blue" : "border-transparent text-stone-500") border-b-2 pb-3 text-xs font-bold hover:text-stone-900 dark:hover:text-white transition">Location &amp; Directions</button>
+                <button @onclick='() => SwitchTab("reviews")' class="@(_tab == "reviews" ? "border-apple-blue text-apple-blue" : "border-transparent text-stone-500") border-b-2 pb-3 text-xs font-bold hover:text-stone-900 dark:hover:text-white transition">Reviews &amp; Community</button>
             </div>
         </div>
 
@@ -90,7 +92,7 @@
                     </div>
                 </div>
             }
-            else
+            else if (_tab == "map")
             {
                 <div class="space-y-6">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#F0EEE9] dark:bg-stone-800/60 p-4 rounded-2xl border border-stone-200 dark:border-stone-800">
@@ -120,6 +122,120 @@
                     </div>
                 </div>
             }
+            else
+            {
+                <div class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-[#F0EEE9] dark:bg-stone-800/60 p-5 rounded-2xl border border-stone-200 dark:border-stone-800">
+                        <div class="text-center md:border-r border-stone-200 dark:border-stone-700 pr-4 flex flex-col justify-center">
+                            <span class="text-5xl font-black text-stone-900 dark:text-white">@Restaurant.Rating.ToString("0.0")</span>
+                            <div class="flex items-center justify-center text-amber-400 my-1">
+                                @for (var s = 0; s < 5; s++)
+                                {
+                                    <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+                                }
+                            </div>
+                            <span class="text-xs text-stone-500 font-medium">Based on @Restaurant.ReviewsCount verified diner reviews</span>
+                        </div>
+
+                        <div class="md:col-span-2 space-y-2 text-xs">
+                            @foreach (var metric in _ratingMetrics)
+                            {
+                                <div class="flex items-center justify-between">
+                                    <span class="text-stone-500 font-semibold">@metric.Label</span>
+                                    <div class="w-3/5 bg-stone-300 dark:bg-stone-700 h-2 rounded-full overflow-hidden">
+                                        <div class="@metric.BarClass h-full" style="width: @metric.Percent%"></div>
+                                    </div>
+                                    <span class="font-bold">@metric.Score.ToString("0.0")</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="bg-[#F0EEE9] dark:bg-stone-900 border border-stone-300/80 dark:border-stone-800 p-4 rounded-2xl space-y-3">
+                    @* <div class="p-4 bg-[#F0EEE9] dark:bg-stone-800/60 rounded-2xl border border-stone-200 dark:border-stone-800 flex items-center justify-between gap-3"> *@
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-xs font-bold uppercase tracking-wider text-apple-blue flex items-center space-x-1">
+                                @* <i data-lucide="pen-tool" class="w-3.5 h-3.5"></i> *@
+                                <i class="fa-solid fa-pen-nib"></i>
+                                <span>Leave a Verified Guest Review</span>
+                            </h4>
+                            <button @onclick="ToggleReviewForm" class="text-xs text-stone-500 hover:text-black dark:hover:text-white font-semibold underline">Write Review</button>
+                        </div>
+
+                      @*   <div class="flex items-center justify-between">
+                            <span class="block text-[10px] font-bold uppercase tracking-wider text-apple-green">Verified Guests Only</span>
+                            <h4 class="text-sm font-bold">Leave a Verified Guest Review</h4>
+                            <button @onclick="ToggleReviewForm" class="text-xs text-stone-500 hover:text-black dark:hover:text-white font-semibold underline">Write Review</button>
+                            <button @onclick="ToggleReviewForm" class="px-4 py-2 bg-apple-blue hover:bg-apple-blue-hover text-white text-xs font-bold rounded-xl shadow-lg shadow-apple-blue/20 transition flex items-center space-x-1.5 whitespace-nowrap">
+                                <i data-lucide="pen-tool" class="w-3.5 h-3.5"></i>
+                                <span>Write Review</span>
+                            </button>
+                        </div> *@
+
+                        @if (_showReviewForm)
+                        {
+                            <form @onsubmit="SubmitReview" @onsubmit:preventDefault class="space-y-3 pt-2 border-t border-stone-200 dark:border-stone-800">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="block text-[10px] font-semibold text-stone-500 uppercase">Your Name</label>
+                                        <input type="text" @bind="_newReviewName" required placeholder="e.g. Sarah M." class="w-full bg-[#F0EEE9] dark:bg-stone-800 border border-stone-300/80 dark:border-stone-700 rounded-xl px-3 py-2 text-xs" />
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-semibold text-stone-500 uppercase">Rating</label>
+                                        <select @bind="_newReviewRating" class="w-full bg-[#F0EEE9] dark:bg-stone-800 border border-stone-300/80 dark:border-stone-700 rounded-xl px-3 py-2 text-xs font-bold text-amber-500">
+                                            <option value="5">★★★★★ (5 - Outstanding)</option>
+                                            <option value="4">★★★★☆ (4 - Very Good)</option>
+                                            <option value="3">★★★☆☆ (3 - Average)</option>
+                                            <option value="2">★★☆☆☆ (2 - Poor)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-stone-500 uppercase">Commentary</label>
+                                    <textarea @bind="_newReviewComment" required rows="2" placeholder="Tell us about the dishes, wine pairing, atmosphere..." class="w-full bg-[#F0EEE9] dark:bg-stone-800 border border-stone-300/80 dark:border-stone-700 rounded-xl p-3 text-xs"></textarea>
+                                </div>
+                                <button type="submit" class="w-full py-2.5 bg-apple-blue hover:bg-apple-blue-hover text-white rounded-xl text-xs font-bold transition">Submit Verified Review</button>
+                            </form>
+                            @* <div class="p-4 bg-[#F8F7F4] dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl space-y-3">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <input @bind="_newReviewName" placeholder="Your name" class="w-full px-3 py-2 text-xs rounded-xl border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-800" />
+                                <select @bind="_newReviewRating" class="w-full px-3 py-2 text-xs rounded-xl border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-800">
+                                    @for (var r = 5; r >= 1; r--)
+                                    {
+                                        <option value="@r">@r star@(r == 1 ? "" : "s")</option>
+                                    }
+                                </select>
+                            </div>
+                            <textarea @bind="_newReviewComment" rows="3" placeholder="Share your experience" class="w-full px-3 py-2 text-xs rounded-xl border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-800"></textarea>
+                            <div class="flex justify-end space-x-2">
+                                <button @onclick="ToggleReviewForm" class="px-4 py-2 text-xs font-bold text-stone-500 hover:text-stone-900 dark:hover:text-white transition">Cancel</button>
+                                <button @onclick="SubmitReview" disabled="@(string.IsNullOrWhiteSpace(_newReviewName) || string.IsNullOrWhiteSpace(_newReviewComment))" class="px-4 py-2 bg-apple-blue hover:bg-apple-blue-hover disabled:opacity-40 text-white text-xs font-bold rounded-xl transition">Submit Review</button>
+                            </div>
+                        </div> *@
+                        }
+                    </div>
+
+
+                    <div class="space-y-3">
+                        @foreach (var review in _reviews.Concat(_userReviews))
+                        {
+                            <div class="p-4 bg-[#F8F7F4] dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-bold">@review.Name</span>
+                                    <span class="text-[10px] text-stone-400">@review.Date</span>
+                                </div>
+                                <div class="flex text-amber-400">
+                                    @for (var s = 0; s < review.Rating; s++)
+                                    {
+                                        <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400"></i>
+                                    }
+                                </div>
+                                <p class="text-xs text-stone-600 dark:text-stone-300 leading-relaxed">@review.Comment</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
         </div>
 
         <div class="p-4 border-t border-stone-200 dark:border-stone-800 bg-[#F0EEE9]/80 dark:bg-stone-900 flex items-center justify-between flex-shrink-0">
@@ -142,6 +258,31 @@
 
     [Parameter] public EventCallback<RestaurantVO> OnReserve { get; set; }
 
+    private sealed record StaticReview(string Name, string Date, int Rating, string Comment);
+
+    private sealed record RatingMetric(string Label, string BarClass, int Percent, decimal Score);
+
+    private static readonly StaticReview[] _reviews =
+    [
+        new("Sarah M.", "2 days ago", 5, "Outstanding service and the signature dishes were beautifully presented. The window table is worth requesting."),
+        new("James L.", "1 week ago", 4, "Excellent wine pairing and a relaxed atmosphere. Parking was easy with valet."),
+        new("Amélie D.", "2 weeks ago", 5, "A memorable evening for our anniversary. The chef's counter experience is a must.")
+    ];
+
+    private static readonly RatingMetric[] _ratingMetrics =
+    [
+        new("Food Quality", "bg-apple-green", 96, 4.9m),
+        new("Service", "bg-apple-blue", 94, 4.8m),
+        new("Ambience", "bg-apple-purple", 98, 5.0m)
+    ];
+
+    private readonly List<StaticReview> _userReviews = [];
+
+    private bool _showReviewForm;
+    private string _newReviewName = "";
+    private string _newReviewComment = "";
+    private int _newReviewRating = 5;
+
     private string _tab = "overview";
 
     private string PriceText => new('$', Math.Clamp(Restaurant.PriceLevel, 1, 4));
@@ -149,4 +290,30 @@
     private string MapsUrl => $"https://www.google.com/maps/search/?api=1&query={Uri.EscapeDataString(Restaurant.Address)}";
 
     private void SwitchTab(string tab) => _tab = tab;
+
+    private void ToggleReviewForm() => _showReviewForm = !_showReviewForm;
+
+    private void SubmitReview()
+    {
+        if (string.IsNullOrWhiteSpace(_newReviewName) || string.IsNullOrWhiteSpace(_newReviewComment))
+        {
+            return;
+        }
+
+        _userReviews.Insert(0, new StaticReview(_newReviewName.Trim(), "Just now", _newReviewRating, _newReviewComment.Trim()));
+        _newReviewName = "";
+        _newReviewComment = "";
+        _newReviewRating = 5;
+        _showReviewForm = false;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("refreshReserveIcons");
+            StateHasChanged();
+        }
+    }
+
 }
