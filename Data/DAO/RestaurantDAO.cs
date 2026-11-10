@@ -37,7 +37,8 @@ public sealed class RestaurantDAO : NHibernateRepository
             parameters.Add(("text" , $"%{search.Text}%"));
         }
         string query = $@"
-            FROM RestaurantVO restaurant 
+            FROM RestaurantVO restaurant
+            LEFT JOIN FETCH restaurant.PhotoList photo
             {where}
         ";
 
