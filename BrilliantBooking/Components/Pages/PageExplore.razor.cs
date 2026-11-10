@@ -13,6 +13,7 @@ public partial class PageExplore
     private RestaurantFDM _fdm = new();
     private RestaurantSH Search = new();
     private IList<RestaurantVO> RestaurantLsit = new List<RestaurantVO>();
+    private RestaurantVO? SelectedRestaurant;
     public IList<string> CuisineList => RestaurantLsit.Select(x => x.Cuisine).ToList();
 
     public IReadOnlyList<(string Value , string Label)> Prices { get; } = new[]
@@ -58,9 +59,14 @@ public partial class PageExplore
     }
 
 
-    private void OpenRestaurant(RestaurantVO item)
+    private void OpenRestaurant(RestaurantVO restaurant)
     {
+        SelectedRestaurant = restaurant;
+    }
 
+    private void CloseRestaurant()
+    {
+        SelectedRestaurant = null;
     }
 
 

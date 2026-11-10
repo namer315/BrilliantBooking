@@ -1,0 +1,152 @@
+@using Data.VO.Restaurant
+
+<div class="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto" @onclick="OnClose">
+    <div class="bg-[#F8F7F4] dark:bg-stone-900 w-full max-w-4xl rounded-3xl shadow-2xl border border-stone-200 dark:border-stone-800 overflow-hidden my-auto max-h-[92vh] flex flex-col" @onclick:stopPropagation>
+        <div class="relative h-64 sm:h-72 w-full flex-shrink-0">
+            <img src="@Restaurant.ImageUrl" alt="@Restaurant.Name" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-t from-stone-950/90 via-black/30 to-black/20"></div>
+
+            <button @onclick="OnClose" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-black/50 text-white backdrop-blur-md flex items-center justify-center hover:bg-black/70 transition" aria-label="Close">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            @if (!string.IsNullOrWhiteSpace(Restaurant.Badge))
+            {
+                <div class="absolute top-4 left-4 flex space-x-2">
+                    <span class="bg-black/60 backdrop-blur-md text-white text-[11px] font-bold px-3 py-1 rounded-full border border-white/20">@Restaurant.Badge</span>
+                </div>
+            }
+
+            <div class="absolute bottom-4 left-6 right-6 text-white space-y-1">
+                <div class="flex flex-wrap items-center gap-2 text-xs font-semibold">
+                    <span class="bg-apple-blue/20 backdrop-blur-md text-white px-2.5 py-0.5 rounded-full border border-apple-blue/30">@Restaurant.Cuisine</span>
+                    <span class="text-stone-300">@PriceText</span>
+                    <span>•</span>
+                    <div class="flex items-center space-x-1 text-amber-400 font-bold">
+                        <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+                        <span>@Restaurant.Rating.ToString("0.0")</span>
+                        <span class="text-stone-300 font-normal text-xs">(@Restaurant.ReviewsCount reviews)</span>
+                    </div>
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-black tracking-tight">@Restaurant.Name</h2>
+                <p class="text-xs sm:text-sm text-stone-300 flex items-center space-x-1">
+                    <i data-lucide="map-pin" class="w-3.5 h-3.5 text-apple-blue"></i>
+                    <span>@Restaurant.Location</span>
+                </p>
+            </div>
+        </div>
+
+        <div class="px-6 pt-4 border-b border-stone-200 dark:border-stone-800 bg-[#F0EEE9]/60 dark:bg-stone-900 flex-shrink-0">
+            <div class="flex space-x-4 border-b border-transparent">
+                <button @onclick='() => SwitchTab("overview")' class="@(_tab == "overview" ? "border-apple-blue text-apple-blue" : "border-transparent text-stone-500") border-b-2 pb-3 text-xs font-bold transition">Overview</button>
+                <button @onclick='() => SwitchTab("map")' class="@(_tab == "map" ? "border-apple-blue text-apple-blue" : "border-transparent text-stone-500") border-b-2 pb-3 text-xs font-bold hover:text-stone-900 dark:hover:text-white transition">Location &amp; Directions</button>
+            </div>
+        </div>
+
+        <div class="p-6 overflow-y-auto space-y-6 flex-grow">
+            @if (_tab == "overview")
+            {
+                <div class="space-y-6">
+                    <div class="space-y-2">
+                        <h3 class="text-sm font-bold uppercase tracking-wider text-stone-400">About Venue</h3>
+                        <p class="text-sm leading-relaxed text-stone-700 dark:text-stone-300">@Restaurant.Description</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <div class="bg-[#F0EEE9] dark:bg-stone-800/60 p-3 rounded-2xl border border-stone-200 dark:border-stone-800">
+                            <span class="text-[10px] font-bold text-stone-400 uppercase">Dress Code</span>
+                            <p class="text-xs font-bold mt-0.5">@Restaurant.DressCode</p>
+                        </div>
+                        <div class="bg-[#F0EEE9] dark:bg-stone-800/60 p-3 rounded-2xl border border-stone-200 dark:border-stone-800">
+                            <span class="text-[10px] font-bold text-stone-400 uppercase">Valet &amp; Parking</span>
+                            <p class="text-xs font-bold mt-0.5">@Restaurant.Parking</p>
+                        </div>
+                        <div class="bg-[#F0EEE9] dark:bg-stone-800/60 p-3 rounded-2xl border border-stone-200 dark:border-stone-800">
+                            <span class="text-[10px] font-bold text-stone-400 uppercase">Corkage Fee</span>
+                            <p class="text-xs font-bold mt-0.5">@Restaurant.Corkage</p>
+                        </div>
+                        <div class="bg-[#F0EEE9] dark:bg-stone-800/60 p-3 rounded-2xl border border-stone-200 dark:border-stone-800">
+                            <span class="text-[10px] font-bold text-stone-400 uppercase">Cancellation</span>
+                            <p class="text-xs font-bold mt-0.5 text-apple-green">2 Hours Free</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div class="p-4 bg-[#F0EEE9] dark:bg-stone-800/60 rounded-2xl border border-stone-200 dark:border-stone-800 flex items-center space-x-3">
+                            <i data-lucide="users" class="w-5 h-5 text-apple-blue"></i>
+                            <div>
+                                <span class="block text-[10px] font-bold text-stone-400 uppercase">Table Capacity</span>
+                                <p class="text-xs font-bold">@Restaurant.TableCapacity guests per table</p>
+                            </div>
+                        </div>
+                        <div class="p-4 bg-[#F0EEE9] dark:bg-stone-800/60 rounded-2xl border border-stone-200 dark:border-stone-800 flex items-center space-x-3">
+                            <i data-lucide="phone" class="w-5 h-5 text-apple-blue"></i>
+                            <div>
+                                <span class="block text-[10px] font-bold text-stone-400 uppercase">Contact</span>
+                                <p class="text-xs font-bold">@Restaurant.Phone</p>
+                                <p class="text-xs text-stone-500">@Restaurant.Email</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="space-y-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#F0EEE9] dark:bg-stone-800/60 p-4 rounded-2xl border border-stone-200 dark:border-stone-800">
+                        <div class="space-y-1">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-apple-blue">Address &amp; Location</span>
+                            <h4 class="text-sm font-bold">@Restaurant.Address</h4>
+                            <p class="text-xs text-stone-500">Cross streets: @Restaurant.CrossStreet</p>
+                        </div>
+                        <a href="@MapsUrl" target="_blank" rel="noopener" class="px-5 py-3 bg-apple-blue hover:bg-apple-blue-hover text-white text-xs font-bold rounded-xl shadow-lg shadow-apple-blue/20 flex items-center justify-center space-x-2 transition whitespace-nowrap">
+                            <i data-lucide="navigation" class="w-4 h-4"></i>
+                            <span>Get Directions in Google Maps</span>
+                        </a>
+                    </div>
+
+                    <div class="relative w-full h-64 sm:h-80 rounded-2xl border border-stone-300 dark:border-stone-800 overflow-hidden bg-stone-200 dark:bg-stone-950 flex items-center justify-center">
+                        <div class="absolute inset-0 bg-[radial-gradient(#d1d5db_1px,transparent_1px)] dark:bg-[radial-gradient(#374151_1px,transparent_1px)] [background-size:20px_20px] opacity-60"></div>
+                        <svg class="absolute inset-0 w-full h-full text-stone-300 dark:text-stone-800 opacity-70" viewBox="0 0 400 200">
+                            <path d="M 0 50 Q 150 120 400 40" stroke="currentColor" stroke-width="12" fill="none" />
+                            <path d="M 200 0 L 200 200" stroke="currentColor" stroke-width="16" fill="none" />
+                        </svg>
+                        <div class="relative z-10 text-center space-y-1 animate-bounce">
+                            <div class="w-12 h-12 bg-apple-blue text-white rounded-full flex items-center justify-center mx-auto shadow-2xl ring-4 ring-white dark:ring-stone-900">
+                                <i data-lucide="utensils" class="w-6 h-6"></i>
+                            </div>
+                            <span class="inline-block bg-black/80 text-white font-bold text-xs px-3 py-1 rounded-full shadow-lg backdrop-blur-md">@Restaurant.Name</span>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="p-4 border-t border-stone-200 dark:border-stone-800 bg-[#F0EEE9]/80 dark:bg-stone-900 flex items-center justify-between flex-shrink-0">
+            <div>
+                <span class="block text-[10px] text-stone-400 uppercase font-bold">Ready to dine?</span>
+                <span class="text-xs font-extrabold">@Restaurant.Name</span>
+            </div>
+            <button @onclick="() => OnReserve.InvokeAsync(Restaurant)" class="px-6 py-3 bg-apple-blue hover:bg-apple-blue-hover text-white text-xs font-bold rounded-2xl shadow-lg shadow-apple-blue/20 transition flex items-center space-x-1.5">
+                <span>Reserve a Table Now</span>
+                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public RestaurantVO Restaurant { get; set; } = null!;
+
+    [Parameter] public EventCallback OnClose { get; set; }
+
+    [Parameter] public EventCallback<RestaurantVO> OnReserve { get; set; }
+
+    private string _tab = "overview";
+
+    private string PriceText => new('$', Math.Clamp(Restaurant.PriceLevel, 1, 4));
+
+    private string MapsUrl => $"https://www.google.com/maps/search/?api=1&query={Uri.EscapeDataString(Restaurant.Address)}";
+
+    private void SwitchTab(string tab) => _tab = tab;
+}
