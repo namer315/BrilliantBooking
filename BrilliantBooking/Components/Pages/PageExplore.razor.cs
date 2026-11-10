@@ -1,3 +1,4 @@
+using BrilliantBooking.Extensions;
 using BrilliantBooking.Services;
 using Data.Search;
 using Data.VO.Restaurant;
@@ -44,7 +45,7 @@ public partial class PageExplore
 
     private async Task dgSearch()
     {
-        RestaurantLsit = await _fdm.GetRestaurantLsitBy(Search);
+        RestaurantLsit = await _fdm.GetRestaurantLsitBy(Search).ShowProcessing(this);
     }
 
     public async void Reset()
@@ -58,6 +59,14 @@ public partial class PageExplore
 
     }
 
+
+    private static string GetImageSrc(RestaurantVO restaurant)
+    {
+        var photo = restaurant.PhotoList.FirstOrDefault();
+        return photo?.Photo is { Length: > 0 } bytes
+            ? $"data:image/jpeg;base64,{Convert.ToBase64String(bytes)}"
+            : restaurant.ImageUrl;
+    }
 
     private void OpenRestaurant(RestaurantVO restaurant)
     {

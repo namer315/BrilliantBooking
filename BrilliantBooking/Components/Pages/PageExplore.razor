@@ -3,7 +3,6 @@
 @rendermode @(new InteractiveServerRenderMode(false))
 @inherits PageBase
 @using Data.VO.Restaurant
-@using BrilliantBooking.Components.Dialog
 
 <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
 <section class="space-y-8">
@@ -73,9 +72,9 @@
                     <div class="sf-glass rounded-3xl overflow-hidden shadow-apple-card hover:shadow-apple-hover transition-all duration-300 transform hover:-translate-y-1 flex flex-col justify-between border border-stone-200/80 dark:border-stone-800 cursor-pointer group" @onclick='() => OpenRestaurant(item)'>
                         <div>
                             <div class="relative h-52 w-full overflow-hidden">
-                                <img src="@item.ImageUrl" alt="@item.Name" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                <img src="@GetImageSrc(item)" alt="@item.Name" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
-
+                                
                                 <span class="absolute top-3 left-3 bg-black/60 backdrop-blur-md text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider border border-white/20">@item.Badge</span>
 
                                 <button @onclick='() => ToggleFavorite(item)' @onclick:stopPropagation class="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/50 text-white backdrop-blur-md flex items-center justify-center hover:scale-110 transition">
