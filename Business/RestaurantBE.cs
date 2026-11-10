@@ -133,17 +133,17 @@ public class RestaurantBE
     public static int index = 0;
     public async Task<RestaurantVO> GetNew()
     {
-        //RestaurantVO restaurant = new RestaurantVO();
-        RestaurantVO restaurant = (await GetRestaurantLsitBy(new()))[index++];
-        RestaurantPhotoVO restaurantPhoto = new RestaurantPhotoVO
-        {
-            Name = restaurant.Name ,
-            Photo = await GetImageBytesAsync(restaurant.ImageUrl) ,
-            Restaurant = restaurant
-        };
+        RestaurantVO restaurant = new RestaurantVO();
+        //RestaurantVO restaurant = (await GetRestaurantLsitBy(new()))[index++];
+        //RestaurantPhotoVO restaurantPhoto = new RestaurantPhotoVO
+        //{
+        //    Name = restaurant.Name ,
+        //    Photo = await GetImageBytesAsync(restaurant.ImageUrl) ,
+        //    Restaurant = restaurant
+        //};
 
-        restaurant.PhotoList.Add(restaurantPhoto);
-        await Task.Delay(1000 * 5);
+        //restaurant.PhotoList.Add(restaurantPhoto);
+        //await Task.Delay(1000 * 5);
         restaurant.Owner = new RestaurantOwnerVO() { Restaurant = restaurant };
         restaurant.OpeningHourList = new[]
             {
