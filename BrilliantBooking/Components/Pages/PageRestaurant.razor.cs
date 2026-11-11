@@ -14,7 +14,7 @@ public partial class PageRestaurant
 
     protected const string InputClass = "w-full rounded-xl border border-white/60 dark:border-white/10 bg-white/60 dark:bg-stone-900/60 backdrop-blur-md px-4 py-2.5 text-sm text-stone-900 dark:text-stone-100 placeholder:text-stone-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-apple-blue";
 
-    protected static readonly string[] StepTitles = ["Basics" , "Location" , "Hours" , "Capacity" , "Tables" , "Review"];
+    protected static readonly string[] StepTitles = ["Basics" , "Location" , "Hours" , "Photos" , "Tables" , "Review"];
     protected static readonly string[] CuisineOptions = ["Seafood" , "French" , "Japanese" , "Italian" , "Farm-to-Table"];
     protected Dictionary<string , string> Errors { get; } = new();
     protected List<string> SubmitErrors { get; } = new();
@@ -97,8 +97,21 @@ public partial class PageRestaurant
     protected void SelectPhoto(int index) =>
         SelectedPhotoIndex = Math.Clamp(index , 0 , Math.Max(Restaurant.PhotoList.Count - 1 , 0));
 
-    protected static string ToDataUrl(RestaurantPhotoVO photo) =>
-        "data:image/*;base64," + Convert.ToBase64String(photo.Photo);
+    private bool IsMain(RestaurantPhotoVO photo) => photo.Sequence == 1;
+
+    private void SetMainPhoto(int index)
+    {
+        if (index < 0 || index >= Restaurant.PhotoList.Count)
+        {
+            return;
+        }
+
+        var photo = Restaurant.PhotoList[index];
+        Restaurant.PhotoList.RemoveAt(index);
+        Restaurant.PhotoList.Insert(0, photo);
+        _fdm.RebindPhotoSequence(Restaurant);
+        SelectedPhotoIndex = 0;
+    }
 
     protected static TimeOnly? ParseTime(object? value) =>
         TimeOnly.TryParse(value?.ToString() , out var time) ? time : null;

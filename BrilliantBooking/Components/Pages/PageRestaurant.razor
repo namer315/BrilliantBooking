@@ -153,7 +153,20 @@
                         <InputFile id="photos" multiple accept="image/*" OnChange="OnPhotosSelected" class="block w-full text-sm text-stone-500 file:mr-4 file:rounded-full file:border-0 file:bg-apple-blue/10 file:px-4 file:py-2 file:text-apple-blue" />
                         @if (Restaurant.PhotoList.Count > 0)
                         {
-                            <img src="@ToDataUrl(Restaurant.PhotoList[SelectedPhotoIndex])" alt="@Restaurant.PhotoList[SelectedPhotoIndex].Name" class="mt-3 w-full aspect-video object-cover rounded-2xl border border-white/60 dark:border-white/10" />
+                            <div class="relative mt-3">
+                                <img src="@Restaurant.PhotoList[SelectedPhotoIndex].Photo.ToImage()" alt="@Restaurant.PhotoList[SelectedPhotoIndex].Name" class="w-full aspect-video object-cover rounded-2xl border border-white/60 dark:border-white/10" />
+                                @if (IsMain(Restaurant.PhotoList[SelectedPhotoIndex]))
+                                {
+                                    <span class="absolute top-3 left-3 px-2.5 py-1 rounded-full text-xs font-semibold text-white bg-apple-blue shadow-md shadow-apple-blue/30">Main</span>
+                                }
+                            </div>
+                            @if (!IsMain(Restaurant.PhotoList[SelectedPhotoIndex]))
+                            {
+                                <button type="button" @onclick="() => SetMainPhoto(SelectedPhotoIndex)"
+                                        class="mt-2 px-4 py-1.5 rounded-full text-xs font-semibold text-apple-blue bg-apple-blue/10 hover:bg-apple-blue/20 transition motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-apple-blue">
+                                    Set as main
+                                </button>
+                            }
                             <div class="mt-3 grid grid-cols-5 gap-2">
                                 @for (var i = 0 ; i < Restaurant.PhotoList.Count ; i++)
                                 {
@@ -163,8 +176,12 @@
                                     <button type="button" @onclick="() => SelectPhoto(index)"
                                             aria-pressed="@selected.ToString().ToLowerInvariant()"
                                             aria-label="Show photo @photo.Name"
-                                            class="rounded-xl overflow-hidden transition motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-apple-blue @(selected ? "ring-2 ring-apple-blue" : "opacity-70 hover:opacity-100")">
-                                        <img src="@ToDataUrl(photo)" alt="@photo.Name" class="w-full aspect-square object-cover" />
+                                            class="relative rounded-xl overflow-hidden transition motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-apple-blue @(selected ? "ring-2 ring-apple-blue" : "opacity-70 hover:opacity-100")">
+                                        <img src="@photo.Photo.ToImage()" alt="@photo.Name" class="w-full aspect-square object-cover" />
+                                        @if (IsMain(photo))
+                                        {
+                                            <span class="absolute top-1 left-1 px-1.5 py-0.5 rounded-full text-[10px] font-semibold text-white bg-apple-blue">Main</span>
+                                        }
                                     </button>
                                 }
                             </div>
