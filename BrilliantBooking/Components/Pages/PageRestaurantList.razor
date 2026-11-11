@@ -1,0 +1,100 @@
+@page "/App/Restaurant"
+
+@inherits PageBase
+@rendermode @(new InteractiveServerRenderMode(false))
+
+<section class="restaurant-list-page">
+    <header class="restaurant-list-header">
+        <h1>Restaurants</h1>
+        @if (TotalRecords > 0)
+        {
+            <p class="restaurant-list-count">@TotalRecords restaurants found</p>
+        }
+    </header>
+
+    @if (RestaurantLsit.Count == 0)
+    {
+        <div class="restaurant-empty">
+            <p>No restaurants are available right now.</p>
+        </div>
+    }
+    else
+    {
+        <div class="restaurant-grid">
+            @foreach (var restaurant in RestaurantLsit)
+            {
+                <article class="restaurant-card" @key="restaurant.Id">
+                    <div class="restaurant-card-image">
+                        @if (!string.IsNullOrWhiteSpace(restaurant.ImageUrl))
+                        {
+                            <img src="@restaurant.ImageUrl" alt="@restaurant.Name" loading="lazy" />
+                        }
+                        else
+                        {
+                            <div class="restaurant-card-placeholder" aria-hidden="true">@restaurant.Name.Substring(0, 1)</div>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(restaurant.Badge))
+                        {
+                            <span class="restaurant-badge">@restaurant.Badge</span>
+                        }
+                    </div>
+
+                    <div class="restaurant-card-body">
+                        <div class="restaurant-card-meta">
+                            <span class="restaurant-cuisine">@restaurant.Cuisine</span>
+                            <span class="restaurant-price" aria-label="Price level @restaurant.PriceLevel of 4">@(new string('$', restaurant.PriceLevel))</span>
+                        </div>
+
+                        <h2 class="restaurant-name">@restaurant.Name</h2>
+
+                        <div class="restaurant-rating">
+                            <span aria-hidden="true">&#9733;</span>
+                            <strong>@restaurant.Rating.ToString("0.0")</strong>
+                            <span class="restaurant-reviews">(@restaurant.ReviewsCount reviews)</span>
+                        </div>
+
+                        <p class="restaurant-location">@restaurant.Location</p>
+
+                        @if (!string.IsNullOrWhiteSpace(restaurant.Description))
+                        {
+                            <p class="restaurant-description">@restaurant.Description</p>
+                        }
+                    </div>
+                </article>
+            }
+        </div>
+
+        <nav class="restaurant-pager" aria-label="Restaurant pages">
+            <button class="pager-btn" type="button" @onclick="PreviousPage" disabled="@(CurrentPage <= 1)">
+                Previous
+            </button>
+
+            <ul class="pager-pages">
+                @for (int page = 1; page <= TotalPages; page++)
+                {
+                    var pageNumber = page;
+                    if (pageNumber == 1 || pageNumber == TotalPages || Math.Abs(pageNumber - CurrentPage) <= 1)
+                    {
+                        <li>
+                            <button class="pager-btn @(pageNumber == CurrentPage ? "active" : string.Empty)"
+                                    type="button"
+                                    aria-label="Page @pageNumber"
+                                    aria-current="@(pageNumber == CurrentPage ? "page" : null)"
+                                    @onclick="() => GoToPage(pageNumber)">
+                                @pageNumber
+                            </button>
+                        </li>
+                    }
+                    else if (pageNumber == 2 || pageNumber == TotalPages - 1)
+                    {
+                        <li class="pager-ellipsis" aria-hidden="true">&hellip;</li>
+                    }
+                }
+            </ul>
+
+            <button class="pager-btn" type="button" @onclick="NextPage" disabled="@(CurrentPage >= TotalPages)">
+                Next
+            </button>
+        </nav>
+    }
+</section>
