@@ -7,7 +7,7 @@ namespace BrilliantBooking.Components.Pages;
 
 public partial class PageBooking
 {
-    private BookingVO Booking;
+    private BookingVO Booking = new();
     private BookingFDM _fdm = new();
 
 
