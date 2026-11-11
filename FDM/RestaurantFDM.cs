@@ -1,5 +1,6 @@
 ﻿using Business;
 using Data.DAO;
+using Data.DTO;
 using Data.Search;
 using Data.VO.Restaurant;
 using System;
@@ -23,4 +24,10 @@ public class RestaurantFDM
 
     public async Task<RestaurantVO> Persist(RestaurantVO restaurant)
         => await _be.Persist(restaurant);
+
+    public void AddPhotos(RestaurantVO restaurant, IEnumerable<FileDTO> files)
+        => _be.AddPhotos(restaurant, files);
+
+    public void RebindPhotoSequence(RestaurantVO restaurant)
+        => _be.RebindPhotoSequence(restaurant);
 }

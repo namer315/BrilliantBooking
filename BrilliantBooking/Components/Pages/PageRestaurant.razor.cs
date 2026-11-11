@@ -1,4 +1,5 @@
 using BrilliantBooking.Extensions;
+using Data.DTO;
 using Data.VO.Restaurant;
 using FDM;
 using Microsoft.AspNetCore.Components.Forms;
@@ -20,6 +21,7 @@ public partial class PageRestaurant
     protected int CurrentStep { get; set; }
     protected bool Submitted { get; set; }
     protected string SubmittedName { get; set; } = string.Empty;
+    protected int SelectedPhotoIndex { get; set; }
 
     protected override void OnInitialized()
     {
@@ -73,27 +75,11 @@ public partial class PageRestaurant
 
     protected async Task OnPhotosSelected(InputFileChangeEventArgs e)
     {
-        //Restaurant.Photos = e.GetMultipleFiles(5)
-        //    .Select(file => new RestaurantPhotoVO { 
-        //        Name = file.Name,
-        //        Photo = file., 
-        //        Restaurant = Restaurant}).ToList();
+        IList<FileDTO> files = await e.ToFileDTOs(5);
 
-        IList<RestaurantPhotoVO> photoList = new List<RestaurantPhotoVO>();
-
-        foreach (var file in e.GetMultipleFiles(5))
-        {
-            using var stream = file.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024);
-            using var memory = new MemoryStream();
-            await stream.CopyToAsync(memory);
-
-            Restaurant.PhotoList.Add(new RestaurantPhotoVO
-            {
-                Name = file.Name ,
-                Photo = memory.ToArray() ,
-                Restaurant = Restaurant
-            });
-        }
+        _fdm.AddPhotos(Restaurant , files);
+        SelectedPhotoIndex = 0;
+        StateHasChanged();
     }
 
     protected async Task HandleFormSubmit()
@@ -107,6 +93,12 @@ public partial class PageRestaurant
             Next();
         }
     }
+
+    protected void SelectPhoto(int index) =>
+        SelectedPhotoIndex = Math.Clamp(index , 0 , Math.Max(Restaurant.PhotoList.Count - 1 , 0));
+
+    protected static string ToDataUrl(RestaurantPhotoVO photo) =>
+        "data:image/*;base64," + Convert.ToBase64String(photo.Photo);
 
     protected static TimeOnly? ParseTime(object? value) =>
         TimeOnly.TryParse(value?.ToString() , out var time) ? time : null;

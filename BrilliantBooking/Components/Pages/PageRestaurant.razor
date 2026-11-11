@@ -147,18 +147,27 @@
 
                 case 3:
                 <fieldset class="space-y-5">
-                    <legend class="text-lg font-semibold text-stone-900 dark:text-white">Capacity and photos</legend>
+                    <legend class="text-lg font-semibold text-stone-900 dark:text-white">Photos</legend>
                     <div>
                         <label for="photos" class="block text-sm font-medium mb-1.5">Photos (up to 5)</label>
                         <InputFile id="photos" multiple accept="image/*" OnChange="OnPhotosSelected" class="block w-full text-sm text-stone-500 file:mr-4 file:rounded-full file:border-0 file:bg-apple-blue/10 file:px-4 file:py-2 file:text-apple-blue" />
                         @if (Restaurant.PhotoList.Count > 0)
                         {
-                            <ul class="mt-2 flex flex-wrap gap-2 text-xs text-stone-500">
-                                @foreach (var photo in Restaurant.PhotoList)
+                            <img src="@ToDataUrl(Restaurant.PhotoList[SelectedPhotoIndex])" alt="@Restaurant.PhotoList[SelectedPhotoIndex].Name" class="mt-3 w-full aspect-video object-cover rounded-2xl border border-white/60 dark:border-white/10" />
+                            <div class="mt-3 grid grid-cols-5 gap-2">
+                                @for (var i = 0 ; i < Restaurant.PhotoList.Count ; i++)
                                 {
-                                    <li class="px-2.5 py-1 rounded-full bg-white/50 dark:bg-white/10 border border-white/60 dark:border-white/10">@photo.Name</li>
+                                    var index = i;
+                                    var photo = Restaurant.PhotoList[i];
+                                    var selected = index == SelectedPhotoIndex;
+                                    <button type="button" @onclick="() => SelectPhoto(index)"
+                                            aria-pressed="@selected.ToString().ToLowerInvariant()"
+                                            aria-label="Show photo @photo.Name"
+                                            class="rounded-xl overflow-hidden transition motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-apple-blue @(selected ? "ring-2 ring-apple-blue" : "opacity-70 hover:opacity-100")">
+                                        <img src="@ToDataUrl(photo)" alt="@photo.Name" class="w-full aspect-square object-cover" />
+                                    </button>
                                 }
-                            </ul>
+                            </div>
                         }
                     </div>
                 </fieldset>

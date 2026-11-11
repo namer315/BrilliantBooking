@@ -1,3 +1,5 @@
+using FluentNHibernate.Mapping;
+
 namespace Data.VO.Restaurant;
 
 /// <summary>
@@ -8,6 +10,7 @@ public class RestaurantPhotoVO : EntityBase
     public virtual string Name { get; set; } = string.Empty;
     public virtual byte[] Photo { get; set; }
     public virtual string Url { get; set; } = string.Empty;
+    public virtual int Sequence { get; set; } = 1;
 
     public virtual RestaurantVO Restaurant { get; set; } = null!;
 }
@@ -19,6 +22,7 @@ public class RestaurantPhotoMap : EntityWithIdMapping<RestaurantPhotoVO>
         Map(x => x.Name).Length(260).Not.Nullable();
         Map(x => x.Photo).Length(int.MaxValue).Not.Nullable();
         Map(x => x.Url).Length(1000).Not.Nullable();
+        Map(x => x.Sequence).Not.Nullable().Default("1");
 
         References(x => x.Restaurant, "Restaurant").Not.Nullable().Index("IX_RestaurantPhotos_RestaurantId");
     }

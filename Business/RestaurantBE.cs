@@ -1,8 +1,8 @@
 ﻿using Data.DAO;
+using Data.DTO;
 using Data.Search;
 using Data.VO.Operations;
 using Data.VO.Restaurant;
-using System.Collections;
 
 namespace Business;
 
@@ -129,6 +129,30 @@ public class RestaurantBE
     private void Validation(RestaurantVO restaurant)
     {
         //if(string.IsNullOrEmpty(restaurant.Name)
+        RebindPhotoSequence(restaurant);
+    }
+    public void RebindPhotoSequence(RestaurantVO restaurant)
+    {
+        int sequence = 1;
+
+        foreach (RestaurantPhotoVO photo in restaurant.PhotoList)
+        {
+            photo.Sequence = sequence++;
+        }
+    }
+
+    public void AddPhotos(RestaurantVO restaurant , IEnumerable<FileDTO> files)
+    {
+        foreach (FileDTO file in files)
+        {
+            restaurant.PhotoList.Add(new RestaurantPhotoVO
+            {
+                Name = file.Name ,
+                Photo = file.File ,
+                Sequence = restaurant.PhotoList.Count + 1,
+                Restaurant = restaurant
+            });
+        }
     }
     public static int index = 0;
     public async Task<RestaurantVO> GetNew()
