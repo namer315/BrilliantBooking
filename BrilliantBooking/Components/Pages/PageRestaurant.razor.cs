@@ -66,7 +66,7 @@ public partial class PageRestaurant
 
     protected void GoTo(int step)
     {
-        if (step < CurrentStep)
+        if (step < CurrentStep || Restaurant.Id != Guid.Empty)
         {
             Errors.Clear();
             CurrentStep = step;
