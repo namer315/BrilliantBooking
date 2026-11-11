@@ -23,14 +23,34 @@ The web project must not reference `Business`.
 private RestaurantFDM _fdm = new RestaurantFDM();
 ```
 
+## Pages
+
+- Every page under `Components\Pages` must inherit `BrilliantBooking.Components.Pages.PageBase`.
+
+```csharp
+public partial class PageRestaurantList : PageBase
+{
+}
+```
+
+- Every page must declare the render mode at the top of its `.razor` file:
+
+```razor
+@rendermode @(new InteractiveServerRenderMode(false))
+```
+
+- A page that overrides `OnAfterRenderAsync` must call `base.OnAfterRenderAsync(firstRender)`.
+
 ## Do
 
 - Put business rules in `Business`.
 - Put queries, DAOs, models, and VOs in `Data`.
 - Call backend functionality from components only through `FDM` classes.
+- Derive every page from `PageBase` and use its shared helpers (`ShowMessage`, `ShowException`, `ShowWarning`, `LoadingService`).
 
 ## Don't
 
 - Don't put business logic in `FDM`.
 - Don't reference `Business` from the web project.
 - Don't write data queries directly in Blazor components.
+- Don't create page classes that skip `PageBase`.
