@@ -312,13 +312,4 @@
         _showReviewForm = false;
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await JS.InvokeVoidAsync("refreshReserveIcons");
-            StateHasChanged();
-        }
-    }
-
 }

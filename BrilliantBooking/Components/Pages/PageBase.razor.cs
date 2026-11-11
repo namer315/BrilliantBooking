@@ -13,6 +13,17 @@ public partial class PageBase
     [Inject] private IMessageBoxService MessageBoxService { get; set; } = default!;
     [Inject] public LoadingService LoadingService { get; set; } = default!;
 
+    #region life
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        //if (firstRender)
+        {
+            await JS.InvokeVoidAsync("refreshReserveIcons");
+            StateHasChanged();
+        }
+    }
+    #endregion
+
     #region IMessageBoxService
     public void ShowMessage(string text , string title = "Confirmation")
     {
