@@ -23,7 +23,7 @@
         <div class="restaurant-grid">
             @foreach (var restaurant in RestaurantLsit)
             {
-                <article class="restaurant-card" @key="restaurant.Id">
+                <article class="restaurant-card" @key="restaurant.Id" @onclick="() => OpenRestaurant(restaurant.Id)">
                     <div class="restaurant-card-image">
                         @if (!string.IsNullOrWhiteSpace(restaurant.ImageUrl))
                         {

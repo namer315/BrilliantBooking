@@ -13,6 +13,16 @@ public partial class PageBase
     [Inject] private IMessageBoxService MessageBoxService { get; set; } = default!;
     [Inject] public LoadingService LoadingService { get; set; } = default!;
 
+
+
+    #region Parameter
+    public string PageMode { get; set; } = null;
+    // The raw string from the URL route (e.g., "New", "new", "d3b07384-...")
+    [Parameter] public string? Id { get; set; }
+    //public bool IsNew => Id is not null && string.Equals(Id , RouteManager.New , StringComparison.OrdinalIgnoreCase);
+
+    #endregion
+
     #region life
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -23,6 +33,28 @@ public partial class PageBase
         }
     }
     #endregion
+
+    /// <summary>
+    /// Parses the route ID. Returns null if "New", a Guid if valid, or throws if invalid.
+    /// </summary>
+    protected Guid? GetEntityId()
+    {
+        // 1. Handle "New" (Case-insensitive)
+        if (string.Equals(Id , /*RouteManager.New*/ "New" , StringComparison.OrdinalIgnoreCase))
+        {
+            return null; // Null implies "Create Mode"
+        }
+
+        // 2. Handle Guid (Edit Mode)
+        if (Guid.TryParse(Id , out var parsedGuid) && parsedGuid != Guid.Empty)
+        {
+            return parsedGuid;
+        }
+
+        // 3. Invalid Route -> Throw
+        //NavigateToErroPage($"Invalid route parameter '{Id}'. Must be a GUID or 'new'.");
+        throw new ArgumentException($"The route parameter '{Id}' is invalid. It must be a GUID or 'New'.");
+    }
 
     #region IMessageBoxService
     public void ShowMessage(string text , string title = "Confirmation")

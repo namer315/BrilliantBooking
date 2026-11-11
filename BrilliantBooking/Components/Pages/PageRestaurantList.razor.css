@@ -95,6 +95,7 @@
     box-shadow: var(--glass-shadow);
     backdrop-filter: blur(20px) saturate(160%);
     -webkit-backdrop-filter: blur(20px) saturate(160%);
+    cursor: pointer;
     transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 

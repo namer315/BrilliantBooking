@@ -1,0 +1,249 @@
+﻿@page "/App/Restaurant/{Id}"
+
+@inherits PageBase
+@rendermode @(new InteractiveServerRenderMode(false))
+
+
+<PageTitle>Register Your Restaurant — Tableau Reserve</PageTitle>
+
+<main class="flex-grow max-w-3xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 min-h-screen bg-gradient-to-br via-purple-50 to-emerald-50 dark:from-stone-950 dark:via-indigo-950 dark:to-stone-900">
+    <header class="text-center mb-8">
+        <h1 class="text-3xl font-bold tracking-tight text-stone-900 dark:text-white">Register your restaurant</h1>
+        <p class="mt-2 text-sm text-stone-500 dark:text-stone-400">Join Tableau Reserve in six simple steps.</p>
+    </header>
+
+    @if (Submitted)
+    {
+        <section class="sf-glass rounded-3xl p-8 text-center shadow-apple-glass backdrop-blur-xl border-white/60 dark:border-white/10" role="alert">
+            <div class="mx-auto w-14 h-14 rounded-full bg-apple-green/20 text-apple-green flex items-center justify-center mb-4">
+                <i data-lucide="check" class="w-7 h-7"></i>
+            </div>
+            <h2 class="text-xl font-semibold text-stone-900 dark:text-white">@SubmittedName is registered</h2>
+            <p class="mt-2 text-sm text-stone-500 dark:text-stone-400">Thank you. Our team will review your listing shortly.</p>
+            <a href="/" class="inline-flex mt-6 px-5 py-2.5 rounded-full bg-apple-blue text-white text-sm font-semibold shadow-md shadow-apple-blue/30 hover:opacity-90 transition focus-visible:ring-2 focus-visible:ring-apple-blue">Back to Explore</a>
+        </section>
+    }
+    else
+    {
+        <nav aria-label="Registration progress" class="mb-8 rounded-2xl border border-white/60 dark:border-white/10 bg-white/50 dark:bg-stone-900/50 backdrop-blur-xl shadow-apple-glass p-4">
+            <ol class="flex items-center justify-between gap-2">
+                @for (var i = 0 ; i < StepTitles.Length ; i++)
+                {
+                    var index = i;
+                    var done = index < CurrentStep;
+                    var active = index == CurrentStep;
+                    <li class="flex-1 flex flex-col items-center text-center">
+                        <button type="button" @onclick="() => GoTo(index)"
+                                aria-current="@(active ? "step" : null)"
+                                class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-semibold transition motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-apple-blue @(active ? "bg-apple-blue text-white shadow-md shadow-apple-blue/30" : done ? "bg-apple-green text-white" : "bg-stone-200 dark:bg-stone-800 text-stone-500")">
+                            @(done ? "✓" : (index + 1).ToString())
+                        </button>
+                        <span class="mt-2 text-[11px] font-medium @(active ? "text-stone-900 dark:text-white" : "text-stone-500")">@StepTitles[i]</span>
+                    </li>
+                }
+            </ol>
+            <div class="mt-4 h-1 rounded-full bg-stone-200 dark:bg-stone-800 overflow-hidden">
+                <div class="h-full bg-apple-blue transition-all duration-500 motion-reduce:transition-none" style="width: @(CurrentStep * 100 / (StepTitles.Length - 1))%"></div>
+            </div>
+        </nav>
+
+        <form class="sf-glass rounded-3xl p-6 sm:p-8 shadow-apple-glass backdrop-blur-xl border-white/60 dark:border-white/10 space-y-6" @onsubmit="HandleFormSubmit" @onsubmit:preventDefault>
+            @switch (CurrentStep)
+            {
+                case 0:
+                <fieldset class="space-y-5">
+                    <legend class="text-lg font-semibold text-stone-900 dark:text-white">The basics</legend>
+                    <div>
+                        <label for="name" class="block text-sm font-medium mb-1.5">Restaurant name</label>
+                        <InputText id="name" class="@InputClass" @bind-Value="Restaurant.Name" placeholder="e.g. Table Bay Bistro" />
+                        @if (ErrorText(nameof(Restaurant.Name)) is { } nameErr)
+                        {
+                            <p class="mt-1 text-xs text-apple-red" role="alert">@nameErr</p>
+                        }
+                    </div>
+                    <div>
+                        <label for="cuisine" class="block text-sm font-medium mb-1.5">Cuisine</label>
+                        <InputSelect id="cuisine" class="@InputClass" @bind-Value="Restaurant.Cuisine">
+                            <option value="">Select a cuisine</option>
+                            @foreach (var c in CuisineOptions)
+                            {
+                                <option value="@c">@c</option>
+                            }
+                        </InputSelect>
+                        @if (ErrorText(nameof(Restaurant.Cuisine)) is { } cuisineErr)
+                        {
+                            <p class="mt-1 text-xs text-apple-red" role="alert">@cuisineErr</p>
+                        }
+                    </div>
+                    <div>
+                        <label for="description" class="block text-sm font-medium mb-1.5">Description</label>
+                        <InputTextArea id="description" rows="4" class="@InputClass" @bind-Value="Restaurant.Description" placeholder="Tell guests what makes your restaurant special." />
+                        <p class="mt-1 text-xs text-stone-500">Up to 1000 characters.</p>
+                        @if (ErrorText(nameof(Restaurant.Description)) is { } descErr)
+                        {
+                            <p class="mt-1 text-xs text-apple-red" role="alert">@descErr</p>
+                        }
+                    </div>
+                </fieldset>
+                break;
+
+                case 1:
+                <fieldset class="space-y-5">
+                    <legend class="text-lg font-semibold text-stone-900 dark:text-white">Location and contact</legend>
+                    <div>
+                        <label for="address" class="block text-sm font-medium mb-1.5">Address</label>
+                        <InputText id="address" class="@InputClass" @bind-Value="Restaurant.Address" placeholder="Street, suburb, city" />
+                        @if (ErrorText(nameof(Restaurant.Address)) is { } addrErr)
+                        {
+                            <p class="mt-1 text-xs text-apple-red" role="alert">@addrErr</p>
+                        }
+                    </div>
+                    <div class="grid sm:grid-cols-2 gap-5">
+                        <div>
+                            <label for="phone" class="block text-sm font-medium mb-1.5">Phone</label>
+                            <InputText id="phone" type="tel" class="@InputClass" @bind-Value="Restaurant.Phone" placeholder="+27 21 000 0000" />
+                            @if (ErrorText(nameof(Restaurant.Phone)) is { } phoneErr)
+                            {
+                                <p class="mt-1 text-xs text-apple-red" role="alert">@phoneErr</p>
+                            }
+                        </div>
+                        <div>
+                            <label for="email" class="block text-sm font-medium mb-1.5">Email</label>
+                            <InputText id="email" type="email" class="@InputClass" @bind-Value="Restaurant.Email" placeholder="hello@restaurant.com" />
+                            @if (ErrorText(nameof(Restaurant.Email)) is { } emailErr)
+                            {
+                                <p class="mt-1 text-xs text-apple-red" role="alert">@emailErr</p>
+                            }
+                        </div>
+                    </div>
+                </fieldset>
+                break;
+
+                case 2:
+                <fieldset class="space-y-4">
+                    <legend class="text-lg font-semibold text-stone-900 dark:text-white">Opening hours</legend>
+                    @foreach (var hour in Restaurant.OpeningHourList)
+                    {
+                        var h = hour;
+                        <div class="flex flex-wrap items-center gap-3 p-3 rounded-xl bg-white/40 dark:bg-white/[0.04] border border-white/50 dark:border-white/5">
+                            <span class="w-28 text-sm font-medium">@h.Day</span>
+                            <label class="flex items-center gap-2 text-xs text-stone-500">
+                                <input type="checkbox" class="accent-apple-blue" @bind="h.IsClosed" /> Closed
+                            </label>
+                            @if (!h.IsClosed)
+                            {
+                                <input type="time" class="@InputClass !w-auto" aria-label="@($"{h.Day} open")" value="@h.OpenTime?.ToString("HH:mm")" @onchange="e => h.OpenTime = ParseTime(e.Value)" />
+                                <span class="text-stone-400">to</span>
+                                <input type="time" class="@InputClass !w-auto" aria-label="@($"{h.Day} close")" value="@h.CloseTime?.ToString("HH:mm")" @onchange="e => h.CloseTime = ParseTime(e.Value)" />
+                            }
+                        </div>
+                        @if (ErrorText($"hours-{h.Day}") is { } hourErr)
+                        {
+                            <p class="text-xs text-apple-red" role="alert">@hourErr</p>
+                        }
+                    }
+                </fieldset>
+                break;
+
+                case 3:
+                <fieldset class="space-y-5">
+                    <legend class="text-lg font-semibold text-stone-900 dark:text-white">Capacity and photos</legend>
+                    <div>
+                        <label for="capacity" class="block text-sm font-medium mb-1.5">Total table capacity (seats)</label>
+                        <InputNumber id="capacity" class="@InputClass" @bind-Value="Restaurant.TableCapacity" />
+                        @if (ErrorText(nameof(Restaurant.TableCapacity)) is { } capErr)
+                        {
+                            <p class="mt-1 text-xs text-apple-red" role="alert">@capErr</p>
+                        }
+                    </div>
+                    <div>
+                        <label for="photos" class="block text-sm font-medium mb-1.5">Photos (up to 5)</label>
+                        <InputFile id="photos" multiple accept="image/*" OnChange="OnPhotosSelected" class="block w-full text-sm text-stone-500 file:mr-4 file:rounded-full file:border-0 file:bg-apple-blue/10 file:px-4 file:py-2 file:text-apple-blue" />
+                        @if (Restaurant.PhotoList.Count > 0)
+                        {
+                            <ul class="mt-2 flex flex-wrap gap-2 text-xs text-stone-500">
+                                @foreach (var photo in Restaurant.PhotoList)
+                                {
+                                    <li class="px-2.5 py-1 rounded-full bg-white/50 dark:bg-white/10 border border-white/60 dark:border-white/10">@photo.Name</li>
+                                }
+                            </ul>
+                        }
+                    </div>
+                </fieldset>
+                break;
+
+                case 4:
+                <fieldset class="space-y-5">
+                    <legend class="text-lg font-semibold text-stone-900 dark:text-white">Owner account</legend>
+                    <div>
+                        <label for="owner-name" class="block text-sm font-medium mb-1.5">Full name</label>
+                        <InputText id="owner-name" class="@InputClass" @bind-Value="Restaurant.Owner.FullName" />
+                        @if (ErrorText(nameof(Restaurant.Owner.FullName)) is { } ownerNameErr)
+                        {
+                            <p class="mt-1 text-xs text-apple-red" role="alert">@ownerNameErr</p>
+                        }
+                    </div>
+                    <div class="grid sm:grid-cols-2 gap-5">
+                        <div>
+                            <label for="owner-email" class="block text-sm font-medium mb-1.5">Email</label>
+                            <InputText id="owner-email" type="email" class="@InputClass" @bind-Value="Restaurant.Owner.Email" />
+                            @if (ErrorText(nameof(Restaurant.Owner.Email)) is { } ownerEmailErr)
+                            {
+                                <p class="mt-1 text-xs text-apple-red" role="alert">@ownerEmailErr</p>
+                            }
+                        </div>
+                        <div>
+                            <label for="owner-phone" class="block text-sm font-medium mb-1.5">Phone</label>
+                            <InputText id="owner-phone" type="tel" class="@InputClass" @bind-Value="Restaurant.Owner.Phone" />
+                            @if (ErrorText(nameof(Restaurant.Owner.Phone)) is { } ownerPhoneErr)
+                            {
+                                <p class="mt-1 text-xs text-apple-red" role="alert">@ownerPhoneErr</p>
+                            }
+                        </div>
+                    </div>
+                </fieldset>
+                break;
+
+                case 5:
+                <section class="space-y-4">
+                    <h2 class="text-lg font-semibold text-stone-900 dark:text-white">Review</h2>
+                    <dl class="grid sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
+                        <div><dt class="text-stone-500">Name</dt><dd class="font-medium">@Restaurant.Name</dd></div>
+                        <div><dt class="text-stone-500">Cuisine</dt><dd class="font-medium">@Restaurant.Cuisine</dd></div>
+                        <div class="sm:col-span-2"><dt class="text-stone-500">Address</dt><dd class="font-medium">@Restaurant.Address</dd></div>
+                        <div><dt class="text-stone-500">Phone</dt><dd class="font-medium">@Restaurant.Phone</dd></div>
+                        <div><dt class="text-stone-500">Email</dt><dd class="font-medium">@Restaurant.Email</dd></div>
+                        <div><dt class="text-stone-500">Capacity</dt><dd class="font-medium">@Restaurant.TableCapacity seats</dd></div>
+                        @Restaurant.PhotoList.Count selected
+                        <div class="sm:col-span-2"><dt class="text-stone-500">Owner</dt><dd class="font-medium">@Restaurant.Owner.FullName (@Restaurant.Owner.Email)</dd></div>
+                    </dl>
+                    @foreach (var err in SubmitErrors)
+                    {
+                        <p class="text-xs text-apple-red" role="alert">@err</p>
+                    }
+                </section>
+                break;
+            }
+
+            <div class="flex items-center justify-between pt-4 border-t border-stone-200 dark:border-stone-800">
+                <button type="button" @onclick="Back" disabled="@(CurrentStep == 0)"
+                        class="px-5 py-2.5 rounded-full text-sm font-medium text-stone-600 dark:text-stone-300 hover:bg-white/60 dark:hover:bg-white/10 transition motion-reduce:transition-none disabled:opacity-40 disabled:pointer-events-none focus-visible:ring-2 focus-visible:ring-apple-blue">
+                    Back
+                </button>
+
+                @if (CurrentStep < StepTitles.Length - 1)
+                {
+                    <button type="submit" class="px-6 py-2.5 rounded-full bg-apple-blue text-white text-sm font-semibold shadow-md shadow-apple-blue/30 hover:opacity-90 transition motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-apple-blue">
+                        Continue
+                    </button>
+                }
+                else
+                {
+                    <button type="submit" class="px-6 py-2.5 rounded-full bg-apple-green text-white text-sm font-semibold shadow-md shadow-apple-green/30 hover:opacity-90 transition motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-apple-green">
+                        Submit registration
+                    </button>
+                }
+            </div>
+        </form>
+    }
+</main>

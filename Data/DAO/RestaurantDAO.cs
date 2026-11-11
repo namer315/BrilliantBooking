@@ -17,15 +17,16 @@ public sealed class RestaurantDAO : NHibernateRepository
 
         return await q.ListAsync();
     }
-    public async Task<IList> GetRestaurantBy(Guid id)
+    public async Task<RestaurantVO> GetRestaurantBy(Guid id)
     {
         IQuery q = Session.CreateQuery(@"
             FROM RestaurantVO restaurant 
             where restaurant.Id = :id
 			")
-            .SetParameter("id" , id);
+            .SetParameter("id" , id)
+            .SetMaxResults(1);
 
-        return await q.ListAsync();
+        return await q.UniqueResultAsync<RestaurantVO>();
     }
 
     public async Task<IList<RestaurantVO>> GetRestaurantListBy(RestaurantSH search)
@@ -40,6 +41,7 @@ public sealed class RestaurantDAO : NHibernateRepository
             FROM RestaurantVO restaurant
             LEFT JOIN FETCH restaurant.PhotoList photo
             {where}
+            ORDER BY restaurant.Name
         ";
 
         return await RunHQLAsync<RestaurantVO>(query, parameters, search);

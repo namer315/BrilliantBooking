@@ -44,4 +44,9 @@ public partial class PageRestaurantList
     {
         RestaurantLsit = await _fdm.GetRestaurantLsitBy(Search).ShowProcessing(this);
     }
+
+    private void OpenRestaurant(Guid id)
+    {
+        NavigationManager.NavigateTo($"/App/Restaurant/{id}");
+    }
 }
