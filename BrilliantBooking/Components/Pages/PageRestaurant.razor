@@ -149,14 +149,6 @@
                 <fieldset class="space-y-5">
                     <legend class="text-lg font-semibold text-stone-900 dark:text-white">Capacity and photos</legend>
                     <div>
-                        <label for="capacity" class="block text-sm font-medium mb-1.5">Total table capacity (seats)</label>
-                        <InputNumber id="capacity" class="@InputClass" @bind-Value="Restaurant.TableCapacity" />
-                        @if (ErrorText(nameof(Restaurant.TableCapacity)) is { } capErr)
-                        {
-                            <p class="mt-1 text-xs text-apple-red" role="alert">@capErr</p>
-                        }
-                    </div>
-                    <div>
                         <label for="photos" class="block text-sm font-medium mb-1.5">Photos (up to 5)</label>
                         <InputFile id="photos" multiple accept="image/*" OnChange="OnPhotosSelected" class="block w-full text-sm text-stone-500 file:mr-4 file:rounded-full file:border-0 file:bg-apple-blue/10 file:px-4 file:py-2 file:text-apple-blue" />
                         @if (Restaurant.PhotoList.Count > 0)
@@ -174,32 +166,14 @@
 
                 case 4:
                 <fieldset class="space-y-5">
-                    <legend class="text-lg font-semibold text-stone-900 dark:text-white">Owner account</legend>
+                    <legend class="text-lg font-semibold text-stone-900 dark:text-white">Tables</legend>
                     <div>
-                        <label for="owner-name" class="block text-sm font-medium mb-1.5">Full name</label>
-                        <InputText id="owner-name" class="@InputClass" @bind-Value="Restaurant.Owner.FullName" />
-                        @if (ErrorText(nameof(Restaurant.Owner.FullName)) is { } ownerNameErr)
+                        <label for="capacity" class="block text-sm font-medium mb-1.5">Total table capacity (seats)</label>
+                        <InputNumber id="capacity" class="@InputClass" @bind-Value="Restaurant.TableCapacity" />
+                        @if (ErrorText(nameof(Restaurant.TableCapacity)) is { } capErr)
                         {
-                            <p class="mt-1 text-xs text-apple-red" role="alert">@ownerNameErr</p>
+                            <p class="mt-1 text-xs text-apple-red" role="alert">@capErr</p>
                         }
-                    </div>
-                    <div class="grid sm:grid-cols-2 gap-5">
-                        <div>
-                            <label for="owner-email" class="block text-sm font-medium mb-1.5">Email</label>
-                            <InputText id="owner-email" type="email" class="@InputClass" @bind-Value="Restaurant.Owner.Email" />
-                            @if (ErrorText(nameof(Restaurant.Owner.Email)) is { } ownerEmailErr)
-                            {
-                                <p class="mt-1 text-xs text-apple-red" role="alert">@ownerEmailErr</p>
-                            }
-                        </div>
-                        <div>
-                            <label for="owner-phone" class="block text-sm font-medium mb-1.5">Phone</label>
-                            <InputText id="owner-phone" type="tel" class="@InputClass" @bind-Value="Restaurant.Owner.Phone" />
-                            @if (ErrorText(nameof(Restaurant.Owner.Phone)) is { } ownerPhoneErr)
-                            {
-                                <p class="mt-1 text-xs text-apple-red" role="alert">@ownerPhoneErr</p>
-                            }
-                        </div>
                     </div>
                 </fieldset>
                 break;
@@ -215,7 +189,6 @@
                         <div><dt class="text-stone-500">Email</dt><dd class="font-medium">@Restaurant.Email</dd></div>
                         <div><dt class="text-stone-500">Capacity</dt><dd class="font-medium">@Restaurant.TableCapacity seats</dd></div>
                         @Restaurant.PhotoList.Count selected
-                        <div class="sm:col-span-2"><dt class="text-stone-500">Owner</dt><dd class="font-medium">@Restaurant.Owner.FullName (@Restaurant.Owner.Email)</dd></div>
                     </dl>
                     @foreach (var err in SubmitErrors)
                     {

@@ -13,7 +13,7 @@ public partial class PageRestaurant
 
     protected const string InputClass = "w-full rounded-xl border border-white/60 dark:border-white/10 bg-white/60 dark:bg-stone-900/60 backdrop-blur-md px-4 py-2.5 text-sm text-stone-900 dark:text-stone-100 placeholder:text-stone-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-apple-blue";
 
-    protected static readonly string[] StepTitles = ["Basics" , "Location" , "Hours" , "Capacity" , "Owner" , "Review"];
+    protected static readonly string[] StepTitles = ["Basics" , "Location" , "Hours" , "Capacity" , "Tables" , "Review"];
     protected static readonly string[] CuisineOptions = ["Seafood" , "French" , "Japanese" , "Italian" , "Farm-to-Table"];
     protected Dictionary<string , string> Errors { get; } = new();
     protected List<string> SubmitErrors { get; } = new();
@@ -151,13 +151,8 @@ public partial class PageRestaurant
                     }
                 }
                 break;
-            case 3:
-                ValidateMember(Restaurant , nameof(Restaurant.TableCapacity));
-                break;
             case 4:
-                ValidateMember(Restaurant.Owner , nameof(Restaurant.Owner.FullName));
-                ValidateMember(Restaurant.Owner , nameof(Restaurant.Owner.Email));
-                ValidateMember(Restaurant.Owner , nameof(Restaurant.Owner.Phone));
+                ValidateMember(Restaurant , nameof(Restaurant.TableCapacity));
                 break;
         }
 
