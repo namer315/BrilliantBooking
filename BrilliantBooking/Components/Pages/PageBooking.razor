@@ -123,7 +123,7 @@
                             <svg viewBox="0 0 800 @canvasHeight" class="w-full h-auto select-none" role="group" aria-label="Floor plan">
                                 @foreach (var (table, cx, cy, _) in layout)
                                 {
-                                    var seats = Math.Max(table.Seats, 1);
+                                    var seats = Math.Max(table.GuestCount, 1);
                                     var isSelected = Booking.TableName == table.Name;
                                     var tooSmall = seats < Booking.GuestCount;
                                     var fill = isSelected ? "#0A84FF" : tooSmall ? "#9CA3AF" : "#34C759";
@@ -147,7 +147,7 @@
                                             <rect x="@(cx - width / 2)" y="@(cy - 35)" width="@width" height="70" rx="14" fill="@fill" fill-opacity="@(isSelected ? "1" : "0.2")" stroke="@stroke" stroke-width="3" />
                                         }
                                         <text x="@cx" y="@(cy - 2)" text-anchor="middle" font-size="13" font-weight="bold" fill="@textColor">@table.Name</text>
-                                        <text x="@cx" y="@(cy + 16)" text-anchor="middle" font-size="11" fill="@subColor">@table.Seats seats</text>
+                                        <text x="@cx" y="@(cy + 16)" text-anchor="middle" font-size="11" fill="@subColor">@table.GuestCount seats</text>
                                     </g>
                                 }
                             </svg>

@@ -65,7 +65,7 @@ public partial class PageBooking
         double x = 30, y = 40, rowHeight = 0;
         foreach (var t in tables)
         {
-            var s = Math.Max(t.Seats, 1);
+            var s = Math.Max(t.GuestCount, 1);
             double w = 60 + s * 10;
             var h = s <= 2 ? 44 + s * 6 : 70;
             if (x + w > 770)
@@ -83,7 +83,7 @@ public partial class PageBooking
 
     private void SelectTable(TableVO table)
     {
-        if (table.Seats < Booking.GuestCount)
+        if (table.GuestCount < Booking.GuestCount)
         {
             return;
         }

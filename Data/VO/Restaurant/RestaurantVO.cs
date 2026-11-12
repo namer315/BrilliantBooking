@@ -60,5 +60,6 @@ public class RestaurantMap : EntityWithIdMapping<RestaurantVO>
 
         HasMany(x => x.OpeningHourList).KeyColumn("Restaurant").Inverse().Cascade.AllDeleteOrphan();
         HasMany(x => x.PhotoList).KeyColumn("Restaurant").OrderBy("Sequence").Inverse().Cascade.AllDeleteOrphan();
+        HasMany(x => x.TableList).KeyColumn("Restaurant").Inverse().Cascade.AllDeleteOrphan();
     }
 }
