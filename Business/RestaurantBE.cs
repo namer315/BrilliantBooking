@@ -130,6 +130,10 @@ public class RestaurantBE
     {
         //if(string.IsNullOrEmpty(restaurant.Name)
         RebindPhotoSequence(restaurant);
+        foreach (TableVO table in restaurant.TableList)
+        {
+            table.Restaurant = restaurant;
+        }
     }
     public void RebindPhotoSequence(RestaurantVO restaurant)
     {
