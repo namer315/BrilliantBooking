@@ -116,20 +116,6 @@
                         </label>
                     </div>
 
-                    <fieldset class="field">
-                        <legend class="field-label">Dining preference</legend>
-                        <div class="field-grid">
-                            <label class="remember">
-                                <input type="radio" name="dining-preference" value="main" checked='@(_diningPreference == "main")' @onchange='() => _diningPreference = "main"' />
-                                <span>Main dining</span>
-                            </label>
-                            <label class="remember">
-                                <input type="radio" name="dining-preference" value="tasting" checked='@(_diningPreference == "tasting")' @onchange='() => _diningPreference = "tasting"' />
-                                <span>Tasting menu</span>
-                            </label>
-                        </div>
-                    </fieldset>
-
                     <label class="field">
                         <span class="field-label">Password</span>
                         <span class="field-control">

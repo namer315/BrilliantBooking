@@ -13,7 +13,6 @@ public partial class PageLogin
     private string? _errorMessage;
     private bool _showPassword;
     private bool _showConfirmPassword;
-    private string _diningPreference = "main";
 
     private string PasswordInputType => _showPassword ? "text" : "password";
 
