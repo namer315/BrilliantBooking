@@ -1,0 +1,114 @@
+﻿@page "/login"
+@inherits PageBase
+@rendermode @(new InteractiveServerRenderMode(false))
+@using Data.DTO
+
+<div class="login-page">
+    <div class="login-card">
+        <aside class="login-story" aria-label="Restaurant highlights">
+            <div class="story-top">
+                <span class="story-eyebrow">Table reservations</span>
+                <h2 class="story-heading">Reserve your table in moments</h2>
+                <p class="story-copy">Book seasonal tasting menus, manage your reservations, and discover restaurants near you.</p>
+            </div>
+            <div class="story-highlight">
+                <i data-lucide="utensils" class="story-icon" aria-hidden="true"></i>
+                <div>
+                    <p class="story-highlight-title">Chef's tasting menu</p>
+                    <p class="story-highlight-sub">Wine pairings available</p>
+                </div>
+            </div>
+        </aside>
+
+        <section class="login-form-panel">
+            <div class="login-brand">
+                <div class="login-logo" aria-hidden="true">
+                    <i data-lucide="utensils-crossed"></i>
+                </div>
+                <h1 class="login-title">Brilliant Booking</h1>
+                <p class="login-tagline">Reserve your table</p>
+            </div>
+
+            <div class="sf-segmented auth-tabs" role="tablist" aria-label="Account action">
+                <button type="button" role="tab" class="auth-tab @(_isSignIn ? "active" : "")"
+                        aria-selected="@_isSignIn" @onclick="ShowSignIn">Sign in</button>
+                <button type="button" role="tab" class="auth-tab @(!_isSignIn ? "active" : "")"
+                        aria-selected="@(!_isSignIn)" @onclick="ShowSignUp">Create account</button>
+            </div>
+
+            @if (!string.IsNullOrEmpty(_errorMessage))
+            {
+                <p class="form-error" role="alert">@_errorMessage</p>
+            }
+
+            @if (_isSignIn)
+            {
+                <EditForm Model="_signIn" OnValidSubmit="HandleSignInAsync" class="login-form">
+                    <label class="field">
+                        <span class="field-label">Email</span>
+                        <span class="field-control">
+                            <i data-lucide="mail" class="field-icon" aria-hidden="true"></i>
+                            <InputText @bind-Value="_signIn.Email" class="field-input" type="email" autocomplete="username" placeholder="you@example.com" />
+                        </span>
+                    </label>
+
+                    <label class="field">
+                        <span class="field-row">
+                            <span class="field-label">Password</span>
+                            <button type="button" class="link-button" @onclick="ShowForgotPassword">Forgot password?</button>
+                        </span>
+                        <span class="field-control">
+                            <i data-lucide="lock" class="field-icon" aria-hidden="true"></i>
+                            <InputText @bind-Value="_signIn.Password" class="field-input" type="@PasswordInputType" autocomplete="current-password" placeholder="••••••••" />
+                            <button type="button" class="field-toggle" aria-label="Toggle password visibility" @onclick="TogglePasswordVisibility">
+                                <i data-lucide="@(_showPassword ? "eye-off" : "eye")" aria-hidden="true"></i>
+                            </button>
+                        </span>
+                    </label>
+
+                    <label class="remember">
+                        <InputCheckbox @bind-Value="_signIn.RememberMe" />
+                        <span>Remember me</span>
+                    </label>
+
+                    <button type="submit" class="btn-primary" disabled="@_isBusy">Sign in</button>
+                </EditForm>
+            }
+            else
+            {
+                <EditForm Model="_signUp" OnValidSubmit="HandleSignUpAsync" class="login-form">
+                    <label class="field">
+                        <span class="field-label">Email</span>
+                        <span class="field-control">
+                            <i data-lucide="mail" class="field-icon" aria-hidden="true"></i>
+                            <InputText @bind-Value="_signUp.Email" class="field-input" type="email" autocomplete="username" placeholder="you@example.com" />
+                        </span>
+                    </label>
+
+                    <label class="field">
+                        <span class="field-label">Password</span>
+                        <span class="field-control">
+                            <i data-lucide="lock" class="field-icon" aria-hidden="true"></i>
+                            <InputText @bind-Value="_signUp.Password" class="field-input" type="@PasswordInputType" autocomplete="new-password" placeholder="••••••••" />
+                            <button type="button" class="field-toggle" aria-label="Toggle password visibility" @onclick="TogglePasswordVisibility">
+                                <i data-lucide="@(_showPassword ? "eye-off" : "eye")" aria-hidden="true"></i>
+                            </button>
+                        </span>
+                    </label>
+
+                    <label class="field">
+                        <span class="field-label">Confirm password</span>
+                        <span class="field-control">
+                            <i data-lucide="shield-check" class="field-icon" aria-hidden="true"></i>
+                            <InputText @bind-Value="_signUp.ConfirmPassword" class="field-input" type="@PasswordInputType" autocomplete="new-password" placeholder="••••••••" />
+                        </span>
+                    </label>
+
+                    <button type="submit" class="btn-primary" disabled="@_isBusy">Create account</button>
+                </EditForm>
+            }
+        </section>
+    </div>
+</div>
+
+
