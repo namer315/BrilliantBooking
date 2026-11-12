@@ -1,5 +1,6 @@
 using BrilliantBooking.Extensions;
 using Data.DTO;
+using Data.VO.Operations;
 using Data.VO.Restaurant;
 using FDM;
 using Microsoft.AspNetCore.Components.Forms;
@@ -22,6 +23,9 @@ public partial class PageRestaurant
     protected bool Submitted { get; set; }
     protected string SubmittedName { get; set; } = string.Empty;
     protected int SelectedPhotoIndex { get; set; }
+    protected TableVO NewTable { get; set; } = new();
+    protected int EditingTableIndex { get; set; } = -1;
+    protected bool IsEditingTable => EditingTableIndex >= 0;
 
     protected override void OnInitialized()
     {
@@ -113,6 +117,103 @@ public partial class PageRestaurant
         SelectedPhotoIndex = 0;
     }
 
+    #region Table tab
+    protected void AddTable()
+    {
+        Errors.Clear();
+        if (!ValidateTable(NewTable))
+        {
+            return;
+        }
+
+        Restaurant.TableList.Add(new TableVO
+        {
+            Name = NewTable.Name.Trim(),
+            GuestCount = NewTable.GuestCount,
+            Description = string.IsNullOrWhiteSpace(NewTable.Description) ? null : NewTable.Description.Trim()
+        });
+        NewTable = new TableVO();
+    }
+
+    protected void EditTable(int index)
+    {
+        if (index < 0 || index >= Restaurant.TableList.Count)
+        {
+            return;
+        }
+
+        var table = Restaurant.TableList[index];
+        Errors.Clear();
+        NewTable = new TableVO
+        {
+            Name = table.Name,
+            GuestCount = table.GuestCount,
+            Description = table.Description
+        };
+        EditingTableIndex = index;
+    }
+
+    protected void SaveTable()
+    {
+        if (!IsEditingTable)
+        {
+            AddTable();
+            return;
+        }
+
+        Errors.Clear();
+        if (!ValidateTable(NewTable))
+        {
+            return;
+        }
+
+        var table = Restaurant.TableList[EditingTableIndex];
+        table.Name = NewTable.Name.Trim();
+        table.GuestCount = NewTable.GuestCount;
+        table.Description = string.IsNullOrWhiteSpace(NewTable.Description) ? null : NewTable.Description.Trim();
+        CancelEdit();
+    }
+
+    protected void CancelEdit()
+    {
+        NewTable = new TableVO();
+        EditingTableIndex = -1;
+        foreach (var key in Errors.Keys.Where(k => k.StartsWith("table-")).ToList())
+        {
+            Errors.Remove(key);
+        }
+    }
+
+    protected void RemoveTable(int index)
+    {
+        if (index < 0 || index >= Restaurant.TableList.Count || index == EditingTableIndex)
+        {
+            return;
+        }
+
+        Restaurant.TableList.RemoveAt(index);
+        if (IsEditingTable && index < EditingTableIndex)
+        {
+            EditingTableIndex--;
+        }
+    }
+
+    private bool ValidateTable(TableVO table)
+    {
+        var results = new List<ValidationResult>();
+        if (!Validator.TryValidateObject(table, new ValidationContext(table), results, validateAllProperties: true))
+        {
+            foreach (var result in results)
+            {
+                var member = result.MemberNames.FirstOrDefault() ?? string.Empty;
+                Errors[$"table-{member}"] = result.ErrorMessage ?? "Invalid value.";
+            }
+        }
+
+        return Errors.Count == 0;
+    }
+    #endregion
+
     protected static TimeOnly? ParseTime(object? value) =>
         TimeOnly.TryParse(value?.ToString() , out var time) ? time : null;
 
@@ -158,6 +259,10 @@ public partial class PageRestaurant
                 break;
             case 4:
                 ValidateMember(Restaurant , nameof(Restaurant.TableCapacity));
+                if (Restaurant.TableList.Count == 0)
+                {
+                    Errors["table-list"] = "Add at least one table.";
+                }
                 break;
         }
 
