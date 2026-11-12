@@ -1,5 +1,6 @@
 ﻿using Business;
 using Data.DTO;
+using Data.VO;
 
 namespace FDM;
 
@@ -10,6 +11,6 @@ public class UserFDM
     public async Task<bool> SignInAsync(SignInDTO signIn)
         => await _be.SignInAsync(signIn);
 
-    public async Task<bool> SignUpAsync(SignUpDTO signUp)
+    public async Task<UserVO> SignUpAsync(SignUpDTO signUp)
         => await _be.SignUpAsync(signUp);
 }

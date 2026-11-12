@@ -123,4 +123,7 @@
   <data name="PleaseWait" xml:space="preserve">
     <value>يرجى الانتظار...</value>
   </data>
+  <data name="Name" xml:space="preserve">
+    <value>الاسم</value>
+  </data>
 </root>
