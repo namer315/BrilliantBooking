@@ -43,6 +43,8 @@
 
             @if (_isSignIn)
             {
+                <p class="field-hint">Welcome back. Sign in to manage your reservations.</p>
+
                 <EditForm Model="_signIn" OnValidSubmit="HandleSignInAsync" class="login-form">
                     <label class="field">
                         <span class="field-label">Email</span>
@@ -71,19 +73,62 @@
                         <span>Remember me</span>
                     </label>
 
-                    <button type="submit" class="btn-primary" disabled="@_isBusy">Sign in</button>
+                    <button type="submit" class="btn-primary" disabled="@_isBusy">
+                        Sign in <i data-lucide="arrow-right" aria-hidden="true"></i>
+                    </button>
                 </EditForm>
+
+                <div class="divider">Or continue with</div>
+
+                <div class="social-buttons">
+                    <button type="button" class="btn-social" @onclick='() => ShowSocialPlaceholder("Google")'>Google</button>
+                    <button type="button" class="btn-social" @onclick='() => ShowSocialPlaceholder("Apple")'>Apple</button>
+                </div>
             }
             else
             {
+                <p class="field-hint">Join the VIP circle for priority reservations and curated menus.</p>
+
                 <EditForm Model="_signUp" OnValidSubmit="HandleSignUpAsync" class="login-form">
                     <label class="field">
-                        <span class="field-label">Email</span>
+                        <span class="field-label">Full name</span>
                         <span class="field-control">
-                            <i data-lucide="mail" class="field-icon" aria-hidden="true"></i>
-                            <InputText @bind-Value="_signUp.Email" class="field-input" type="email" autocomplete="username" placeholder="you@example.com" />
+                            <i data-lucide="user" class="field-icon" aria-hidden="true"></i>
+                            <InputText @bind-Value="_signUp.FullName" class="field-input" autocomplete="name" placeholder="Jane Doe" />
                         </span>
                     </label>
+
+                    <div class="field-grid">
+                        <label class="field">
+                            <span class="field-label">Email</span>
+                            <span class="field-control">
+                                <i data-lucide="mail" class="field-icon" aria-hidden="true"></i>
+                                <InputText @bind-Value="_signUp.Email" class="field-input" type="email" autocomplete="username" placeholder="you@example.com" />
+                            </span>
+                        </label>
+
+                        <label class="field">
+                            <span class="field-label">Phone</span>
+                            <span class="field-control">
+                                <i data-lucide="phone" class="field-icon" aria-hidden="true"></i>
+                                <InputText @bind-Value="_signUp.Phone" class="field-input" type="tel" autocomplete="tel" placeholder="+1 555 000 0000" />
+                            </span>
+                        </label>
+                    </div>
+
+                    <fieldset class="field">
+                        <legend class="field-label">Dining preference</legend>
+                        <div class="field-grid">
+                            <label class="remember">
+                                <input type="radio" name="dining-preference" value="main" checked='@(_diningPreference == "main")' @onchange='() => _diningPreference = "main"' />
+                                <span>Main dining</span>
+                            </label>
+                            <label class="remember">
+                                <input type="radio" name="dining-preference" value="tasting" checked='@(_diningPreference == "tasting")' @onchange='() => _diningPreference = "tasting"' />
+                                <span>Tasting menu</span>
+                            </label>
+                        </div>
+                    </fieldset>
 
                     <label class="field">
                         <span class="field-label">Password</span>
@@ -94,18 +139,43 @@
                                 <i data-lucide="@(_showPassword ? "eye-off" : "eye")" aria-hidden="true"></i>
                             </button>
                         </span>
+                        <span class="password-strength" aria-hidden="true">
+                            @for (var i = 0; i < 4; i++)
+                            {
+                                var index = i;
+                                <span class="password-strength-bar @(index < PasswordStrength ? "filled" : "")"></span>
+                            }
+                        </span>
                     </label>
 
                     <label class="field">
                         <span class="field-label">Confirm password</span>
                         <span class="field-control">
                             <i data-lucide="shield-check" class="field-icon" aria-hidden="true"></i>
-                            <InputText @bind-Value="_signUp.ConfirmPassword" class="field-input" type="@PasswordInputType" autocomplete="new-password" placeholder="••••••••" />
+                            <InputText @bind-Value="_signUp.ConfirmPassword" class="field-input" type="@ConfirmPasswordInputType" autocomplete="new-password" placeholder="••••••••" />
+                            <button type="button" class="field-toggle" aria-label="Toggle confirm password visibility" @onclick="ToggleConfirmPasswordVisibility">
+                                <i data-lucide="@(_showConfirmPassword ? "eye-off" : "eye")" aria-hidden="true"></i>
+                            </button>
                         </span>
+                        @if (PasswordsMismatch)
+                        {
+                            <span class="field-error" role="alert">Passwords do not match.</span>
+                        }
                     </label>
 
-                    <button type="submit" class="btn-primary" disabled="@_isBusy">Create account</button>
+                    <button type="submit" class="btn-primary" disabled="@_isBusy">
+                        Create VIP Membership <i data-lucide="arrow-right" aria-hidden="true"></i>
+                    </button>
                 </EditForm>
+            }
+
+            @if (_isSignIn)
+            {
+                <p class="auth-footer">Not a member yet? <button type="button" class="link-button" @onclick="ShowSignUp">Create an account</button></p>
+            }
+            else
+            {
+                <p class="auth-footer">Already a member? <button type="button" class="link-button" @onclick="ShowSignIn">Sign in</button></p>
             }
         </section>
     </div>
