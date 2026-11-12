@@ -1,7 +1,8 @@
 ﻿@page "/login"
+
 @inherits PageBase
 @rendermode @(new InteractiveServerRenderMode(false))
-@using Data.DTO
+@using Data.VO
 
 <div class="login-page">
     <div class="login-card">
@@ -149,8 +150,22 @@
                         }
                     </label>
 
+                    <fieldset class="field">
+                        <legend class="field-label">Account type</legend>
+                        <div class="field-grid account-type-grid">
+                            <label class="remember">
+                                <input type="radio" name="account-type" value="Client" checked='@(_signUp.Type == UserVO.UserType.Client)' @onchange='() => _signUp.Type = UserVO.UserType.Client' />
+                                <span>Client</span>
+                            </label>
+                            <label class="remember">
+                                <input type="radio" name="account-type" value="Owner" checked='@(_signUp.Type == UserVO.UserType.Owner)' @onchange='() => _signUp.Type = UserVO.UserType.Owner' />
+                                <span>Owner</span>
+                            </label>
+                        </div>
+                    </fieldset>
+
                     <button type="submit" class="btn-primary" disabled="@_isBusy">
-                        Create VIP Membership <i data-lucide="arrow-right" aria-hidden="true"></i>
+                        Create Membership <i data-lucide="arrow-right" aria-hidden="true"></i>
                     </button>
                 </EditForm>
             }

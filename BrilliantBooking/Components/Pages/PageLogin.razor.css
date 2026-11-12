@@ -180,7 +180,7 @@
 .field {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 14px;
 }
 
 .field-row {
@@ -365,6 +365,10 @@
     display: grid;
     grid-template-columns: 1fr;
     gap: 24px;
+}
+
+.account-type-grid {
+    grid-template-columns: 1fr 1fr;
 }
 
 .field-hint {

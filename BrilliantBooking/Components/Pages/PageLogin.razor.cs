@@ -1,4 +1,6 @@
+using BrilliantBooking.Extensions;
 using Data.DTO;
+using Data.VO;
 using FDM;
 
 namespace BrilliantBooking.Components.Pages;
@@ -96,7 +98,7 @@ public partial class PageLogin
 
         await RunAsync(async () =>
         {
-            if (await _fdm.SignUpAsync(_signUp))
+            if (await _fdm.SignUpAsync(_signUp) is UserVO user)
             {
                 ShowMessage("Account created successfully.", "Welcome");
             }
@@ -108,7 +110,7 @@ public partial class PageLogin
         _isBusy = true;
         try
         {
-            await action();
+            await action().ShowProcessing(this);
         }
         catch (Exception ex)
         {
