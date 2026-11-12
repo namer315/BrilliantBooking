@@ -94,11 +94,12 @@ public class RestaurantBE
         };
     }
 
-    private IList<TableVO> GetTableList(int v)
+    public IList<TableVO> GetTableList(int v)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(v);
 
         string[] zones = { "Indoor" , "Terrace" , "Bar" , "Private Room" };
+        string[] statuses = { "Available" , "Selected" , "Reserved" };
 
         IList<TableVO> tables = new List<TableVO>(v);
 
@@ -109,10 +110,10 @@ public class RestaurantBE
             tables.Add(new TableVO
             {
                 Name = $"T{i + 1}" ,
-                Seats = seats ,
-                Capacity = seats ,
-                Zone = zones[Random.Shared.Next(zones.Length)] ,
-                Status = "Available"
+                GuestCount = seats ,
+                //Capacity = seats ,
+                //Zone = zones[Random.Shared.Next(zones.Length)] ,
+                //Status = statuses[Random.Shared.Next(statuses.Length)]
             });
         }
 
