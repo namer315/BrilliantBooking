@@ -14,13 +14,25 @@ public class AppException : Exception
         ErrorCode = errorCode;
     }
     public AppException(ErrorCode errorCode , params object[] args)
-        : base(string.Format(
-            ExceptionResource.ResourceManager.GetString(errorCode.ToString())
-            ?? errorCode.ToString() ,
-            args))
+        : base(FormatMessage(errorCode , args))
     {
         ErrorCode = errorCode;
     }
+
+    private static string FormatMessage(ErrorCode errorCode , object[] args)
+    {
+        return string.Format(
+                    ExceptionResource.ResourceManager.GetString(errorCode.ToString())
+                    ?? errorCode.ToString() ,
+                    args);
+    }
+
+    private static string GetMessage(ErrorCode errorCode)
+    {
+        return ExceptionResource.ResourceManager.GetString(errorCode.ToString())
+               ?? errorCode.ToString();
+    }
+
     //public AppException(ErrorCode errorCode , Exception innerException , params object[] args)
     //    : base(FormatMessage(errorCode , args) , innerException)
     //{
@@ -37,12 +49,6 @@ public class AppException : Exception
     //        ? string.Format(template , args)
     //        : template;
     //}
-
-    private static string GetMessage(ErrorCode errorCode)
-    {
-        return ExceptionResource.ResourceManager.GetString(errorCode.ToString())
-               ?? errorCode.ToString();
-    }
 }
 /// <summary>
 /// Identifies the error that an <see cref="AppException"/> represents.
