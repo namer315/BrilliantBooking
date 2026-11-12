@@ -133,6 +133,32 @@
                             <InputNumber id="capacity" class="@InputClass" @bind-Value="Restaurant.TableCapacity" />
                             @if (ErrorText(nameof(Restaurant.TableCapacity)) is { } capErr) { <p class="mt-1 text-xs text-apple-red" role="alert">@capErr</p> }
                         </div>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium">Tables</span>
+                                <button type="button" @onclick="AddTable" class="px-3 py-1.5 rounded-full bg-apple-blue/10 text-apple-blue text-xs font-semibold hover:opacity-90 transition">Add table</button>
+                            </div>
+                            @foreach (var table in Restaurant.TableList)
+                            {
+                                var t = table;
+                                <div class="grid sm:grid-cols-4 gap-3 items-end p-3 rounded-xl bg-black/[0.03] dark:bg-white/[0.04]">
+                                    <div>
+                                        <label class="block text-xs font-medium mb-1">Name</label>
+                                        <InputText class="@InputClass" @bind-Value="t.Name" />
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium mb-1">Guests</label>
+                                        <InputNumber class="@InputClass" @bind-Value="t.GuestCount" />
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium mb-1">Zone</label>
+                                        <InputText class="@InputClass" @bind-Value="t.Zone" />
+                                    </div>
+                                    <button type="button" @onclick="() => RemoveTable(t)" class="px-3 py-2.5 rounded-xl text-xs font-medium text-apple-red hover:bg-black/5 dark:hover:bg-white/10 transition">Remove</button>
+                                </div>
+                            }
+                            @if (ErrorText("tables") is { } tablesErr) { <p class="mt-1 text-xs text-apple-red" role="alert">@tablesErr</p> }
+                        </div>
                         <div>
                             <label for="photos" class="block text-sm font-medium mb-1.5">Photos (up to 5)</label>
                             <InputFile id="photos" multiple accept="image/*" OnChange="OnPhotosSelected" class="block w-full text-sm text-stone-500 file:mr-4 file:rounded-full file:border-0 file:bg-apple-blue/10 file:px-4 file:py-2 file:text-apple-blue" />
@@ -159,6 +185,7 @@
                             <div><dt class="text-stone-500">Phone</dt><dd class="font-medium">@Restaurant.Phone</dd></div>
                             <div><dt class="text-stone-500">Email</dt><dd class="font-medium">@Restaurant.Email</dd></div>
                             <div><dt class="text-stone-500">Capacity</dt><dd class="font-medium">@Restaurant.TableCapacity seats</dd></div>
+                            <div><dt class="text-stone-500">Tables</dt><dd class="font-medium">@Restaurant.TableList.Count</dd></div>
                             @Restaurant.PhotoList.Count selected
                         </dl>
                         @foreach (var err in SubmitErrors)

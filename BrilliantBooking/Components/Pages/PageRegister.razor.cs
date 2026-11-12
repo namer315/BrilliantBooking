@@ -1,3 +1,4 @@
+using Data.VO.Operations;
 using Data.VO.Restaurant;
 using FDM;
 using Microsoft.AspNetCore.Components.Forms;
@@ -106,6 +107,18 @@ public partial class PageRegister
     protected static TimeOnly? ParseTime(object? value) =>
         TimeOnly.TryParse(value?.ToString(), out var time) ? time : null;
 
+    protected void AddTable()
+    {
+        Restaurant.TableList.Add(new TableVO
+        {
+            GuestCount = 2,
+            Capacity = 2,
+            Restaurant = Restaurant
+        });
+    }
+
+    protected void RemoveTable(TableVO table) => Restaurant.TableList.Remove(table);
+
     private async Task endEdit()
     {
         try
@@ -148,6 +161,10 @@ public partial class PageRegister
                 break;
             case 3:
                 ValidateMember(Restaurant, nameof(Restaurant.TableCapacity));
+                if (Restaurant.TableList.Count == 0)
+                {
+                    Errors["tables"] = "Add at least one table.";
+                }
                 break;
         }
 

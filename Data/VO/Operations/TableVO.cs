@@ -12,8 +12,8 @@ public class TableVO : EntityBase
 {
     [Required, StringLength(100)]
     public virtual string Name { get; set; } = string.Empty;
-    [Range(1, 50)]
-    public virtual int GuestCount { get; set; }
+    [Range(1 , 50)]
+    public virtual int GuestCount { get; set; } = 1;
     public virtual string? Zone { get; set; }
     public virtual string? Status { get; set; }
 
