@@ -173,7 +173,7 @@ public class RestaurantBE
 
         //restaurant.PhotoList.Add(restaurantPhoto);
         //await Task.Delay(1000 * 5);
-        restaurant.Owner = new RestaurantOwnerVO() { Restaurant = restaurant };
+        //restaurant.Owner = new RestaurantOwnerVO() { Restaurant = restaurant };
         restaurant.OpeningHourList = new[]
             {
                 DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday,

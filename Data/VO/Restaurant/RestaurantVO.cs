@@ -27,7 +27,7 @@ public class RestaurantVO : EntityBase
     public virtual string Email { get; set; }
     public virtual int TableCapacity { get; set; }
 
-    public virtual RestaurantOwnerVO? Owner { get; set; }
+    public virtual RestaurantOwnerVO Owner { get; set; }
     public virtual IList<RestaurantHourVO> OpeningHourList { get; set; } = new List<RestaurantHourVO>();
     public virtual IList<RestaurantPhotoVO> PhotoList { get; set; } = new List<RestaurantPhotoVO>();
     public virtual IList<TableVO> TableList { get; set; } = new List<TableVO>();

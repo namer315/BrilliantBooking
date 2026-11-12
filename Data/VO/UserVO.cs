@@ -13,7 +13,9 @@ public class UserVO : EntityBase
 
     public virtual string Password { get; set; }
 
-    public virtual RestaurantVO Restaurant { get; set; } = null!;
+    public virtual RestaurantOwnerVO Owner { get; set; }
+
+    //public virtual RestaurantVO Restaurant { get; set; } = null!;
 
     public enum UserType
     {
@@ -27,10 +29,11 @@ public class UserMap : EntityWithIdMapping<UserVO>
 {
     public UserMap()
     {
-        Map(x => x.Name).Length(100).Not.Nullable();
-        Map(x => x.Email).Length(256).Nullable();
+        Map(x => x.Name).Not.Nullable();
         Map(x => x.Phone).Length(30).Nullable();
+        Map(x => x.Email).Not.Nullable();
+        Map(x => x.Password).Not.Nullable();
 
-        References(x => x.Restaurant , "Restaurant").Not.Nullable().Unique();
+        //References(x => x.Restaurant , "Restaurant").Not.Nullable().Unique();
     }
 }
