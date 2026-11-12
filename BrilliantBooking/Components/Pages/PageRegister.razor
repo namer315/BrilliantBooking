@@ -9,7 +9,7 @@
 <main class="flex-grow max-w-3xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10">
     <header class="text-center mb-8">
         <h1 class="text-3xl font-bold tracking-tight text-stone-900 dark:text-white">Register your restaurant</h1>
-        <p class="mt-2 text-sm text-stone-500 dark:text-stone-400">Join Tableau Reserve in six simple steps.</p>
+        Join Tableau Reserve in five simple steps.
     </header>
 
     @if (Submitted)
@@ -150,29 +150,6 @@
                     break;
 
                 case 4:
-                    <fieldset class="space-y-5">
-                        <legend class="text-lg font-semibold text-stone-900 dark:text-white">Owner account</legend>
-                        <div>
-                            <label for="owner-name" class="block text-sm font-medium mb-1.5">Full name</label>
-                            <InputText id="owner-name" class="@InputClass" @bind-Value="Restaurant.Owner.FullName" />
-                            @if (ErrorText(nameof(Restaurant.Owner.FullName)) is { } ownerNameErr) { <p class="mt-1 text-xs text-apple-red" role="alert">@ownerNameErr</p> }
-                        </div>
-                        <div class="grid sm:grid-cols-2 gap-5">
-                            <div>
-                                <label for="owner-email" class="block text-sm font-medium mb-1.5">Email</label>
-                                <InputText id="owner-email" type="email" class="@InputClass" @bind-Value="Restaurant.Owner.Email" />
-                                @if (ErrorText(nameof(Restaurant.Owner.Email)) is { } ownerEmailErr) { <p class="mt-1 text-xs text-apple-red" role="alert">@ownerEmailErr</p> }
-                            </div>
-                            <div>
-                                <label for="owner-phone" class="block text-sm font-medium mb-1.5">Phone</label>
-                                <InputText id="owner-phone" type="tel" class="@InputClass" @bind-Value="Restaurant.Owner.Phone" />
-                                @if (ErrorText(nameof(Restaurant.Owner.Phone)) is { } ownerPhoneErr) { <p class="mt-1 text-xs text-apple-red" role="alert">@ownerPhoneErr</p> }
-                            </div>
-                        </div>
-                    </fieldset>
-                    break;
-
-                case 5:
                     <section class="space-y-4">
                         <h2 class="text-lg font-semibold text-stone-900 dark:text-white">Review</h2>
                         <dl class="grid sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
@@ -183,7 +160,6 @@
                             <div><dt class="text-stone-500">Email</dt><dd class="font-medium">@Restaurant.Email</dd></div>
                             <div><dt class="text-stone-500">Capacity</dt><dd class="font-medium">@Restaurant.TableCapacity seats</dd></div>
                             @Restaurant.PhotoList.Count selected
-                            <div class="sm:col-span-2"><dt class="text-stone-500">Owner</dt><dd class="font-medium">@Restaurant.Owner.FullName (@Restaurant.Owner.Email)</dd></div>
                         </dl>
                         @foreach (var err in SubmitErrors)
                         {
