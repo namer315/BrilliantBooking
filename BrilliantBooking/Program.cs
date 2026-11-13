@@ -13,6 +13,20 @@ public partial class Program
             // Add services to the container.
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
+
+            // In the services section, before builder.Build()
+            // Add distributed cache and session services
+            builder.Services.AddDistributedMemoryCache();
+            builder.Services.AddHttpContextAccessor();
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                //options.Cookie.HttpOnly = true;
+                //options.Cookie.IsEssential = true;
+                options.Cookie.Name = "BrilliantBooking.Session"; // Custom session cookie name
+            });
+
+            builder.Services.AddScoped<SessionService>();
             builder.Services.AddScoped<BookingUiStateService>();
             builder.Services.AddScoped<LoadingService>();
             builder.Services.AddScoped<IMessageBoxService, MessageBoxService>();
@@ -41,6 +55,8 @@ public partial class Program
             }
             app.UseStatusCodePagesWithReExecute("/not-found" , createScopeForStatusCodePages: true);
             app.UseHttpsRedirection();
+            // In the pipeline, after app.UseHttpsRedirection() and before app.MapRazorComponents<App>()
+            app.UseSession();
 
             app.UseAntiforgery();
 

@@ -1,5 +1,6 @@
 ﻿using Data.DAO;
 using Data.DTO;
+using Data.Managers;
 using Data.Search;
 using Data.VO.Operations;
 using Data.VO.Restaurant;
@@ -174,6 +175,7 @@ public class RestaurantBE
         //restaurant.PhotoList.Add(restaurantPhoto);
         //await Task.Delay(1000 * 5);
         //restaurant.Owner = new RestaurantOwnerVO() { Restaurant = restaurant };
+        restaurant.Owner = UserSessionManager.CurrentUser.Owner;
         restaurant.OpeningHourList = new[]
             {
                 DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday,

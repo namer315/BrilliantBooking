@@ -2,6 +2,7 @@
 using Data.DTO;
 using Data.Exceptions;
 using Data.Localization;
+using Data.Managers;
 using Data.VO;
 using Data.VO.Restaurant;
 
@@ -11,10 +12,19 @@ public class UserBE
 {
     private UserDAO _dao = new UserDAO();
 
-    public async Task<bool> SignInAsync(SignInDTO signIn)
+    public async Task<UserVO> SignInAsync(SignInDTO signIn)
     {
-        // TODO: Replace stub with real authentication.
-        return await Task.FromResult(true);
+        if (string.IsNullOrWhiteSpace(signIn.Email) || string.IsNullOrWhiteSpace(signIn.Password))
+            throw new AppException(ErrorCode.FieldIsRequired, $"{Resources.Email} , {Resources.Password}");
+        // Encrypt password once and reuse the value
+        string passwordEncrypt = DataEncryptorBE.EncryptString(signIn.Password);
+        UserVO user = await new UserDAO().GetUserBy(signIn.Email , passwordEncrypt);
+        if (user is null)
+            throw new Exception("The email or password you entered is incorrect. Please check your details and try again.");
+
+        UserSessionManager.LogIn(user, signIn);
+
+        return user;
     }
 
     public async Task<UserVO> SignUpAsync(SignUpDTO signUp)

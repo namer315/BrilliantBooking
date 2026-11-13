@@ -9,7 +9,7 @@ internal class DataEncryptorBE
 {
     // This size of the IV (in bytes) must = (keysize / 8).  Default keysize is 256, so the IV must be
     // 32 bytes long.  Using a 16 character string here gives us 32 bytes when converted to a byte array.
-    private const string initVector = "BrilliantBooking_namer315_Ali1982";
+    private const string initVector = "Ali1982_namer315";
     // This constant is used to determine the keysize of the encryption algorithm.
     private const int keysize = 256;
     //Encrypt

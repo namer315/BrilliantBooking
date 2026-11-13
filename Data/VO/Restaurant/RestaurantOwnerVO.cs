@@ -9,7 +9,7 @@ public class RestaurantOwnerVO : EntityBase
     public virtual string? Email { get; set; }
     public virtual string? Phone { get; set; }
 
-    //public virtual RestaurantVO Restaurant { get; set; } = null!;
+    public virtual IList<RestaurantVO> RestaurantList { get; set; } = new List<RestaurantVO>();
 }
 
 public class RestaurantOwnerMap : EntityWithIdMapping<RestaurantOwnerVO>
@@ -20,6 +20,6 @@ public class RestaurantOwnerMap : EntityWithIdMapping<RestaurantOwnerVO>
         Map(x => x.Email).Length(256).Nullable();
         Map(x => x.Phone).Length(30).Nullable();
 
-        //References(x => x.Restaurant, "Restaurant").Not.Nullable().Unique();
+        HasMany(x => x.RestaurantList).KeyColumn("Owner").Cascade.AllDeleteOrphan();
     }
 }

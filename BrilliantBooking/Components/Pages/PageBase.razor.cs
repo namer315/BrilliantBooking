@@ -10,6 +10,21 @@ public partial class PageBase
     //[Inject] private ILogger<PageBase> Logger { get; set; }
     [Inject] public IJSRuntime JS { get; set; }
 
+    protected SessionService _sessionService;
+    [Inject]
+    protected SessionService SessionService
+    {
+        get
+        {
+            return _sessionService;
+        }
+        set
+        {
+            _sessionService = value;
+            value.SendOnlineUserKeyToBackEnd();
+        }
+    }
+
     [Inject] private IMessageBoxService MessageBoxService { get; set; } = default!;
     [Inject] public LoadingService LoadingService { get; set; } = default!;
 

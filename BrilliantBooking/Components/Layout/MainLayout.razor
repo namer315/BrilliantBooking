@@ -1,4 +1,7 @@
-﻿@inherits LayoutComponentBase
+﻿@using BrilliantBooking.Services
+@using Data.Common
+@using Data.Managers
+@inherits LayoutComponentBase
 
 <div class="min-h-screen flex flex-col antialiased selection:bg-apple-blue selection:text-white">
     <SiteHeader />
@@ -20,3 +23,41 @@
         </div>
     </div>
 </footer>
+
+
+@code {
+
+    
+    [CascadingParameter] public HttpContext? HttpContext { get; set; }
+    [Inject] protected SessionService SessionService { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (HttpContext.Session.GetObject<Guid?>(NameKeys.UserSessionKey) is Guid userSessionKey && userSessionKey != Guid.Empty)
+        {
+            UserSessionManager.SetOnlineUserSessionKey(userSessionKey);
+            // btnLoginText = Resources.LogOut;
+            // switch (OnlineUserSessionManager.CurrentOnlineUser.UserKind)
+            // {
+            //     case OnlineUserKind.Tenant:
+            //         User = OnlineUserSessionManager.CurrentOnlineUser.Tenant?.Name;
+            //         break;
+
+            //     case OnlineUserKind.Landlord:
+            //         User = OnlineUserSessionManager.CurrentOnlineUser.Landlord?.Name;
+            //         break;
+
+            //     case OnlineUserKind.Management:
+            //         User = OnlineUserSessionManager.CurrentOnlineUser.Management?.Name;
+            //         break;
+            // }
+        }
+        else
+        {
+            // Set the OnlineUserSessionKey to null in the session
+            HttpContext.Session.SetObject<object?>(NameKeys.UserSessionKey , null);
+        }
+
+
+    }
+}

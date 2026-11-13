@@ -79,8 +79,10 @@ public partial class PageLogin
         _errorMessage = null;
         await RunAsync(async () =>
         {
-            if (await _fdm.SignInAsync(_signIn))
+            if (await _fdm.SignInAsync(_signIn) is UserVO user)
             {
+                SessionService.SetOnlineUserSessionAsync(user);
+                NavigationManager.NavigateTo("/App/Restaurant");
                 ShowMessage("Signed in successfully.", "Welcome");
             }
         });

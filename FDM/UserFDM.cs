@@ -8,7 +8,7 @@ public class UserFDM
 {
     private UserBE _be = new();
 
-    public async Task<bool> SignInAsync(SignInDTO signIn)
+    public async Task<UserVO> SignInAsync(SignInDTO signIn)
         => await _be.SignInAsync(signIn);
 
     public async Task<UserVO> SignUpAsync(SignUpDTO signUp)

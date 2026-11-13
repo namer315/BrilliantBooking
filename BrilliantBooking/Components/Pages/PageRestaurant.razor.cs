@@ -27,11 +27,11 @@ public partial class PageRestaurant
     protected int EditingTableIndex { get; set; } = -1;
     protected bool IsEditingTable => EditingTableIndex >= 0;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         try
         {
-            beginEdit();
+            await beginEdit();
         }
         catch (Exception ex)
         {

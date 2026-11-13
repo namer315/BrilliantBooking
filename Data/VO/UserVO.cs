@@ -31,9 +31,9 @@ public class UserMap : EntityWithIdMapping<UserVO>
     {
         Map(x => x.Name).Not.Nullable();
         Map(x => x.Phone).Length(30).Nullable();
-        Map(x => x.Email).Not.Nullable();
+        Map(x => x.Email).Not.Nullable().Unique();
         Map(x => x.Password).Not.Nullable();
 
-        //References(x => x.Restaurant , "Restaurant").Not.Nullable().Unique();
+        References(x => x.Owner , "Owner").Cascade.None().Not.LazyLoad();
     }
 }
