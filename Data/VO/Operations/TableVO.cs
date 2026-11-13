@@ -15,7 +15,7 @@ public class TableVO : EntityBase
     [Range(1 , 50)]
     public virtual int GuestCount { get; set; } = 1;
     public virtual string? Zone { get; set; }
-    public virtual string? Status { get; set; }
+    //public virtual string? Status { get; set; }
 
     public virtual string Description { get; set; }
     public virtual int Capacity { get; set; }
@@ -28,8 +28,8 @@ public class TableMap : EntityWithIdMapping<TableVO>
     {
         Map(x => x.Name).Length(100).Not.Nullable();
         Map(x => x.GuestCount).Not.Nullable();
-        Map(x => x.Zone).Length(100).Nullable();
-        Map(x => x.Status).Length(50).Nullable();
+        //Map(x => x.Zone).Length(100).Nullable();
+        //Map(x => x.Status).Length(50).Nullable();
         Map(x => x.Description).Length(500).Nullable();
 
         References(x => x.Restaurant, "Restaurant").Not.Nullable().Index("IX_Tables_RestaurantId");

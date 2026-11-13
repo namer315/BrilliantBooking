@@ -34,6 +34,6 @@ public class UserMap : EntityWithIdMapping<UserVO>
         Map(x => x.Email).Not.Nullable().Unique();
         Map(x => x.Password).Not.Nullable();
 
-        References(x => x.Owner , "Owner").Cascade.None().Not.LazyLoad();
+        References(x => x.Owner , "Owner").Cascade.Merge().Not.LazyLoad();
     }
 }
