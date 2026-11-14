@@ -1,5 +1,6 @@
 ﻿@page "/Booking"
 @page "/Booking/{Restaurant}"
+@using Data.VO.Operations
 
 @rendermode @(new InteractiveServerRenderMode(false))
 
@@ -117,7 +118,7 @@
                     </div>
                     
                     <div class="relative w-full border border-stone-300/70 dark:border-stone-800 rounded-2xl bg-[#EFECE6] dark:bg-stone-950 p-4 overflow-auto h-[420px]">
-                        @if (Booking.Restaurant?.TableList is { Count: > 0 } tables)
+                        @if (Booking.Restaurant?.FloorList.SelectMany(floor => floor.TableList) is IList<TableVO> tables && tables is { Count: > 0 })
                         {
                             var (layout, canvasHeight) = BuildFloorLayout(tables);
                             <svg viewBox="0 0 800 @canvasHeight" class="w-full h-auto select-none" role="group" aria-label="Floor plan">
