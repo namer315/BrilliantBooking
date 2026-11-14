@@ -1,0 +1,75 @@
+﻿@rendermode @(new InteractiveServerRenderMode(false))
+
+<button type="button" class="side-nav-mobile-toggle" aria-label="Open menu" aria-controls="side-nav" aria-expanded="@_isMobileOpen" @onclick="ToggleMobile">
+    <i class="fa-solid fa-bars" aria-hidden="true"></i>
+</button>
+
+<div class="side-nav-backdrop @(_isMobileOpen ? "is-visible" : string.Empty)" aria-hidden="true" @onclick="CloseMobile"></div>
+
+<nav id="side-nav" class="side-nav @(_isCollapsed ? "side-nav--collapsed" : string.Empty) @(_isMobileOpen ? "side-nav--open" : string.Empty)"
+     aria-label="Main" @onkeydown="HandleKeyDown">
+    <div class="side-nav-header">
+        <span class="side-nav-brand">
+            <i class="fa-solid fa-utensils" aria-hidden="true"></i>
+            <span class="side-nav-label">Tableau Reserve</span>
+        </span>
+        <button type="button" class="side-nav-collapse" aria-label="@(_isCollapsed ? "Expand sidebar" : "Collapse sidebar")" aria-controls="side-nav" aria-expanded="@(!_isCollapsed)" @onclick="ToggleCollapse">
+            <i class="fa-solid @(_isCollapsed ? "fa-chevron-right" : "fa-chevron-left")" aria-hidden="true"></i>
+        </button>
+    </div>
+
+    <div class="side-nav-search">
+        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+        <input type="search" aria-label="Search menu" placeholder="Search menu" @bind="_searchText" @bind:event="oninput" />
+    </div>
+
+    <ul class="side-nav-list">
+        @foreach (var item in FilteredItems)
+        {
+            <li>
+                <NavLink class="side-nav-link" href="@item.Href" title="@item.Label" Match="NavLinkMatch.All" @onclick="CloseMobile">
+                    <i class="@item.IconClass" aria-hidden="true"></i>
+                    <span class="side-nav-label">@item.Label</span>
+                </NavLink>
+            </li>
+        }
+    </ul>
+
+    @if (FilteredItems.Count == 0)
+    {
+        <p class="side-nav-empty">No matches</p>
+    }
+</nav>
+
+@code {
+    private sealed record NavItem(string Label, string Href, string IconClass);
+
+    private static readonly List<NavItem> Items =
+    [
+        new("Add New Restaurant", "/App/Restaurant/New", "fa-solid fa-plus"),
+        new("Restaurants", "/App/Restaurant", "fa-solid fa-utensils"),
+    ];
+
+    private bool _isCollapsed;
+    private bool _isMobileOpen;
+    private string _searchText = string.Empty;
+
+    private List<NavItem> FilteredItems =>
+        string.IsNullOrWhiteSpace(_searchText)
+            ? Items
+            : Items.Where(i => i.Label.Contains(_searchText.Trim(), StringComparison.OrdinalIgnoreCase)).ToList();
+
+    private void ToggleCollapse() => _isCollapsed = !_isCollapsed;
+
+    private void ToggleMobile() => _isMobileOpen = !_isMobileOpen;
+
+    private void CloseMobile() => _isMobileOpen = false;
+
+    private void HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Escape")
+        {
+            CloseMobile();
+        }
+    }
+}

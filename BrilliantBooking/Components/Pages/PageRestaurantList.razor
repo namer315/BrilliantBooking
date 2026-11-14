@@ -1,7 +1,10 @@
 @page "/App/Restaurant"
 
+@* @using Microsoft.AspNetCore.Authorization
+@attribute [Authorize] *@
 @inherits PageBase
 @rendermode @(new InteractiveServerRenderMode(false))
+@layout PrivateLayout
 
 <section class="restaurant-list-page">
     <header class="restaurant-list-header">
