@@ -1,5 +1,6 @@
 using Data.VO.Booking;
 using Data.VO.Operations;
+using Data.VO.Restaurant;
 using FDM;
 using Microsoft.AspNetCore.Components;
 
@@ -40,7 +41,13 @@ public partial class PageBooking
 
     private async Task beginEdit()
     {
-        Booking = await _fdm.GetNew();
+        RestaurantVO restaurant;
+        if (!Guid.TryParse(Restaurant , out Guid restaurantId))
+        {
+            throw new ArgumentException($"Invalid restaurant id: '{Restaurant}'.");
+        }
+        restaurant = new RestaurantVO { Id = restaurantId };
+        Booking = await _fdm.GetNew(restaurant);
     }
 
 
@@ -81,9 +88,47 @@ public partial class PageBooking
         return (layout, Math.Max(450, y + rowHeight + 40));
     }
 
+    public int SelectedFloorIndex { get; set; }
+
+    protected IList<FloorVO> Floors => Booking.Restaurant?.FloorList ?? new List<FloorVO>();
+
+    protected IList<TableVO> SelectedFloorTables =>
+        Floors.Count == 0
+            ? new List<TableVO>()
+            : Floors[Math.Clamp(SelectedFloorIndex, 0, Floors.Count - 1)].TableList;
+
+    protected void SelectFloor(int index)
+    {
+        if (index < 0 || index >= Floors.Count)
+        {
+            return;
+        }
+
+        SelectedFloorIndex = index;
+    }
+
+    protected bool CanSelectTable(TableVO table) =>
+        table.Status != TableVO.TableStatus.Reserved && table.GuestCount >= Booking.GuestCount;
+
+    public static string StatusColor(TableVO.TableStatus status) => status switch
+    {
+        TableVO.TableStatus.Available => "#34C759",
+        TableVO.TableStatus.Selected => "#0A84FF",
+        TableVO.TableStatus.Reserved => "#FF9500",
+        _ => "#9CA3AF"
+    };
+
+    public static string StatusLabel(TableVO.TableStatus status) => status switch
+    {
+        TableVO.TableStatus.Available => "Available",
+        TableVO.TableStatus.Selected => "Selected",
+        TableVO.TableStatus.Reserved => "Reserved",
+        _ => "Unknown"
+    };
+
     private void SelectTable(TableVO table)
     {
-        if (table.GuestCount < Booking.GuestCount)
+        if (!CanSelectTable(table))
         {
             return;
         }

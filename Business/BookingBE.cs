@@ -1,5 +1,6 @@
 ﻿using Data.DAO;
 using Data.VO.Booking;
+using Data.VO.Restaurant;
 
 namespace Business;
 
@@ -7,7 +8,7 @@ public class BookingBE
 {
     private BookingDAO _dao = new BookingDAO();
 
-    public async Task<BookingVO> GetNew()
+    public async Task<BookingVO> GetNew(RestaurantVO restaurant)
     {
         BookingVO booking = new();
 
@@ -16,7 +17,8 @@ public class BookingBE
         booking.FromTime = DateTime.UtcNow.AddHours(3).TimeOfDay;
         booking.ToTime = DateTime.UtcNow.AddHours(4).TimeOfDay;
 
-        booking.Restaurant = (await new RestaurantBE().GetRestaurantLsitBy(new()))[0];
+        //booking.Restaurant = (await new RestaurantBE().GetRestaurantLsitBy(new()))[0];
+        booking.Restaurant = await new RestaurantDAO().GetRestaurantBy(restaurant.Id);
 
         return booking;
     }

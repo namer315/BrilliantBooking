@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Data.VO.Restaurant;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -8,4 +9,6 @@ public class RestaurantSH : Pagination
 {
     public string Cuisine { get; set; }
     public string? Price { get; set; }
+
+    public virtual RestaurantOwnerVO Owner { get; set; }
 }

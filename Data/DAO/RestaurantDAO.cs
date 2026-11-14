@@ -18,29 +18,48 @@ public sealed class RestaurantDAO : NHibernateRepository
 
         return await q.ListAsync();
     }
-    public async Task<RestaurantVO> GetRestaurantBy(Guid id)
-    {
-        IQuery q = Session.CreateQuery(@"
-            FROM RestaurantVO restaurant 
-            WHERE restaurant.Id = :id
+	public async Task<RestaurantVO> GetRestaurantBy(Guid id)
+	{
+		IQuery q = Session.CreateQuery(@"
+			FROM RestaurantVO restaurant 
+			WHERE restaurant.Id = :id
 			")
-            .SetParameter("id" , id)
-            .SetMaxResults(1);
+			.SetParameter("id" , id)
+			.SetMaxResults(1);
 
-        return await q.UniqueResultAsync<RestaurantVO>();
-    }
+		RestaurantVO restaurant = await q.UniqueResultAsync<RestaurantVO>();
+
+		if (restaurant != null)
+		{
+			// Initialize each bag separately to avoid the "cannot simultaneously fetch multiple bags" error.
+			await NHibernateUtil.InitializeAsync(restaurant.FloorList);
+			await NHibernateUtil.InitializeAsync(restaurant.PhotoList);
+		}
+
+		return restaurant;
+	}
 
     public async Task<IList<RestaurantVO>> GetRestaurantListBy(RestaurantSH search)
     {
-        string where = "WHERE owner.Id = :ownerId";
-        IList<(string , object)> parameters = new List<(string , object)>()
+        IList<string> conditions = new List<string>();
+        IList<(string , object)> parameters = new List<(string , object)>();
+
+        if (search.Owner != null)
         {
-            ("ownerId" , UserSessionManager.CurrentUser.Owner.Id)
-        };
-        if (!string.IsNullOrEmpty(search.Text)) {
-            where = $" AND restaurant.Name like :text";
+            conditions.Add("owner.Id = :ownerId");
+            parameters.Add(("ownerId" , search.Owner.Id));
+        }
+
+        if (!string.IsNullOrEmpty(search.Text))
+        {
+            conditions.Add("restaurant.Name like :text");
             parameters.Add(("text" , $"%{search.Text}%"));
         }
+
+        string where = conditions.Count > 0
+            ? "WHERE " + string.Join(" AND " , conditions)
+            : string.Empty;
+
         string query = $@"
             SELECT DISTINCT restaurant
             FROM RestaurantVO restaurant

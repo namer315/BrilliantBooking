@@ -1,4 +1,5 @@
 using BrilliantBooking.Extensions;
+using Data.Managers;
 using Data.Search;
 using Data.VO.Restaurant;
 using FDM;
@@ -19,6 +20,7 @@ public partial class PageRestaurantList
     {
         try
         {
+            Search.Owner = UserSessionManager.CurrentUser.Owner;
             await dgSearch();
         }
         catch (Exception ex)
