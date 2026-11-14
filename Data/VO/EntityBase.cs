@@ -16,6 +16,11 @@ public abstract class EntityBase
     public virtual bool IsDeleted { get; set; }
     public static bool RightToLeft { get; internal set; } = false;
 }
+
+public abstract class EntityBaseWithName : EntityBase
+{
+    public virtual string Name { get; set; }
+}
 public abstract class EntityBaseWithCode : EntityBase
 {
     public virtual string Code { get; set; }
@@ -36,6 +41,20 @@ public class EntityWithIdMapping<T> : ClassMap<T> where T : EntityBase
 
         Id(e => e.Id)
             .GeneratedBy.GuidComb();
+
+        OptimisticLock.Version().DynamicUpdate();
+    }
+}
+public class EntityBaseWithNameMapping<T> : ClassMap<T> where T : EntityBaseWithName
+{
+    public EntityBaseWithNameMapping()
+    {
+        base.Cache.NonStrictReadWrite();
+
+        Id(e => e.Id)
+            .GeneratedBy.GuidComb();
+
+        Map(e => e.Name);
 
         OptimisticLock.Version().DynamicUpdate();
     }

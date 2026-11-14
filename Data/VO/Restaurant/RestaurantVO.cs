@@ -30,7 +30,8 @@ public class RestaurantVO : EntityBase
     public virtual RestaurantOwnerVO Owner { get; set; }
     public virtual IList<RestaurantHourVO> OpeningHourList { get; set; } = new List<RestaurantHourVO>();
     public virtual IList<RestaurantPhotoVO> PhotoList { get; set; } = new List<RestaurantPhotoVO>();
-    public virtual IList<TableVO> TableList { get; set; } = new List<TableVO>();
+    //public virtual IList<TableVO> TableList { get; set; } = new List<TableVO>();
+    public virtual IList<FloorVO> FloorList { get; set; } = new List<FloorVO>();
 }
 
 public class RestaurantMap : EntityWithIdMapping<RestaurantVO>
@@ -60,6 +61,7 @@ public class RestaurantMap : EntityWithIdMapping<RestaurantVO>
 
         HasMany(x => x.OpeningHourList).KeyColumn("Restaurant").Inverse().Cascade.AllDeleteOrphan();
         HasMany(x => x.PhotoList).KeyColumn("Restaurant").OrderBy("Sequence").Inverse().Cascade.AllDeleteOrphan();
-        HasMany(x => x.TableList).KeyColumn("Restaurant").Inverse().Cascade.AllDeleteOrphan();
+        //HasMany(x => x.TableList).KeyColumn("Restaurant").Inverse().Cascade.AllDeleteOrphan();
+        HasMany(x => x.FloorList).KeyColumn("Restaurant").Cascade.AllDeleteOrphan();
     }
 }

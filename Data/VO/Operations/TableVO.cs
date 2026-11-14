@@ -8,7 +8,7 @@ namespace Data.VO.Operations;
 /// Physical table on the restaurant floor plan.
 /// Source: Live Operations floorplan in index4.html.
 /// </summary>
-public class TableVO : EntityBase
+public class TableVO : EntityBaseWithName
 {
     [Required, StringLength(100)]
     public virtual string Name { get; set; } = string.Empty;
@@ -19,10 +19,11 @@ public class TableVO : EntityBase
 
     public virtual string Description { get; set; }
     public virtual int Capacity { get; set; }
-    public virtual RestaurantVO Restaurant { get; set; } = null!;
+    //public virtual RestaurantVO Restaurant { get; set; } = null!;
+    public virtual FloorVO Floor { get; set; }
 }
 
-public class TableMap : EntityWithIdMapping<TableVO>
+public class TableMap : EntityBaseWithNameMapping<TableVO>
 {
     public TableMap()
     {
@@ -32,6 +33,7 @@ public class TableMap : EntityWithIdMapping<TableVO>
         //Map(x => x.Status).Length(50).Nullable();
         Map(x => x.Description).Length(500).Nullable();
 
-        References(x => x.Restaurant, "Restaurant").Not.Nullable().Index("IX_Tables_RestaurantId");
+        //References(x => x.Restaurant , "Restaurant").Not.Nullable().Index("IX_Tables_RestaurantId");
+        References(x => x.Floor , "Floor").Not.Nullable();
     }
 }
