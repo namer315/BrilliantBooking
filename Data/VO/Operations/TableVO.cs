@@ -27,7 +27,7 @@ public class TableMap : EntityBaseWithNameMapping<TableVO>
 {
     public TableMap()
     {
-        Map(x => x.Name).Length(100).Not.Nullable();
+        //Map(x => x.Name).Length(100).Not.Nullable();
         Map(x => x.GuestCount).Not.Nullable();
         //Map(x => x.Zone).Length(100).Nullable();
         //Map(x => x.Status).Length(50).Nullable();

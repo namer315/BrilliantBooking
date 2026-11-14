@@ -41,7 +41,7 @@ public class RestaurantBE
                 Badge = "Michelin Guide 2026",
                 Description = "Panoramic oceanfront views serving fresh line-caught oysters, prime dry-aged seafood, and handcrafted coastal cocktails.",
                 DressCode = "Smart Casual", Parking = "Complimentary Valet at Victoria Mall", Corkage = "R150 per bottle",
-                TableList = GetTableList(25)
+                //TableList = GetTableList(25)
             },
             new RestaurantVO
             {
@@ -90,7 +90,7 @@ public class RestaurantBE
                 Badge = "Sustainable Winner",
                 Description = "Organic greenhouse cuisine surrounded by flora, featuring hyper-seasonal zero-waste tasting menus.",
                 DressCode = "Smart Casual", Parking = "Estate Gate Parking", Corkage = "R120 per bottle",
-                TableList = GetTableList(15)
+                //TableList = GetTableList(15)
             }
         };
     }
@@ -132,10 +132,10 @@ public class RestaurantBE
     {
         //if(string.IsNullOrEmpty(restaurant.Name)
         RebindPhotoSequence(restaurant);
-        foreach (TableVO table in restaurant.TableList)
-        {
-            table.Restaurant = restaurant;
-        }
+        //foreach (TableVO table in restaurant.TableList)
+        //{
+        //    table.Restaurant = restaurant;
+        //}
     }
     public void RebindPhotoSequence(RestaurantVO restaurant)
     {

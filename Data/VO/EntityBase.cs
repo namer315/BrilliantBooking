@@ -54,7 +54,7 @@ public class EntityBaseWithNameMapping<T> : ClassMap<T> where T : EntityBaseWith
         Id(e => e.Id)
             .GeneratedBy.GuidComb();
 
-        Map(e => e.Name);
+        Map(e => e.Name).Length(int.MaxValue).Not.Nullable();
 
         OptimisticLock.Version().DynamicUpdate();
     }

@@ -14,7 +14,7 @@ public class FloorMap : EntityBaseWithNameMapping<FloorVO>
 {
     public FloorMap()
     {
-        Map(x => x.Name).Length(100).Not.Nullable();
+        //Map(x => x.Name).Length(100).Not.Nullable();
         Map(x => x.Description).Length(500).Nullable();
 
         //References(x => x.Restaurant , "Restaurant").Not.Nullable();
