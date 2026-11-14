@@ -26,6 +26,12 @@ public partial class PageRestaurant
     protected TableVO NewTable { get; set; } = new();
     protected int EditingTableIndex { get; set; } = -1;
     protected bool IsEditingTable => EditingTableIndex >= 0;
+    protected FloorFormVO NewFloor { get; set; } = new();
+    protected int EditingFloorIndex { get; set; } = -1;
+    protected bool IsEditingFloor => EditingFloorIndex >= 0;
+    protected bool IsAddingFloor { get; set; }
+    protected int SelectedFloorIndex { get; set; }
+    protected int ConfirmDeleteFloorIndex { get; set; } = -1;
 
     protected override async Task OnInitializedAsync()
     {
@@ -117,32 +123,165 @@ public partial class PageRestaurant
         SelectedPhotoIndex = 0;
     }
 
-    #region Table tab
-    protected void AddTable()
+    #region Floor tab
+    protected void AddFloor()
     {
         Errors.Clear();
-        if (!ValidateTable(NewTable))
+        NewFloor = new FloorFormVO();
+        EditingFloorIndex = -1;
+        IsAddingFloor = true;
+    }
+
+    protected void EditFloor(int index)
+    {
+        if (index < 0 || index >= Restaurant.FloorList.Count)
         {
             return;
         }
 
-        Restaurant.TableList.Add(new TableVO
+        var floor = Restaurant.FloorList[index];
+        Errors.Clear();
+        NewFloor = new FloorFormVO { Name = floor.Name, Description = floor.Description };
+        EditingFloorIndex = index;
+        IsAddingFloor = false;
+    }
+
+    protected void SaveFloor()
+    {
+        Errors.Clear();
+        if (!ValidateFloor(NewFloor))
+        {
+            return;
+        }
+
+        var name = NewFloor.Name.Trim();
+        var description = string.IsNullOrWhiteSpace(NewFloor.Description) ? null : NewFloor.Description.Trim();
+
+        if (IsEditingFloor)
+        {
+            var floor = Restaurant.FloorList[EditingFloorIndex];
+            floor.Name = name;
+            floor.Description = description;
+        }
+        else
+        {
+            Restaurant.FloorList.Add(new FloorVO
+            {
+                Restaurant = Restaurant,
+                Name = name,
+                Description = description
+            });
+            SelectedFloorIndex = Restaurant.FloorList.Count - 1;
+        }
+
+        CancelFloorEdit();
+    }
+
+    protected void CancelFloorEdit()
+    {
+        NewFloor = new FloorFormVO();
+        EditingFloorIndex = -1;
+        IsAddingFloor = false;
+        foreach (var key in Errors.Keys.Where(k => k.StartsWith("floor-")).ToList())
+        {
+            Errors.Remove(key);
+        }
+    }
+
+    protected void SelectFloor(int index)
+    {
+        if (index < 0 || index >= Restaurant.FloorList.Count)
+        {
+            return;
+        }
+
+        if (index != SelectedFloorIndex)
+        {
+            CancelEdit();
+        }
+
+        SelectedFloorIndex = index;
+        ConfirmDeleteFloorIndex = -1;
+    }
+
+    protected void RequestDeleteFloor(int index) => ConfirmDeleteFloorIndex = index;
+
+    protected void CancelDeleteFloor() => ConfirmDeleteFloorIndex = -1;
+
+    protected void ConfirmDeleteFloor(int index)
+    {
+        if (index < 0 || index >= Restaurant.FloorList.Count)
+        {
+            return;
+        }
+
+        Restaurant.FloorList.RemoveAt(index);
+        ConfirmDeleteFloorIndex = -1;
+        CancelEdit();
+
+        if (Restaurant.FloorList.Count == 0)
+        {
+            SelectedFloorIndex = 0;
+        }
+        else if (index < SelectedFloorIndex)
+        {
+            SelectedFloorIndex--;
+        }
+        else if (index == SelectedFloorIndex)
+        {
+            SelectedFloorIndex = Math.Min(SelectedFloorIndex, Restaurant.FloorList.Count - 1);
+        }
+    }
+
+    private bool ValidateFloor(FloorFormVO floor)
+    {
+        var results = new List<ValidationResult>();
+        if (!Validator.TryValidateObject(floor, new ValidationContext(floor), results, validateAllProperties: true))
+        {
+            foreach (var result in results)
+            {
+                var member = result.MemberNames.FirstOrDefault() ?? string.Empty;
+                Errors[$"floor-{member}"] = result.ErrorMessage ?? "Invalid value.";
+            }
+        }
+
+        return Errors.Count == 0;
+    }
+    #endregion
+
+    #region Table tab
+    protected FloorVO? SelectedFloor =>
+        SelectedFloorIndex >= 0 && SelectedFloorIndex < Restaurant.FloorList.Count
+            ? Restaurant.FloorList[SelectedFloorIndex]
+            : null;
+
+    protected void AddTable()
+    {
+        Errors.Clear();
+        if (SelectedFloor is null || !ValidateTable(NewTable))
+        {
+            return;
+        }
+
+        var table = new TableVO
         {
             Name = NewTable.Name.Trim(),
             GuestCount = NewTable.GuestCount,
-            Description = string.IsNullOrWhiteSpace(NewTable.Description) ? null : NewTable.Description.Trim()
-        });
+            Description = string.IsNullOrWhiteSpace(NewTable.Description) ? null : NewTable.Description.Trim(),
+            Floor = SelectedFloor
+        };
+        SelectedFloor.TableList.Add(table);
         NewTable = new TableVO();
     }
 
     protected void EditTable(int index)
     {
-        if (index < 0 || index >= Restaurant.TableList.Count)
+        if (SelectedFloor is null || index < 0 || index >= SelectedFloor.TableList.Count)
         {
             return;
         }
 
-        var table = Restaurant.TableList[index];
+        var table = SelectedFloor.TableList[index];
         Errors.Clear();
         NewTable = new TableVO
         {
@@ -162,12 +301,12 @@ public partial class PageRestaurant
         }
 
         Errors.Clear();
-        if (!ValidateTable(NewTable))
+        if (SelectedFloor is null || !ValidateTable(NewTable))
         {
             return;
         }
 
-        var table = Restaurant.TableList[EditingTableIndex];
+        var table = SelectedFloor.TableList[EditingTableIndex];
         table.Name = NewTable.Name.Trim();
         table.GuestCount = NewTable.GuestCount;
         table.Description = string.IsNullOrWhiteSpace(NewTable.Description) ? null : NewTable.Description.Trim();
@@ -186,12 +325,12 @@ public partial class PageRestaurant
 
     protected void RemoveTable(int index)
     {
-        if (index < 0 || index >= Restaurant.TableList.Count || index == EditingTableIndex)
+        if (SelectedFloor is null || index < 0 || index >= SelectedFloor.TableList.Count || index == EditingTableIndex)
         {
             return;
         }
 
-        Restaurant.TableList.RemoveAt(index);
+        SelectedFloor.TableList.RemoveAt(index);
         if (IsEditingTable && index < EditingTableIndex)
         {
             EditingTableIndex--;
@@ -216,6 +355,14 @@ public partial class PageRestaurant
 
     protected static TimeOnly? ParseTime(object? value) =>
         TimeOnly.TryParse(value?.ToString() , out var time) ? time : null;
+
+    public class FloorFormVO
+    {
+        [Required, StringLength(100)]
+        public string Name { get; set; } = string.Empty;
+        [StringLength(500)]
+        public string? Description { get; set; }
+    }
 
     private async Task endEdit()
     {
@@ -258,11 +405,17 @@ public partial class PageRestaurant
                 }
                 break;
             case 4:
-                ValidateMember(Restaurant , nameof(Restaurant.TableCapacity));
-                if (Restaurant.TableList.Count == 0)
-                {
-                    Errors["table-list"] = "Add at least one table.";
-                }
+                //if (Restaurant.FloorList.Count == 0)
+                //{
+                //    Errors["floor-list"] = "Add at least one floor.";
+                //}
+                //for (var f = 0 ; f < Restaurant.FloorList.Count ; f++)
+                //{
+                //    if (Restaurant.FloorList[f].TableList.Count == 0)
+                //    {
+                //        Errors[$"floor-{f}"] = $"Add at least one table to {Restaurant.FloorList[f].Name}.";
+                //    }
+                //}
                 break;
         }
 

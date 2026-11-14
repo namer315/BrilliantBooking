@@ -155,7 +155,7 @@ public class RestaurantBE
             {
                 Name = file.Name ,
                 Photo = file.File ,
-                Sequence = restaurant.PhotoList.Count + 1,
+                Sequence = restaurant.PhotoList.Count + 1 ,
                 Restaurant = restaurant
             });
         }
@@ -189,6 +189,21 @@ public class RestaurantBE
                 Restaurant = restaurant
             })
             .ToList();
+        // add a floor with a table for new restaurant
+        FloorVO floor = new FloorVO()
+        {
+            Name = "floor 1" ,
+            Restaurant = restaurant ,
+
+        };
+
+        floor.TableList.Add(new TableVO()
+        {
+            Name = "Table 1" ,
+            Floor = floor
+        });
+
+        restaurant.FloorList.Add(floor);
 
         return restaurant;
     }

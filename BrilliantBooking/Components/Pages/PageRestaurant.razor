@@ -193,92 +193,187 @@
 
                 case 4:
                 <fieldset class="space-y-5">
-                    <legend class="text-lg font-semibold text-stone-900 dark:text-white">Tables</legend>
-                    <div>
-                        <label for="capacity" class="block text-sm font-medium mb-1.5">Total table capacity (seats)</label>
-                        <InputNumber id="capacity" class="@InputClass" @bind-Value="Restaurant.TableCapacity" />
-                        @if (ErrorText(nameof(Restaurant.TableCapacity)) is { } capErr)
-                        {
-                            <p class="mt-1 text-xs text-apple-red" role="alert">@capErr</p>
-                        }
-                    </div>
+                    <legend class="text-lg font-semibold text-stone-900 dark:text-white">Floors and tables</legend>
 
-                    <div class="sf-glass rounded-2xl p-5 border-white/60 dark:border-white/10 shadow-apple-glass space-y-4">
-                        <h3 class="text-sm font-semibold text-stone-900 dark:text-white">@(IsEditingTable ? "Edit table" : "Add a table")</h3>
-                        <div class="grid sm:grid-cols-2 gap-4">
-                            <div>
-                                <label for="table-name" class="block text-sm font-medium mb-1.5">Table name</label>
-                                <InputText id="table-name" class="@InputClass" @bind-Value="NewTable.Name" placeholder="e.g. T1" />
-                                @if (ErrorText("table-Name") is { } tNameErr)
-                                {
-                                    <p class="mt-1 text-xs text-apple-red" role="alert">@tNameErr</p>
-                                }
-                            </div>
-                            <div>
-                                <label for="table-guests" class="block text-sm font-medium mb-1.5">Guest count</label>
-                                <InputNumber id="table-guests" class="@InputClass" @bind-Value="NewTable.GuestCount" min="1" max="50" />
-                                @if (ErrorText("table-GuestCount") is { } tGuestErr)
-                                {
-                                    <p class="mt-1 text-xs text-apple-red" role="alert">@tGuestErr</p>
-                                }
-                            </div>
-                        </div>
-                        <div>
-                            <label for="table-description" class="block text-sm font-medium mb-1.5">Description <span class="text-stone-400">(optional)</span></label>
-                            <InputTextArea id="table-description" rows="2" class="@InputClass" @bind-Value="NewTable.Description" placeholder="e.g. Window seat with harbour view" />
-                            @if (ErrorText("table-Description") is { } tDescErr)
+                    <div class="flex items-center justify-between gap-3">
+                        <div role="tablist" aria-label="Floors" class="flex flex-wrap gap-1 p-1 rounded-full bg-stone-200/60 dark:bg-stone-800/60">
+                            @for (var f = 0 ; f < Restaurant.FloorList.Count ; f++)
                             {
-                                <p class="mt-1 text-xs text-apple-red" role="alert">@tDescErr</p>
+                                var floorIndex = f;
+                                var floor = Restaurant.FloorList[f];
+                                <button type="button" role="tab" aria-selected="@(floorIndex == SelectedFloorIndex)" @onclick="() => SelectFloor(floorIndex)"
+                                        class="min-h-[44px] px-4 rounded-full text-sm font-medium transition motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-apple-blue @(floorIndex == SelectedFloorIndex ? "bg-white dark:bg-stone-700 text-stone-900 dark:text-white shadow-sm" : "text-stone-600 dark:text-stone-300 hover:bg-white/60 dark:hover:bg-white/10")">
+                                    @floor.Name
+                                    <span class="ml-1 text-xs text-stone-500">@floor.TableList.Count</span>
+                                </button>
                             }
                         </div>
-                        <div class="flex justify-end gap-2">
-                            @if (IsEditingTable)
-                            {
-                                <button type="button" @onclick="CancelEdit"
+                        <button type="button" @onclick="AddFloor"
+                                class="min-h-[44px] px-4 rounded-full text-sm font-semibold text-apple-blue hover:bg-apple-blue/10 transition motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-apple-blue">
+                            + Add floor
+                        </button>
+                    </div>
+
+                    @if (ErrorText("floor-list") is { } floorListErr)
+                    {
+                        <p class="text-xs text-apple-red" role="alert">@floorListErr</p>
+                    }
+
+                    @if (IsAddingFloor || IsEditingFloor)
+                    {
+                        <div class="sf-glass rounded-2xl p-5 border-white/60 dark:border-white/10 shadow-apple-glass space-y-4">
+                            <h3 class="text-sm font-semibold text-stone-900 dark:text-white">@(IsEditingFloor ? "Edit floor" : "Add a floor")</h3>
+                            <div>
+                                <label for="floor-name" class="block text-sm font-medium mb-1.5">Floor name</label>
+                                <InputText id="floor-name" class="@InputClass" @bind-Value="NewFloor.Name" placeholder="e.g. Ground floor" />
+                                @if (ErrorText("floor-Name") is { } fNameErr)
+                                {
+                                    <p class="mt-1 text-xs text-apple-red" role="alert">@fNameErr</p>
+                                }
+                            </div>
+                            <div>
+                                <label for="floor-description" class="block text-sm font-medium mb-1.5">Description <span class="text-stone-400">(optional)</span></label>
+                                <InputTextArea id="floor-description" rows="2" class="@InputClass" @bind-Value="NewFloor.Description" placeholder="e.g. Terrace and bar area" />
+                                @if (ErrorText("floor-Description") is { } fDescErr)
+                                {
+                                    <p class="mt-1 text-xs text-apple-red" role="alert">@fDescErr</p>
+                                }
+                            </div>
+                            <div class="flex justify-end gap-2">
+                                <button type="button" @onclick="CancelFloorEdit"
                                         class="min-h-[44px] px-5 rounded-full text-sm font-medium text-stone-600 dark:text-stone-300 hover:bg-white/60 dark:hover:bg-white/10 transition motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-apple-blue">
                                     Cancel
                                 </button>
-                            }
-                            <button type="button" @onclick="SaveTable"
-                                    class="min-h-[44px] px-5 rounded-full bg-apple-blue text-white text-sm font-semibold shadow-md shadow-apple-blue/30 hover:opacity-90 transition motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-apple-blue">
-                                @(IsEditingTable ? "Save changes" : "Add table")
-                            </button>
+                                <button type="button" @onclick="SaveFloor"
+                                        class="min-h-[44px] px-5 rounded-full bg-apple-blue text-white text-sm font-semibold shadow-md shadow-apple-blue/30 hover:opacity-90 transition motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-apple-blue">
+                                    @(IsEditingFloor ? "Save floor" : "Add floor")
+                                </button>
+                            </div>
                         </div>
-                    </div>
-
-                    @if (ErrorText("table-list") is { } listErr)
-                    {
-                        <p class="text-xs text-apple-red" role="alert">@listErr</p>
                     }
 
-                    @if (Restaurant.TableList.Count > 0)
+                    @if (SelectedFloor is { } currentFloor)
                     {
-                        <ul class="divide-y divide-stone-200 dark:divide-stone-800 rounded-2xl border border-white/60 dark:border-white/10 overflow-hidden">
-                            @for (var t = 0 ; t < Restaurant.TableList.Count ; t++)
-                            {
-                                var index = t;
-                                var table = Restaurant.TableList[t];
-                                <li class="flex items-center justify-between gap-4 px-4 py-3 bg-white/50 dark:bg-stone-900/50">
-                                    <div class="min-w-0">
-                                        <p class="text-sm font-semibold text-stone-900 dark:text-white">@table.Name <span class="font-normal text-stone-500">· @table.GuestCount guests</span></p>
-                                        @if (!string.IsNullOrWhiteSpace(table.Description))
-                                        {
-                                            <p class="text-xs text-stone-500 truncate">@table.Description</p>
-                                        }
-                                    </div>
-                                    <div class="flex items-center gap-1">
-                                        <button type="button" @onclick="() => EditTable(index)" aria-label="Edit table @table.Name"
-                                                class="min-h-[44px] min-w-[44px] px-3 rounded-full text-sm font-medium text-apple-blue hover:bg-apple-blue/10 transition motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-apple-blue">
-                                            Edit
-                                        </button>
-                                        <button type="button" @onclick="() => RemoveTable(index)" disabled="@(index == EditingTableIndex)" aria-label="Remove table @table.Name"
-                                                class="min-h-[44px] min-w-[44px] px-3 rounded-full text-sm font-medium text-apple-red hover:bg-apple-red/10 transition motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-apple-red disabled:opacity-40 disabled:pointer-events-none">
-                                            Remove
-                                        </button>
-                                    </div>
-                                </li>
-                            }
-                        </ul>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="min-w-0">
+                                <p class="text-sm font-semibold text-stone-900 dark:text-white truncate">@currentFloor.Name</p>
+                                @if (!string.IsNullOrWhiteSpace(currentFloor.Description))
+                                {
+                                    <p class="text-xs text-stone-500 truncate">@currentFloor.Description</p>
+                                }
+                            </div>
+                            <div class="flex items-center gap-1">
+                                @if (ConfirmDeleteFloorIndex == SelectedFloorIndex)
+                                {
+                                    <span class="text-xs text-apple-red" role="alert">Delete @currentFloor.Name and its @currentFloor.TableList.Count tables?</span>
+                                    <button type="button" @onclick="CancelDeleteFloor"
+                                            class="min-h-[44px] px-3 rounded-full text-sm font-medium text-stone-600 dark:text-stone-300 hover:bg-white/60 dark:hover:bg-white/10 transition motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-apple-blue">
+                                        Cancel
+                                    </button>
+                                    <button type="button" @onclick="() => ConfirmDeleteFloor(SelectedFloorIndex)"
+                                            class="min-h-[44px] px-3 rounded-full text-sm font-semibold text-white bg-apple-red hover:opacity-90 transition motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-apple-red">
+                                        Delete
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button type="button" @onclick="() => EditFloor(SelectedFloorIndex)" aria-label="Edit floor @currentFloor.Name"
+                                            class="min-h-[44px] min-w-[44px] px-3 rounded-full text-sm font-medium text-apple-blue hover:bg-apple-blue/10 transition motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-apple-blue">
+                                        Edit
+                                    </button>
+                                    <button type="button" @onclick="() => RequestDeleteFloor(SelectedFloorIndex)" aria-label="Delete floor @currentFloor.Name"
+                                            class="min-h-[44px] min-w-[44px] px-3 rounded-full text-sm font-medium text-apple-red hover:bg-apple-red/10 transition motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-apple-red">
+                                        Delete
+                                    </button>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="sf-glass rounded-2xl p-5 border-white/60 dark:border-white/10 shadow-apple-glass space-y-4">
+                            <h3 class="text-sm font-semibold text-stone-900 dark:text-white">@(IsEditingTable ? "Edit table" : $"Add a table to {currentFloor.Name}")</h3>
+                            <div class="grid sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="table-name" class="block text-sm font-medium mb-1.5">Table name</label>
+                                    <InputText id="table-name" class="@InputClass" @bind-Value="NewTable.Name" placeholder="e.g. T1" />
+                                    @if (ErrorText("table-Name") is { } tNameErr)
+                                    {
+                                        <p class="mt-1 text-xs text-apple-red" role="alert">@tNameErr</p>
+                                    }
+                                </div>
+                                <div>
+                                    <label for="table-guests" class="block text-sm font-medium mb-1.5">Guest count</label>
+                                    <InputNumber id="table-guests" class="@InputClass" @bind-Value="NewTable.GuestCount" min="1" max="50" />
+                                    @if (ErrorText("table-GuestCount") is { } tGuestErr)
+                                    {
+                                        <p class="mt-1 text-xs text-apple-red" role="alert">@tGuestErr</p>
+                                    }
+                                </div>
+                            </div>
+                            <div>
+                                <label for="table-description" class="block text-sm font-medium mb-1.5">Description <span class="text-stone-400">(optional)</span></label>
+                                <InputTextArea id="table-description" rows="2" class="@InputClass" @bind-Value="NewTable.Description" placeholder="e.g. Window seat with harbour view" />
+                                @if (ErrorText("table-Description") is { } tDescErr)
+                                {
+                                    <p class="mt-1 text-xs text-apple-red" role="alert">@tDescErr</p>
+                                }
+                            </div>
+                            <div class="flex justify-end gap-2">
+                                @if (IsEditingTable)
+                                {
+                                    <button type="button" @onclick="CancelEdit"
+                                            class="min-h-[44px] px-5 rounded-full text-sm font-medium text-stone-600 dark:text-stone-300 hover:bg-white/60 dark:hover:bg-white/10 transition motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-apple-blue">
+                                        Cancel
+                                    </button>
+                                }
+                                <button type="button" @onclick="SaveTable"
+                                        class="min-h-[44px] px-5 rounded-full bg-apple-blue text-white text-sm font-semibold shadow-md shadow-apple-blue/30 hover:opacity-90 transition motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-apple-blue">
+                                    @(IsEditingTable ? "Save changes" : "Add table")
+                                </button>
+                            </div>
+                        </div>
+
+                        @if (ErrorText($"floor-{SelectedFloorIndex}") is { } floorTablesErr)
+                        {
+                            <p class="text-xs text-apple-red" role="alert">@floorTablesErr</p>
+                        }
+
+                        @if (currentFloor.TableList.Count == 0)
+                        {
+                            <p class="text-sm text-stone-500 text-center py-6 rounded-2xl border border-dashed border-stone-300 dark:border-stone-700">No tables on this floor yet.</p>
+                        }
+                        else
+                        {
+                            <ul class="divide-y divide-stone-200 dark:divide-stone-800 rounded-2xl border border-white/60 dark:border-white/10 overflow-hidden">
+                                @for (var t = 0 ; t < currentFloor.TableList.Count ; t++)
+                                {
+                                    var index = t;
+                                    var table = currentFloor.TableList[t];
+                                    <li class="flex items-center justify-between gap-4 px-4 py-3 bg-white/50 dark:bg-stone-900/50">
+                                        <div class="min-w-0">
+                                            <p class="text-sm font-semibold text-stone-900 dark:text-white">@table.Name <span class="font-normal text-stone-500">· @table.GuestCount guests</span></p>
+                                            @if (!string.IsNullOrWhiteSpace(table.Description))
+                                            {
+                                                <p class="text-xs text-stone-500 truncate">@table.Description</p>
+                                            }
+                                        </div>
+                                        <div class="flex items-center gap-1">
+                                            <button type="button" @onclick="() => EditTable(index)" aria-label="Edit table @table.Name"
+                                                    class="min-h-[44px] min-w-[44px] px-3 rounded-full text-sm font-medium text-apple-blue hover:bg-apple-blue/10 transition motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-apple-blue">
+                                                Edit
+                                            </button>
+                                            <button type="button" @onclick="() => RemoveTable(index)" disabled="@(index == EditingTableIndex)" aria-label="Remove table @table.Name"
+                                                    class="min-h-[44px] min-w-[44px] px-3 rounded-full text-sm font-medium text-apple-red hover:bg-apple-red/10 transition motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-apple-red disabled:opacity-40 disabled:pointer-events-none">
+                                                Remove
+                                            </button>
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    }
+                    else if (ErrorText("floor-list") is null)
+                    {
+                        <p class="text-sm text-stone-500 text-center py-6 rounded-2xl border border-dashed border-stone-300 dark:border-stone-700">Add a floor to start adding tables.</p>
                     }
                 </fieldset>
                 break;
@@ -293,8 +388,9 @@
                         <div class="sm:col-span-2"><dt class="text-stone-500">Address</dt><dd class="font-medium">@Restaurant.Address</dd></div>
                         <div><dt class="text-stone-500">Phone</dt><dd class="font-medium">@Restaurant.Phone</dd></div>
                         <div><dt class="text-stone-500">Email</dt><dd class="font-medium">@Restaurant.Email</dd></div>
-                        <div><dt class="text-stone-500">Capacity</dt><dd class="font-medium">@Restaurant.TableCapacity seats</dd></div>
-                        @Restaurant.PhotoList.Count selected
+                        <div><dt class="text-stone-500">Floors</dt><dd class="font-medium">@Restaurant.FloorList.Count</dd></div>
+                        <div><dt class="text-stone-500">Tables</dt><dd class="font-medium">@Restaurant.FloorList.Sum(f => f.TableList.Count)</dd></div>
+                        <div><dt class="text-stone-500">Photos</dt><dd class="font-medium">@Restaurant.PhotoList.Count selected</dd></div>
                     </dl>
                     @foreach (var err in SubmitErrors)
                     {

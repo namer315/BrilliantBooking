@@ -19,6 +19,9 @@ public class FloorMap : EntityBaseWithNameMapping<FloorVO>
 
         //References(x => x.Restaurant , "Restaurant").Not.Nullable();
         References(x => x.Restaurant , "Restaurant").Not.Nullable();
+
+        HasMany(x => x.TableList).KeyColumn("Floor").Cascade.AllDeleteOrphan();
+
     }
 }
 
