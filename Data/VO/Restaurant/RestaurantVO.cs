@@ -56,7 +56,7 @@ public class RestaurantMap : EntityWithIdMapping<RestaurantVO>
         Map(x => x.Email).Length(256).Nullable();
         Map(x => x.TableCapacity).Not.Nullable().Default("0");
 
-        References(x => x.Owner, "Owner").Cascade.All();
+        References(x => x.Owner, "Owner").Cascade.None();
 
         HasMany(x => x.OpeningHourList).KeyColumn("Restaurant").Inverse().Cascade.AllDeleteOrphan();
         HasMany(x => x.PhotoList).KeyColumn("Restaurant").OrderBy("Sequence").Inverse().Cascade.AllDeleteOrphan();

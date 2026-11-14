@@ -1,3 +1,4 @@
+using Data.Managers;
 using Data.Search;
 using Data.VO.Restaurant;
 using NHibernate;
@@ -11,7 +12,7 @@ public sealed class RestaurantDAO : NHibernateRepository
     {
         IQuery q = Session.CreateQuery(@"
             FROM RestaurantVO restaurant 
-            where restaurant.Slug = :slug
+            WHERE restaurant.Slug = :slug
 			")
             .SetParameter("slug" , slug);
 
@@ -21,7 +22,7 @@ public sealed class RestaurantDAO : NHibernateRepository
     {
         IQuery q = Session.CreateQuery(@"
             FROM RestaurantVO restaurant 
-            where restaurant.Id = :id
+            WHERE restaurant.Id = :id
 			")
             .SetParameter("id" , id)
             .SetMaxResults(1);
@@ -31,14 +32,19 @@ public sealed class RestaurantDAO : NHibernateRepository
 
     public async Task<IList<RestaurantVO>> GetRestaurantListBy(RestaurantSH search)
     {
-        string where = string.Empty;
-        IList<(string , object)> parameters = new List<(string , object)>();
+        string where = "WHERE owner.Id = :ownerId";
+        IList<(string , object)> parameters = new List<(string , object)>()
+        {
+            ("ownerId" , UserSessionManager.CurrentUser.Owner.Id)
+        };
         if (!string.IsNullOrEmpty(search.Text)) {
-            where = $"where restaurant.Name like :text";
+            where = $" AND restaurant.Name like :text";
             parameters.Add(("text" , $"%{search.Text}%"));
         }
         string query = $@"
+            SELECT DISTINCT restaurant
             FROM RestaurantVO restaurant
+            LEFT JOIN restaurant.Owner owner
             LEFT JOIN FETCH restaurant.PhotoList photo
             {where}
             ORDER BY restaurant.Name
