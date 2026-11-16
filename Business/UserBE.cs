@@ -4,6 +4,7 @@ using Data.Exceptions;
 using Data.Localization;
 using Data.Managers;
 using Data.VO;
+using Data.VO.Customer;
 using Data.VO.Restaurant;
 
 namespace Business;
@@ -44,12 +45,19 @@ public class UserBE
         user.Phone = signUp.Phone;
         user.Password = DataEncryptorBE.EncryptString(signUp.Password);
 
-        if(signUp.Type == UserVO.UserType.Owner)
+        if (signUp.Type == UserVO.UserType.Owner)
         {
             user.Owner = new RestaurantOwnerVO();
             user.Owner.Name = signUp.FullName;
             user.Owner.Email = signUp.Email;
             user.Owner.Phone = signUp.Phone;
+        }
+        else if (signUp.Type == UserVO.UserType.Client)
+        {
+            user.Customer = new CustomerVO();
+            user.Customer.Name = signUp.FullName;
+            user.Customer.Email = signUp.Email;
+            user.Customer.Phone = signUp.Phone;
         }
 
         return user;

@@ -1,0 +1,88 @@
+@page "/Bookings"
+
+@inherits PageBase
+@rendermode @(new InteractiveServerRenderMode(false))
+
+<section class="mx-auto px-4 sm:px-6 py-10 space-y-8">
+    @if (IsCustomer)
+    {
+        <header class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-stone-200 dark:border-stone-800 pb-5">
+            <div class="space-y-1">
+                <h1 class="text-2xl font-bold tracking-tight">My Reservations</h1>
+                <p class="text-xs text-stone-500">Manage upcoming and past restaurant table bookings</p>
+            </div>
+            <form class="flex items-center gap-2" role="search" @onsubmit="LookupBooking" @onsubmit:preventDefault>
+                <label for="booking-lookup" class="sr-only">Reference code or phone number</label>
+                <input id="booking-lookup"
+                       type="search"
+                       @bind="LookupCode"
+                       placeholder="Ref code (#TBL-...) or phone"
+                       autocomplete="off"
+                       class="bg-[#F8F7F4] dark:bg-stone-900 border border-stone-300/80 dark:border-stone-800 rounded-xl px-3 py-2 text-xs w-56 focus:outline-none focus:ring-2 focus:ring-apple-blue" />
+                <button type="submit" class="px-3 py-2 bg-apple-blue text-white rounded-xl text-xs font-semibold hover:bg-apple-blue-hover transition focus-visible:ring-2 focus-visible:ring-apple-blue">Lookup</button>
+            </form>
+        </header>
+
+        <div class="flex justify-center">
+            <div role="tablist" aria-label="Reservation filter" class="sf-segmented flex space-x-1 p-1 max-w-xs w-full">
+                <button type="button" role="tab" aria-selected="@(BookingsTab == "active")"
+                        @onclick='() => SetBookingsTab("active")'
+                        class="@(BookingsTab == "active" ? "active" : "text-stone-500") flex-1 py-1.5 text-xs font-semibold rounded-md">
+                    Active (@BookingList.Count(b => b.Status == "Active"))
+                </button>
+                <button type="button" role="tab" aria-selected="@(BookingsTab == "past")"
+                        @onclick='() => SetBookingsTab("past")'
+                        class="@(BookingsTab == "past" ? "active" : "text-stone-500") flex-1 py-1.5 text-xs font-semibold rounded-md">
+                    History (@BookingList.Count(b => b.Status == "Past"))
+                </button>
+            </div>
+        </div>
+
+        <div class="space-y-4" role="tabpanel">
+            @if (!VisibleBookings.Any())
+            {
+                <div class="text-center py-12 space-y-3">
+                    <i data-lucide="calendar-x" class="w-10 h-10 text-stone-400 mx-auto"></i>
+                    <p class="text-sm font-semibold text-stone-500">No @BookingsTab reservations found</p>
+                </div>
+            }
+            else
+            {
+                @foreach (var booking in VisibleBookings.ToList())
+                {
+                    <article class="sf-glass rounded-2xl p-5 shadow-apple-card border border-stone-200/80 dark:border-stone-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div class="space-y-1">
+                            <div class="flex items-center space-x-2">
+                                <span class="font-mono text-xs font-bold text-apple-blue">@booking.Reference</span>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold @(booking.Status == "Active" ? "bg-apple-green/20 text-apple-green" : "bg-stone-200 text-stone-600")">@booking.Status</span>
+                            </div>
+                            <h2 class="text-base font-bold">@booking.Restaurant.Name</h2>
+                            <ul class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-stone-500 list-none">
+                                <li><i data-lucide="calendar" class="w-3.5 h-3.5 inline mr-1"></i>@FormatDate(booking.Date)</li>
+                                <li><i data-lucide="clock" class="w-3.5 h-3.5 inline mr-1"></i>@FormatTime(booking.Time)</li>
+                                <li><i data-lucide="users" class="w-3.5 h-3.5 inline mr-1"></i>@booking.GuestCount Guests</li>
+                            </ul>
+                            <div class="text-xs text-apple-blue font-medium">@booking.TableName</div>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            @if (booking.Status == "Active")
+                            {
+                                <button type="button" @onclick='() => CancelBooking(booking)' class="px-3 py-1.5 border border-apple-red/30 text-apple-red hover:bg-apple-red/10 rounded-xl text-xs font-semibold transition">Cancel</button>
+                                <button type="button" @onclick="ModifyBooking" class="px-3 py-1.5 bg-[#F0EEE9] dark:bg-stone-800 rounded-xl text-xs font-semibold hover:bg-stone-200 transition">Modify</button>
+                            }
+                            else
+                            {
+                                <button type="button" @onclick='() => RebookRestaurant(booking.Restaurant)' class="px-3 py-1.5 bg-apple-blue text-white rounded-xl text-xs font-semibold hover:bg-apple-blue-hover transition">Re-book Table</button>
+                            }
+                        </div>
+                    </article>
+                }
+            }
+        </div>
+    }
+    else
+    {
+        <SignInPromptSection />
+    }
+</section>

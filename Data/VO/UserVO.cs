@@ -1,4 +1,5 @@
-﻿using Data.VO.Restaurant;
+﻿using Data.VO.Customer;
+using Data.VO.Restaurant;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -14,6 +15,7 @@ public class UserVO : EntityBase
     public virtual string Password { get; set; }
 
     public virtual RestaurantOwnerVO Owner { get; set; }
+    public virtual CustomerVO Customer { get; set; }
 
     //public virtual RestaurantVO Restaurant { get; set; } = null!;
 
@@ -35,5 +37,6 @@ public class UserMap : EntityWithIdMapping<UserVO>
         Map(x => x.Password).Not.Nullable();
 
         References(x => x.Owner , "Owner").Cascade.Merge().Not.LazyLoad();
+        References(x => x.Customer , "Customer").Cascade.Merge().Not.LazyLoad();
     }
 }

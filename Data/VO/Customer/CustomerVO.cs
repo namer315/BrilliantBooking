@@ -18,9 +18,9 @@ public class CustomerMap : EntityWithIdMapping<CustomerVO>
 {
     public CustomerMap()
     {
-        Map(x => x.Name).Length(200).Not.Nullable();
-        Map(x => x.Phone).Length(50).Not.Nullable();
-        Map(x => x.Email).Length(254).Not.Nullable();
-        Map(x => x.Notes).Length(1000).Not.Nullable();
+        Map(x => x.Name).Length(int.MaxValue).Not.Nullable();
+        Map(x => x.Phone).Length(int.MaxValue).Not.Nullable();
+        Map(x => x.Email).Length(int.MaxValue).Not.Nullable();
+        Map(x => x.Notes).Length(int.MaxValue).Not.Nullable();
     }
 }

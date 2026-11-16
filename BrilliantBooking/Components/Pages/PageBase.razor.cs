@@ -1,4 +1,5 @@
 using BrilliantBooking.Services;
+using Data.Managers;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
@@ -36,6 +37,12 @@ public partial class PageBase
     [Parameter] public string? Id { get; set; }
     //public bool IsNew => Id is not null && string.Equals(Id , RouteManager.New , StringComparison.OrdinalIgnoreCase);
 
+    #endregion
+
+    #region user
+    public bool HasUser => UserSessionManager.IskeyExist && UserSessionManager.CurrentUser is not null;
+    public bool IsCustomer => HasUser && UserSessionManager.CurrentUser.Customer is not null;
+    public bool IsOwner => HasUser && UserSessionManager.CurrentUser.Owner is not null;
     #endregion
 
     #region life
