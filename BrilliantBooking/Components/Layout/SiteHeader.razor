@@ -73,7 +73,7 @@
 </header>
 
 @code {
-    private bool IsExploreActive => IsActive("") || IsActive("reserve");
+    private bool IsExploreActive => IsActive("Explore") || string.IsNullOrEmpty(Navigation.ToBaseRelativePath(Navigation.Uri).TrimEnd('/'));
 
     protected override void OnInitialized()
     {
