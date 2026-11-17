@@ -34,6 +34,7 @@ public class SessionService
     }
 
     public Guid? UserSessionKey { get { return IskeyExist ? GetObject<Guid?>(NameKeys.UserSessionKey) : null; } }
+    public bool IsPrivateUser { get { return UserSessionKey is Guid guid  && guid != Guid.Empty /*&& id != OnlineUserSessionManager.PublicKey;*/ ; } }
 
     public SessionService(IHttpContextAccessor httpContextAccessor)
     {

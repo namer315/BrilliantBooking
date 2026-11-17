@@ -26,10 +26,11 @@ public partial class Program
                 options.Cookie.Name = "BrilliantBooking.Session"; // Custom session cookie name
             });
 
+            builder.Services.AddScoped<GlobalPreProcessor>();
             builder.Services.AddScoped<SessionService>();
             builder.Services.AddScoped<BookingUiStateService>();
             builder.Services.AddScoped<LoadingService>();
-            builder.Services.AddScoped<IMessageBoxService, MessageBoxService>();
+            builder.Services.AddScoped<IMessageBoxService , MessageBoxService>();
 
             //Connection connection = new()
             //{
@@ -58,6 +59,17 @@ public partial class Program
             app.UseHttpsRedirection();
             // In the pipeline, after app.UseHttpsRedirection() and before app.MapRazorComponents<App>()
             app.UseSession();
+
+            app.Use(async (context , next) =>
+            {
+                var preProcessor = context.RequestServices
+                    .GetRequiredService<GlobalPreProcessor>();
+
+                await preProcessor.PreProcessAsync(context);
+
+                await next();
+
+            });
 
             app.UseAntiforgery();
 

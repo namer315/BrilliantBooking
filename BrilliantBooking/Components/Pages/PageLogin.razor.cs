@@ -2,11 +2,18 @@ using BrilliantBooking.Extensions;
 using Data.DTO;
 using Data.VO;
 using FDM;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.WebUtilities;
+using System.Text;
+using System.Text.Json;
 
 namespace BrilliantBooking.Components.Pages;
 
 public partial class PageLogin
 {
+    [Inject] private IDataProtectionProvider DataProtectionProvider { get; set; } = default!;
+
     private UserFDM _fdm = new UserFDM();
     private SignInDTO _signIn = new();
     private SignUpDTO _signUp = new();
@@ -81,8 +88,23 @@ public partial class PageLogin
         {
             if (await _fdm.SignInAsync(_signIn) is UserVO user)
             {
-                SessionService.SetOnlineUserSessionAsync(user);
-                NavigationManager.NavigateTo("/App/Restaurant");
+                await SessionService.SetOnlineUserSessionAsync(user);
+
+                if (_signIn.RememberMe)
+                {
+                    var protector = DataProtectionProvider.CreateProtector("BrilliantBooking.LoginCredentials.v1");
+                    var signInJson = JsonSerializer.Serialize(_signIn);
+                    var protectedCredentials = protector.Protect(signInJson);
+                    var cookieValue = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(protectedCredentials));
+
+                    await JS.SetCookieAsync("BrilliantBooking.LoginCredentials", cookieValue, 30);
+                }
+
+                if(user.Owner is null)
+                    NavigationManager.NavigateTo("/Explore");
+                else
+                    NavigationManager.NavigateTo("/App/Restaurant");
+
                 ShowMessage("Signed in successfully.", "Welcome");
             }
         });

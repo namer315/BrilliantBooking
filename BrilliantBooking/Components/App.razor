@@ -49,10 +49,7 @@
                 }
             }
     </script>
-    <script>
-            window.refreshReserveIcons = () => { if (window.lucide) lucide.createIcons(); };
-            window.setDarkMode = (enabled) => document.documentElement.classList.toggle('dark', enabled);
-    </script>
+    <script src="@Assets["js/site.js"]"></script>
     <link rel="stylesheet" href="@Assets["css/site.css"]" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 </head>
@@ -61,9 +58,6 @@
     <Routes />
     <ReconnectModal />
     <script src="@Assets["_framework/blazor.web.js"]"></script>
-    <script>
-        window.refreshReserveIcons = function () { if (window.lucide) window.lucide.createIcons(); };
-    </script>
 </body>
 
 </html>
