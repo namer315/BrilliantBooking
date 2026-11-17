@@ -1,4 +1,5 @@
 using BrilliantBooking.Components.Controls;
+using Data.Exceptions;
 
 namespace BrilliantBooking.Services;
 
@@ -12,12 +13,12 @@ public class MessageBoxService : IMessageBoxService
     public bool IsVisible { get; private set; }
 
     public string Title { get; private set; } = string.Empty;
-        
+
     public string Message { get; private set; } = string.Empty;
 
     public MessageBox.MessageBoxType Type { get; private set; } = MessageBox.MessageBoxType.Primary;
 
-    public async Task ShowAsync(string message, string title , MessageBox.MessageBoxType type = MessageBox.MessageBoxType.Primary)
+    public async Task ShowAsync(string message , string title , MessageBox.MessageBoxType type = MessageBox.MessageBoxType.Primary)
     {
         _completion?.TrySetResult();
 
@@ -32,9 +33,9 @@ public class MessageBoxService : IMessageBoxService
     }
 
 
-    public void ShowMessage(string message , string title = "Confirmation")
+    public async Task ShowMessageBoxSuccess(string message , string title = "Confirmation")
     {
-        _= ShowAsync(message , title , MessageBox.MessageBoxType.Success);
+        await ShowAsync(message , title , MessageBox.MessageBoxType.Success);
     }
     public async void ShowInfo(string message , string title = "Info")
     {
@@ -44,14 +45,14 @@ public class MessageBoxService : IMessageBoxService
     {
         _ = ShowAsync(message , title , MessageBox.MessageBoxType.Warning);
     }
-    public async void ShowError(string message , string title = "Error")
+    public async Task ShowMessageBoxDanger(string message , string title = "Error")
     {
-        _ = ShowAsync(message , title , MessageBox.MessageBoxType.Danger);
+        await ShowAsync(message , title , MessageBox.MessageBoxType.Danger);
     }
-    public async void ShowException(Exception ex , string title = "Error")
-    {
-        _ = ShowAsync(ex.Message , title , MessageBox.MessageBoxType.Danger);
-    }
+    //public async void ShowException(Exception ex , string title = "Error")
+    //{
+    //    _ = ShowAsync(ex.Message , title , MessageBox.MessageBoxType.Danger);
+    //}
 
     public void Close()
     {
@@ -61,7 +62,9 @@ public class MessageBoxService : IMessageBoxService
 
         Changed?.Invoke();
     }
-    #endregion Toast
+    #endregion
+
+    #region Toast
 
     private TaskCompletionSource? _toastCompletion;
     private CancellationTokenSource? _toastCancellation;
@@ -74,7 +77,7 @@ public class MessageBoxService : IMessageBoxService
 
     public MessageBox.MessageBoxType ToastType { get; private set; } = MessageBox.MessageBoxType.Primary;
 
-    public async Task ShowToastAsync(string message, string title, MessageBox.MessageBoxType type = MessageBox.MessageBoxType.Primary)
+    public async Task ShowToastAsync(string message , string title , MessageBox.MessageBoxType type = MessageBox.MessageBoxType.Primary)
     {
         _toastCancellation?.Cancel();
         _toastCancellation?.Dispose();
@@ -94,7 +97,7 @@ public class MessageBoxService : IMessageBoxService
 
         try
         {
-            await Task.Delay(TimeSpan.FromSeconds(4), cancellation.Token);
+            await Task.Delay(TimeSpan.FromSeconds(4) , cancellation.Token);
 
             if (version == _toastVersion)
             {
@@ -123,4 +126,30 @@ public class MessageBoxService : IMessageBoxService
     {
         _ = ShowToastAsync(message , title , MessageBox.MessageBoxType.Success);
     }
+    public async Task ShowToastDanger(string message , string title = "Error")
+    {
+        await ShowToastAsync(message , title , MessageBox.MessageBoxType.Danger);
+    }
+
+    #endregion
+
+    #region General
+    public async void ShowMessage(string message , string title = "Confirmation")
+    {
+        await ShowMessageBoxSuccess(message , title);
+    }
+    public async void ShowException(Exception ex , string title = "Error")
+    {
+        switch (ex)
+        {
+            case AppException appException:
+                await ShowToastDanger(ex.Message , title);
+                break;
+            default:
+                await ShowMessageBoxDanger(ex.Message , title);
+                break;
+        }
+
+    }
+    #endregion
 }
