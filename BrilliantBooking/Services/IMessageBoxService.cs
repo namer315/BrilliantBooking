@@ -6,6 +6,7 @@ public interface IMessageBoxService
 {
     event Action? Changed;
 
+    #region MessageBox
     bool IsVisible { get; }
 
     string Title { get; }
@@ -20,4 +21,21 @@ public interface IMessageBoxService
     void ShowWarning(string message , string title);
 
     void Close();
+    #endregion
+
+    #region Toast
+
+    bool IsToastVisible { get; }
+
+    string ToastTitle { get; }
+
+    string ToastMessage { get; }
+
+    MessageBox.MessageBoxType ToastType { get; }
+
+    Task ShowToastAsync(string message, string title, MessageBox.MessageBoxType type = MessageBox.MessageBoxType.Primary);
+    void CloseToast();
+    void ShowToastSuccess(string message , string title);
+
+    #endregion
 }

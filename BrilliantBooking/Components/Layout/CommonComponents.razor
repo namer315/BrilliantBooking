@@ -6,5 +6,10 @@
             Type="@MessageBoxService.Type"
             OnClose="@(() => MessageBoxService.Close())" />
 
-            
+<Toast IsVisible="@MessageBoxService.IsToastVisible"
+       Title="@MessageBoxService.ToastTitle"
+       Message="@MessageBoxService.ToastMessage"
+       Type="@MessageBoxService.ToastType"
+       OnClose="@(() => MessageBoxService.CloseToast())" />
+
 <Loading />

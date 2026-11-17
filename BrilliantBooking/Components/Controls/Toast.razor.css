@@ -1,0 +1,19 @@
+@keyframes toast-progress {
+    from {
+        transform: scaleX(1);
+    }
+
+.toast-progress {
+    animation: toast-progress 4s linear forwards;
+}
+
+    to {
+        transform: scaleX(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .toast-progress {
+        animation: none;
+    }
+}
