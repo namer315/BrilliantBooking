@@ -18,6 +18,6 @@ public class BookingFDM
     public async Task<BookingVO> GetNew(RestaurantVO restaurant)
         => await _be.GetNew(restaurant);
 
-    public async Task<string> Persist(BookingVO booking)
+    public async Task<BookingVO> Persist(BookingVO booking)
         => await _be.Persist(booking);
 }

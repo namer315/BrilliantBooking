@@ -21,12 +21,16 @@ public class BookingBE
 
     public async Task<BookingVO> GetNew(RestaurantVO restaurant)
     {
+        if (!UserSessionManager.IskeyExist || UserSessionManager.CurrentUser.Customer is null)
+            throw new AppException(ErrorCode.AccessDenied);
+
         BookingVO booking = new();
 
         booking.GuestCount = 2;
         booking.Date = DateOnly.FromDateTime(DateTime.UtcNow.AddHours(3));
         booking.FromTime = DateTime.UtcNow.AddHours(3).TimeOfDay;
         booking.ToTime = DateTime.UtcNow.AddHours(4).TimeOfDay;
+        booking.Customer = UserSessionManager.CurrentUser.Customer;
 
         //booking.Restaurant = (await new RestaurantBE().GetRestaurantLsitBy(new()))[0];
         booking.Restaurant = await new RestaurantDAO().GetRestaurantBy(restaurant.Id);
@@ -34,12 +38,11 @@ public class BookingBE
         return booking;
     }
 
-    public async Task<string> Persist(BookingVO booking)
+    public async Task<BookingVO> Persist(BookingVO booking)
     {
         Validation(booking);
 
-        var a = await _dao.Merge(booking);
-        return "";
+       return await _dao.Merge(booking);
     }
 
     private void Validation(BookingVO booking)

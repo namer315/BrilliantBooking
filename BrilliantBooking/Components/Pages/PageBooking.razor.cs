@@ -3,6 +3,8 @@ using Data.VO.Operations;
 using Data.VO.Restaurant;
 using FDM;
 using Microsoft.AspNetCore.Components;
+using System.Globalization;
+using static BrilliantBooking.Components.Pages.HomeBase;
 
 namespace BrilliantBooking.Components.Pages;
 
@@ -35,7 +37,7 @@ public partial class PageBooking
         }
         catch(Exception ex)
         {
-
+            ShowException(ex);
         }
     }
 
@@ -54,6 +56,32 @@ public partial class PageBooking
     private void GoToBookingStep(int step)
     {
         Booking.Step = step;
+    }
+
+    private void SelectDateShortcut(int offset)
+    {
+        Booking.Date = GetShortcutDate(offset);
+    }
+
+    private void OnDateChanged(ChangeEventArgs e)
+    {
+        if (DateOnly.TryParseExact(e.Value?.ToString(), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
+        {
+            Booking.Date = date;
+        }
+    }
+
+    private DateOnly GetShortcutDate(int offset)
+    {
+        var today = DateOnly.FromDateTime(DateTime.UtcNow.AddHours(3));
+
+        return offset switch
+        {
+            0 => today,
+            1 => today.AddDays(1),
+            2 => today.AddDays(((int)DayOfWeek.Friday - (int)today.DayOfWeek + 7) % 7),
+            _ => today.AddDays(offset)
+        };
     }
 
     private void SubmitGuestDetails()
@@ -133,8 +161,7 @@ public partial class PageBooking
             return;
         }
 
-        Booking.Table = table;
-        Booking.TableName = table.Name;
+        Booking.BookingTable = table;
         StateHasChanged();
     }
 
@@ -142,7 +169,7 @@ public partial class PageBooking
     {
         try
         {
-            string s = await _fdm.Persist(Booking);
+            Booking = await _fdm.Persist(Booking);
         }
         catch(Exception ex)
         {

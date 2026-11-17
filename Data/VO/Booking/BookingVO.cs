@@ -1,7 +1,6 @@
 using Data.VO.Customer;
 using Data.VO.Operations;
 using Data.VO.Restaurant;
-using FluentNHibernate.Mapping;
 using NHibernate.Type;
 
 namespace Data.VO.Booking;

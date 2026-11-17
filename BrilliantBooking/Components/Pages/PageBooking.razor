@@ -57,11 +57,10 @@
                     <div class="grid grid-cols-3 gap-2 mb-3">
                         @foreach (var shortcut in DateShortcuts)
                         {
-                            @*"onclick='() => Page.SelectDateShortcut(shortcut.Offset)'*@
-                            <button class="py-2.5 px-3 rounded-xl text-xs font-semibold text-center border @(DateShortcuts[0].Offset == shortcut.Offset ? "border-apple-blue bg-apple-blue/10 text-apple-blue" : "border-stone-300/80 dark:border-stone-700 hover:border-apple-blue")">@shortcut.Label</button>
+                            <button type="button" @onclick="() => SelectDateShortcut(shortcut.Offset)" class="py-2.5 px-3 rounded-xl text-xs font-semibold text-center border @(Booking.Date == GetShortcutDate(shortcut.Offset) ? "border-apple-blue bg-apple-blue/10 text-apple-blue" : "border-stone-300/80 dark:border-stone-700 hover:border-apple-blue")">@shortcut.Label</button>
                         }
                     </div>
-                    <input type="date" value="@Booking.Date" @onchange="e => Booking.Date = DateOnly.FromDateTime(Convert.ToDateTime(e.Value ?? DateTime.UtcNow))" class="w-full bg-[#F0EEE9] dark:bg-stone-800 border border-stone-300/80 dark:border-stone-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-apple-blue" />
+                    <input type="date" value="@Booking.Date.ToString("yyyy-MM-dd")" @onchange="OnDateChanged" class="w-full bg-[#F0EEE9] dark:bg-stone-800 border border-stone-300/80 dark:border-stone-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-apple-blue" />
                 </div>
 
                 <div>
@@ -144,7 +143,7 @@
                                 @foreach (var (table , cx , cy , _) in layout)
                                 {
                                     var seats = Math.Max(table.GuestCount , 1);
-                                    var isSelected = Booking.TableName == table.Name;
+                                    var isSelected = Booking.BookingTable?.Id == table.Id;
                                     var tooSmall = seats < Booking.GuestCount;
                                     var canSelect = CanSelectTable(table);
                                     var color = StatusColor(table.Status);
@@ -231,11 +230,11 @@
                                 <i data-lucide="armchair" class="w-5 h-5"></i>
                             </div>
                             <div>
-                                <h4 class="text-sm font-bold">@(Booking.Table?.Name ?? "No Table Selected")</h4>
-                                <p class="text-xs text-stone-500">@(Booking.Table is null ? "Select a highlighted table from the dining floor plan above" : $"{Booking.Table?.Description} ({Booking.Table?.Capacity} seats max)")</p>
+                                <h4 class="text-sm font-bold">@(Booking.BookingTable?.Name ?? "No Table Selected")</h4>
+                                <p class="text-xs text-stone-500">@(Booking.BookingTable is null ? "Select a highlighted table from the dining floor plan above" : $"{Booking.BookingTable?.Description} ({Booking.BookingTable?.Capacity} seats max)")</p>
                             </div>
                         </div>
-                        <span class="px-2.5 py-1 rounded-full text-xs font-semibold @(Booking.TableName is null ? "bg-stone-200 dark:bg-stone-800 text-stone-600 dark:text-stone-300" : "bg-apple-green text-white")">@(Booking.Table is null ? "Required" : "Selected")</span>
+                        <span class="px-2.5 py-1 rounded-full text-xs font-semibold @(Booking.BookingTable is null ? "bg-stone-200 dark:bg-stone-800 text-stone-600 dark:text-stone-300" : "bg-apple-green text-white")">@(Booking.BookingTable is null ? "Required" : "Selected")</span>
                     </div>
 
                     <div class="flex items-center justify-between pt-2">
@@ -253,27 +252,11 @@
         {
             <div class="max-w-2xl mx-auto bg-[#F8F7F4] dark:bg-stone-900 rounded-3xl p-6 md:p-8 shadow-apple-card border border-stone-200/80 dark:border-stone-800 space-y-6">
                 <h3 class="text-base font-bold flex items-center space-x-2">
-                    <i data-lucide="user-check" class="w-5 h-5 text-apple-blue"></i>
-                    <span>Contact Information &amp; Dietary Notes</span>
+                    <i data-lucide="clipboard-list" class="w-5 h-5 text-apple-blue"></i>
+                    <span>Dining Preferences</span>
                 </h3>
 
                 <form @onsubmit="SubmitGuestDetails" @onsubmit:preventDefault class="space-y-4">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1">Full Name *</label>
-                            <input type="text" @bind="Booking.GuestName" @bind:event="oninput" required placeholder="e.g. Johnathan Vance" class="w-full bg-[#F0EEE9] dark:bg-stone-800 border border-stone-300/80 dark:border-stone-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-apple-blue" />
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1">Mobile Phone *</label>
-                            <input type="tel" @bind="Booking.GuestPhone" @bind:event="oninput" required placeholder="+27 82 123 4567" class="w-full bg-[#F0EEE9] dark:bg-stone-800 border border-stone-300/80 dark:border-stone-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-apple-blue" />
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1">Email Address *</label>
-                        <input type="email" @bind="Booking.GuestEmail" @bind:event="oninput" required placeholder="johnathan@example.com" class="w-full bg-[#F0EEE9] dark:bg-stone-800 border border-stone-300/80 dark:border-stone-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-apple-blue" />
-                    </div>
-
                     <div>
                         <label class="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Special Occasion</label>
                         <div class="flex flex-wrap gap-2">
@@ -348,11 +331,11 @@
                             </div>
                             <div class="flex justify-between pb-2 border-b border-stone-200 dark:border-stone-700">
                                 <span class="text-stone-500 text-xs">Seating Area / Table</span>
-                                <span class="font-semibold text-apple-blue text-xs">@(Booking.Table?.Name ?? "Host Selected")</span>
+                                <span class="font-semibold text-apple-blue text-xs">@(Booking.BookingTable?.Name ?? "Host Selected")</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-stone-500 text-xs">Guest</span>
-                                <span class="font-semibold text-xs">@Booking.GuestName</span>
+                                <span class="font-semibold text-xs">@(Booking.Customer?.Name ?? "Signed-in customer")</span>
                             </div>
                         </div>
 

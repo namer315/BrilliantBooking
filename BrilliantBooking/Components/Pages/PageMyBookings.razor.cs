@@ -19,7 +19,9 @@ public partial class PageMyBookings
     //public bool IsCustomer => SessionService.HasValidSessionKeys;
 
     public IEnumerable<BookingVO> VisibleBookings => BookingList.Where(b =>
-        BookingsTab == "active" ? b.Status == "Active" : b.Status == "Past");
+        BookingsTab == "active"
+            ? b.Status == BookingVO.BookingStatus.Active
+            : b.Status != BookingVO.BookingStatus.Active);
 
     protected override async Task OnInitializedAsync()
     {
@@ -37,20 +39,20 @@ public partial class PageMyBookings
     {
         if (!IsCustomer) return;
         BookingList = await _fdm.GetBookingBy(Search);
-        var oceanGrill = new RestaurantVO { Id = Guid.NewGuid(), Name = "Ocean Grill & Raw Bar" };
-        var petitManoir = new RestaurantVO { Id = Guid.NewGuid(), Name = "Le Petit Manoir" };
+        //var oceanGrill = new RestaurantVO { Id = Guid.NewGuid(), Name = "Ocean Grill & Raw Bar" };
+        //var petitManoir = new RestaurantVO { Id = Guid.NewGuid(), Name = "Le Petit Manoir" };
 
-        BookingList = new List<BookingVO>()
-        {
-            new BookingVO { Reference = "#TBL-8942-CPT", Restaurant = oceanGrill, Date = DateOnly.FromDateTime(DateTime.Today), Time = new(19, 30, 0), GuestCount = 4, TableName = "Table 04 (Ocean Window)", Status = "Active" },
-            new BookingVO { Reference = "#TBL-2041-FRN", Restaurant = petitManoir, Date = new(2026, 10, 14), Time = new(20, 0, 0), GuestCount = 2, TableName = "Chef's Counter C1", Status = "Past" }
-        };
+        //BookingList = new List<BookingVO>()
+        //{
+        //    new BookingVO { Reference = "#TBL-8942-CPT", Restaurant = oceanGrill, Date = DateOnly.FromDateTime(DateTime.Today), Time = new(19, 30, 0), GuestCount = 4, TableName = "Table 04 (Ocean Window)", Status = BookingVO.BookingStatus.Active },
+        //    new BookingVO { Reference = "#TBL-2041-FRN", Restaurant = petitManoir, Date = new(2026, 10, 14), Time = new(20, 0, 0), GuestCount = 2, TableName = "Chef's Counter C1", Status = BookingVO.BookingStatus.Past }
+        //};
         //await Task.CompletedTask;
     }
 
     public void SetBookingsTab(string tab) => BookingsTab = tab;
 
-    public void CancelBooking(BookingVO booking) => BookingList.Remove(booking);
+    public void CancelBooking(BookingVO booking) => booking.Status = BookingVO.BookingStatus.Cancelled;
 
     public async Task ModifyBooking() =>
         await JS.InvokeVoidAsync("alert", "Modification request sent to host.");
@@ -71,9 +73,9 @@ public partial class PageMyBookings
 
         var found = BookingList.FirstOrDefault(b =>
             b.Reference.Equals(query, StringComparison.OrdinalIgnoreCase) ||
-            (!string.IsNullOrEmpty(b.GuestPhone) && b.GuestPhone == query));
+            (!string.IsNullOrEmpty(b.Customer.Phone) && b.Customer.Phone == query));
         var message = found is not null
-            ? $"Reservation Found!\n\nVenue: {found.Restaurant.Name}\nDate: {FormatDate(found.Date)} at {FormatTime(found.Time)}\nTable: {found.TableName}"
+            ? $"Reservation Found!\n\nVenue: {found.Restaurant.Name}\nDate: {FormatDate(found.Date)} at {FormatTime(found.FromTime)}\nTable: {found.BookingTable?.Name}"
             : $"No active reservation found matching code: {query}";
         await JS.InvokeVoidAsync("alert", message);
     }
