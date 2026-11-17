@@ -361,6 +361,22 @@
     background: var(--apple-blue);
 }
 
+.password-strength.strength-1 .password-strength-bar.filled {
+    background: var(--apple-red);
+}
+
+.password-strength.strength-2 .password-strength-bar.filled {
+    background: #f59e0b;
+}
+
+.password-strength.strength-3 .password-strength-bar.filled {
+    background: var(--apple-blue);
+}
+
+.password-strength.strength-4 .password-strength-bar.filled {
+    background: #34c759;
+}
+
 .field-grid {
     display: grid;
     grid-template-columns: 1fr;
@@ -415,4 +431,46 @@
     .login-form-panel {
         padding: var(--space-md);
     }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+    .login-card {
+        background: #ffffff;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+    }
+}
+
+.auth-panel {
+    animation: auth-fade-in 220ms ease-out;
+}
+
+@keyframes auth-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .auth-panel {
+        animation: none;
+    }
+}
+
+.password-strength-label {
+    margin-top: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--stone-500);
+}
+
+.btn-social.placeholder {
+    border-style: dashed;
+    opacity: 0.85;
 }

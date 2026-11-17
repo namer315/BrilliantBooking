@@ -44,6 +44,7 @@
 
             @if (_isSignIn)
             {
+                <div class="auth-panel">
                 <p class="field-hint">Welcome back. Sign in to manage your reservations.</p>
 
                 <EditForm Model="_signIn" OnValidSubmit="HandleSignInAsync" class="login-form">
@@ -82,12 +83,14 @@
                 <div class="divider">Or continue with</div>
 
                 <div class="social-buttons">
-                    <button type="button" class="btn-social" @onclick='() => ShowSocialPlaceholder("Google")'>Google</button>
-                    <button type="button" class="btn-social" @onclick='() => ShowSocialPlaceholder("Apple")'>Apple</button>
+                    <button type="button" class="btn-social placeholder" @onclick='() => ShowSocialPlaceholder("Google")'>Google</button>
+                    <button type="button" class="btn-social placeholder" @onclick='() => ShowSocialPlaceholder("Apple")'>Apple</button>
+                </div>
                 </div>
             }
             else
             {
+                <div class="auth-panel">
                 <p class="field-hint">Join the VIP circle for priority reservations and curated menus.</p>
 
                 <EditForm Model="_signUp" OnValidSubmit="HandleSignUpAsync" class="login-form">
@@ -126,7 +129,7 @@
                                 <i data-lucide="@(_showPassword ? "eye-off" : "eye")" aria-hidden="true"></i>
                             </button>
                         </span>
-                        <span class="password-strength" aria-hidden="true">
+                        <span class="password-strength strength-@PasswordStrength" aria-hidden="true">
                             @for (var i = 0; i < 4; i++)
                             {
                                 var index = i;
@@ -168,6 +171,7 @@
                         Create Membership <i data-lucide="arrow-right" aria-hidden="true"></i>
                     </button>
                 </EditForm>
+                </div>
             }
 
             @if (_isSignIn)
