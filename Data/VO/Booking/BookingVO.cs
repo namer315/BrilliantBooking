@@ -2,6 +2,7 @@ using Data.VO.Customer;
 using Data.VO.Operations;
 using Data.VO.Restaurant;
 using FluentNHibernate.Mapping;
+using NHibernate.Type;
 
 namespace Data.VO.Booking;
 
@@ -12,9 +13,6 @@ namespace Data.VO.Booking;
 public class BookingVO : EntityBase
 {
     //public int PartySize { get; set; } = 2
-    public virtual string GuestName { get; set; }
-    public virtual string GuestPhone { get; set; }
-    public virtual string GuestEmail { get; set; }
     public virtual string Reference { get; set; } = string.Empty;
 
     public virtual DateOnly Date { get; set; }
@@ -22,8 +20,8 @@ public class BookingVO : EntityBase
     public virtual TimeSpan FromTime { get; set; }
     public virtual TimeSpan ToTime { get; set; }
     public virtual int GuestCount { get; set; }
-    public virtual string TableName { get; set; } = string.Empty;
-    public virtual string Status { get; set; } = string.Empty;
+    //public virtual string TableName { get; set; } = string.Empty;
+    public virtual BookingStatus Status { get; set; } = BookingStatus.Active;
     public virtual string Occasion { get; set; } = string.Empty;
     //public virtual string Dietary { get; set; } = string.Empty;
 
@@ -38,7 +36,14 @@ public class BookingVO : EntityBase
 
     public virtual RestaurantVO Restaurant { get; set; } = null!;
     public virtual CustomerVO Customer { get; set; } = null!;
-    public virtual TableVO Table { get; set; }
+    public virtual TableVO BookingTable { get; set; }
+
+    public enum BookingStatus
+    {
+        Active,
+        Past,
+        Cancelled
+    }
 
 }
 
@@ -48,14 +53,18 @@ public class BookingMap : EntityWithIdMapping<BookingVO>
     {
         Map(x => x.Reference).Length(50).Not.Nullable().Unique();
         Map(x => x.Date).Not.Nullable();
-        Map(x => x.Time).Not.Nullable();
+        Map(x => x.FromTime).Not.Nullable();
+        Map(x => x.ToTime).Not.Nullable();
         Map(x => x.GuestCount).Not.Nullable();
-        Map(x => x.TableName).Length(100).Not.Nullable();
-        Map(x => x.Status).Length(50).Not.Nullable();
+        Map(x => x.Status)
+            .CustomType<EnumStringType<BookingVO.BookingStatus>>()
+            .Length(50)
+            .Not.Nullable();
         Map(x => x.Occasion).Length(100).Not.Nullable();
         //Map(x => x.Dietary).Length(500).Not.Nullable();
 
-        References(x => x.Restaurant, "Restaurant").Not.Nullable().Index("IX_Bookings_RestaurantId");
-        References(x => x.Customer, "Customer").Not.Nullable().Index("IX_Bookings_CustomerId");
+        References(x => x.Restaurant, "Restaurant").Not.Nullable().Not.LazyLoad().Index("IX_Bookings_RestaurantId");
+        References(x => x.Customer , "Customer").Not.Nullable().Not.LazyLoad().Index("IX_Bookings_CustomerId");
+        References(x => x.BookingTable , "BookingTable").Not.LazyLoad().Cascade.None();
     }
 }

@@ -28,8 +28,10 @@ public class BookingDAO : NHibernateRepository
             : string.Empty;
 
         string query = $@"
+            SELECT booking
             FROM BookingVO booking
                 LEFT JOIN booking.Restaurant restaurant
+                LEFT JOIN booking.BookingTable bookingTable
                 LEFT JOIN booking.Customer customer
             {where}
             ORDER BY restaurant.Name
