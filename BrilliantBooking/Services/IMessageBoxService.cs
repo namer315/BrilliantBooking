@@ -17,7 +17,7 @@ public interface IMessageBoxService
 
     Task ShowAsync(string message, string title, MessageBox.MessageBoxType type = MessageBox.MessageBoxType.Primary);
     void ShowMessage(string message , string title);
-    void ShowException(Exception ex , string title);
+    void ShowException(Exception ex , string title = "Error");
     void ShowWarning(string message , string title);
 
     void Close();

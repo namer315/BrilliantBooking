@@ -95,15 +95,33 @@
 
     private void NavigateToLogin() => Navigation.NavigateTo("/login");
 
+
+    [Inject] private IMessageBoxService MessageBoxService { get; set; } = default!;
+
     protected override void OnInitialized()
     {
-        UiState.Changed += OnStateChanged;
-        Navigation.LocationChanged += OnLocationChanged;
+        try
+        {
+            UiState.Changed += OnStateChanged;
+            Navigation.LocationChanged += OnLocationChanged;
+        }
+        catch (Exception ex)
+        {
+            MessageBoxService.ShowException(ex);
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await JavaScript.InvokeVoidAsync("refreshReserveIcons");
+        try
+        {
+            await JavaScript.InvokeVoidAsync("refreshReserveIcons");
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            MessageBoxService.ShowException(ex);
+        }
     }
 
     private bool IsActive(string route) => Navigation.ToBaseRelativePath(Navigation.Uri).TrimEnd('/').Contains(route);
