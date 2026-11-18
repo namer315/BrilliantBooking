@@ -68,7 +68,7 @@ public sealed class CityDAO : NHibernateRepository
     {
         string condition = string.IsNullOrWhiteSpace(text)
             ? string.Empty
-            : "WHERE lower(city.Name) like :text";
+            : "WHERE lower(city.Name) like :text OR lower(city.Code) like :text OR lower(city.CityCode) like :text";
 
         IQuery query = Session.CreateQuery($@"
             FROM CityVO city

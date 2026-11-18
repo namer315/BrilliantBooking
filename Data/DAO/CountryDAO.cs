@@ -44,7 +44,7 @@ public sealed class CountryDAO : NHibernateRepository
     {
         string condition = string.IsNullOrWhiteSpace(text)
             ? string.Empty
-            : "WHERE lower(country.Name) like :text OR lower(country.Code) like :text";
+            : "WHERE lower(country.Name) like :text OR lower(country.Code) like :text OR lower(country.CountryCode) like :text";
 
         IQuery query = Session.CreateQuery($@"
             FROM CountryVO country

@@ -13,7 +13,7 @@ public class CityBE
     public Task<IList<CityVO>> GetByCountry(Guid countryId)
         => _dao.GetByCountry(countryId);
 
-    public Task<IList<CityVO>> GetList(string? text = null)
+    public Task<IList<CityVO>> GetList(string text = "")
         => _dao.GetList(text);
 
     public Task<CityVO> Persist(CityVO city)

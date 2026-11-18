@@ -1,5 +1,6 @@
 using BrilliantBooking.Extensions;
 using Data.DTO;
+using Data.VO.Location;
 using Data.VO.Operations;
 using Data.VO.Restaurant;
 using FDM;
@@ -12,6 +13,12 @@ public partial class PageRestaurant
 {
     private RestaurantVO Restaurant = new RestaurantVO();
     private RestaurantFDM _fdm = new RestaurantFDM();
+
+    private IList<CountryVO> CountryList { get; set; } = new List<CountryVO>();
+    private IList<CityVO> CityList { get; set; } = new List<CityVO>();
+    private Guid SelectedCountryId { get; set; }
+    private Guid SelectedCityId { get; set; }
+    private bool IsLoadingCities { get; set; }
 
     protected const string InputClass = "w-full rounded-xl border border-white/60 dark:border-white/10 bg-white/60 dark:bg-stone-900/60 backdrop-blur-md px-4 py-2.5 text-sm text-stone-900 dark:text-stone-100 placeholder:text-stone-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-apple-blue";
 
@@ -37,11 +44,60 @@ public partial class PageRestaurant
     {
         try
         {
+            await InitializeComponents().ShowProcessing(this);
             await beginEdit();
+            await InitializeLocationSelection();
         }
         catch (Exception ex)
         {
             ShowException(ex);
+        }
+    }
+
+    private async Task InitializeComponents()
+    {
+        CountryList = await _fdm.GetCountryList();
+    }
+
+    private async Task InitializeLocationSelection()
+    {
+        SelectedCityId = Restaurant.City?.Id ?? Guid.Empty;
+        SelectedCountryId = Restaurant.City?.Country?.Id ?? Guid.Empty;
+
+        if (SelectedCountryId != Guid.Empty)
+        {
+            await LoadCities(SelectedCountryId).ShowProcessing(this);
+        }
+    }
+
+    private async Task OnCountryChanged()
+    {
+        Restaurant.City = null;
+        SelectedCityId = Guid.Empty;
+        CityList = new List<CityVO>();
+
+        if (SelectedCountryId != Guid.Empty)
+        {
+            await LoadCities(SelectedCountryId).ShowProcessing(this); ;
+        }
+    }
+
+    private void OnCityChanged()
+    {
+        Restaurant.City = CityList.FirstOrDefault(city => city.Id == SelectedCityId);
+    }
+
+    private async Task LoadCities(Guid countryId)
+    {
+        IsLoadingCities = true;
+
+        try
+        {
+            CityList = await _fdm.GetCityList(countryId).ShowProcessing(this); ;
+        }
+        finally
+        {
+            IsLoadingCities = false;
         }
     }
 

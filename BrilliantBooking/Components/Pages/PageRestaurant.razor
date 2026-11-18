@@ -101,6 +101,33 @@
                     </div>
                     <div class="grid sm:grid-cols-2 gap-5">
                         <div>
+                            <label for="country" class="block text-sm font-medium mb-1.5">Country</label>
+                            <InputSelect id="country" class="@InputClass" @bind-Value="SelectedCountryId" @bind-Value:after="OnCountryChanged">
+                                <option value="@Guid.Empty">Select a country</option>
+                                @foreach (var country in CountryList)
+                                {
+                                    <option value="@country.Id">@country.Name</option>
+                                }
+                            </InputSelect>
+                        </div>
+                        <div>
+                            <label for="city" class="block text-sm font-medium mb-1.5">City</label>
+                            <InputSelect id="city" class="@InputClass" @bind-Value="SelectedCityId" @bind-Value:after="OnCityChanged" disabled="@(SelectedCountryId == Guid.Empty || IsLoadingCities)" aria-describedby="city-help">
+                                <option value="@Guid.Empty">@(IsLoadingCities ? "Loading cities…" : SelectedCountryId == Guid.Empty ? "Select a country first" : CityList.Count == 0 ? "No cities available" : "Select a city")</option>
+                                @foreach (var city in CityList)
+                                {
+                                    <option value="@city.Id">@city.Name</option>
+                                }
+                            </InputSelect>
+                            <p id="city-help" class="mt-1 text-xs text-stone-500 dark:text-stone-400">Choose a country first to see its cities.</p>
+                            @if (ErrorText(nameof(Restaurant.City)) is { } cityErr)
+                            {
+                                <p class="mt-1 text-xs text-apple-red" role="alert">@cityErr</p>
+                            }
+                        </div>
+                    </div>
+                    <div class="grid sm:grid-cols-2 gap-5">
+                        <div>
                             <label for="phone" class="block text-sm font-medium mb-1.5">Phone</label>
                             <InputText id="phone" type="tel" class="@InputClass" @bind-Value="Restaurant.Phone" placeholder="+27 21 000 0000" />
                             @if (ErrorText(nameof(Restaurant.Phone)) is { } phoneErr)

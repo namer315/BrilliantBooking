@@ -2,6 +2,7 @@
 using Data.DAO;
 using Data.DTO;
 using Data.Search;
+using Data.VO.Location;
 using Data.VO.Restaurant;
 using System;
 using System.Collections.Generic;
@@ -30,4 +31,12 @@ public class RestaurantFDM
 
     public void RebindPhotoSequence(RestaurantVO restaurant)
         => _be.RebindPhotoSequence(restaurant);
+
+    public async Task<IList<CountryVO>> GetCountryList()
+        => await new CountryBE().GetList();
+    public async Task<IList<CityVO>> GetCityList()
+        => await new CityBE().GetList();
+
+    public async Task<IList<CityVO>> GetCityList(Guid countryId)
+        => await new CityBE().GetByCountry(countryId);
 }

@@ -12,7 +12,7 @@ public class CountryBE
     public Task<CountryVO?> GetById(Guid id)
         => _dao.GetById(id);
 
-    public Task<IList<CountryVO>> GetList(string? text = null)
+    public Task<IList<CountryVO>> GetList(string text = "")
         => _dao.GetList(text);
 
     /// <summary>
