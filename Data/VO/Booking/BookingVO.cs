@@ -50,7 +50,7 @@ public class BookingMap : EntityWithIdMapping<BookingVO>
 {
     public BookingMap()
     {
-        Map(x => x.Reference).Length(50).Not.Nullable().Unique();
+        Map(x => x.Reference).Length(int.MaxValue).Not.Nullable().Unique();
         Map(x => x.Date).Not.Nullable();
         Map(x => x.FromTime).Not.Nullable();
         Map(x => x.ToTime).Not.Nullable();

@@ -4,37 +4,65 @@
 @rendermode @(new InteractiveServerRenderMode(false))
 @using Data.VO
 
-<div class="login-page">
+<main class="login-page">
     <div class="login-card">
-        <aside class="login-story" aria-label="Restaurant highlights">
+        <aside class="login-story" aria-label="Brilliant Booking benefits">
             <div class="story-top">
-                <span class="story-eyebrow">Table reservations</span>
-                <h2 class="story-heading">Reserve your table in moments</h2>
-                <p class="story-copy">Book seasonal tasting menus, manage your reservations, and discover restaurants near you.</p>
+                <span class="story-eyebrow">Your table is waiting</span>
+
+                <h2 class="story-heading">
+                    Make every meal memorable
+                </h2>
+
+                <p class="story-copy">
+                    Sign in to discover exceptional restaurants, reserve your next table,
+                    and manage all your dining plans in one place.
+                </p>
             </div>
+
             <div class="story-highlight">
-                <i data-lucide="utensils" class="story-icon" aria-hidden="true"></i>
+                <i data-lucide="calendar-check" class="story-icon" aria-hidden="true"></i>
+
                 <div>
-                    <p class="story-highlight-title">Chef's tasting menu</p>
-                    <p class="story-highlight-sub">Wine pairings available</p>
+                    <p class="story-highlight-title">Effortless reservations</p>
+                    <p class="story-highlight-sub">Find a table that fits your plans</p>
                 </div>
             </div>
         </aside>
 
-        <section class="login-form-panel">
+        <section class="login-form-panel" aria-labelledby="login-title">
             <div class="login-brand">
                 <div class="login-logo" aria-hidden="true">
                     <i data-lucide="utensils-crossed"></i>
                 </div>
-                <h1 class="login-title">Brilliant Booking</h1>
-                <p class="login-tagline">Reserve your table</p>
+
+                <h1 id="login-title" class="login-title">
+                    Welcome to Brilliant Booking
+                </h1>
+
+                <p class="login-tagline">
+                    Your dining plans start here
+                </p>
             </div>
 
-            <div class="sf-segmented auth-tabs" role="tablist" aria-label="Account action">
-                <button type="button" role="tab" class="auth-tab @(_isSignIn ? "active" : "")"
-                        aria-selected="@_isSignIn" @onclick="ShowSignIn">Sign in</button>
-                <button type="button" role="tab" class="auth-tab @(!_isSignIn ? "active" : "")"
-                        aria-selected="@(!_isSignIn)" @onclick="ShowSignUp">Create account</button>
+            <div class="sf-segmented auth-tabs"
+                 role="tablist"
+                 aria-label="Account action">
+                <button type="button"
+                        role="tab"
+                        class="auth-tab @(_isSignIn ? "active" : "")"
+                        aria-selected="@_isSignIn"
+                        @onclick="ShowSignIn">
+                    Sign in
+                </button>
+
+                <button type="button"
+                        role="tab"
+                        class="auth-tab @(!_isSignIn ? "active" : "")"
+                        aria-selected="@(!_isSignIn)"
+                        @onclick="ShowSignUp">
+                    Create account
+                </button>
             </div>
 
             @if (!string.IsNullOrEmpty(_errorMessage))
@@ -45,145 +73,273 @@
             @if (_isSignIn)
             {
                 <div class="auth-panel">
-                <p class="field-hint">Welcome back. Sign in to manage your reservations.</p>
+                    <p class="field-hint">
+                        Sign in to view your upcoming reservations and discover new dining experiences.
+                    </p>
 
-                <EditForm Model="_signIn" OnValidSubmit="HandleSignInAsync" class="login-form">
-                    <label class="field">
-                        <span class="field-label">Email</span>
-                        <span class="field-control">
-                            <i data-lucide="mail" class="field-icon" aria-hidden="true"></i>
-                            <InputText @bind-Value="_signIn.Email" class="field-input" type="email" autocomplete="username" placeholder="you@example.com" />
-                        </span>
-                    </label>
+                    <EditForm Model="_signIn"
+                              OnValidSubmit="HandleSignInAsync"
+                              class="login-form">
+                        <label class="field">
+                            <span class="field-label">Email address</span>
 
-                    <label class="field">
-                        <span class="field-row">
-                            <span class="field-label">Password</span>
-                            <button type="button" class="link-button" @onclick="ShowForgotPassword">Forgot password?</button>
-                        </span>
-                        <span class="field-control">
-                            <i data-lucide="lock" class="field-icon" aria-hidden="true"></i>
-                            <InputText @bind-Value="_signIn.Password" class="field-input" type="@PasswordInputType" autocomplete="current-password" placeholder="••••••••" />
-                            <button type="button" class="field-toggle" aria-label="Toggle password visibility" @onclick="TogglePasswordVisibility">
-                                <i data-lucide="@(_showPassword ? "eye-off" : "eye")" aria-hidden="true"></i>
-                            </button>
-                        </span>
-                    </label>
+                            <span class="field-control">
+                                <i data-lucide="mail"
+                                   class="field-icon"
+                                   aria-hidden="true"></i>
 
-                    <label class="remember">
-                        <InputCheckbox @bind-Value="_signIn.RememberMe" />
-                        <span>Remember me</span>
-                    </label>
+                                <InputText @bind-Value="_signIn.Email"
+                                           class="field-input"
+                                           type="email"
+                                           autocomplete="username"
+                                           placeholder="you@example.com" />
+                            </span>
+                        </label>
 
-                    <button type="submit" class="btn-primary" disabled="@_isBusy">
-                        Sign in <i data-lucide="arrow-right" aria-hidden="true"></i>
-                    </button>
-                </EditForm>
+                        <label class="field">
+                            <span class="field-row">
+                                <span class="field-label">Password</span>
 
-                <div class="divider">Or continue with</div>
+                                <button type="button"
+                                        class="link-button"
+                                        @onclick="ShowForgotPassword">
+                                    Forgot password?
+                                </button>
+                            </span>
 
-                <div class="social-buttons">
-                    <button type="button" class="btn-social placeholder" @onclick='() => ShowSocialPlaceholder("Google")'>Google</button>
-                    <button type="button" class="btn-social placeholder" @onclick='() => ShowSocialPlaceholder("Apple")'>Apple</button>
-                </div>
+                            <span class="field-control">
+                                <i data-lucide="lock"
+                                   class="field-icon"
+                                   aria-hidden="true"></i>
+
+                                <InputText @bind-Value="_signIn.Password"
+                                           class="field-input"
+                                           type="@PasswordInputType"
+                                           autocomplete="current-password"
+                                           placeholder="Enter your password" />
+
+                                <button type="button"
+                                        class="field-toggle"
+                                        aria-label="Toggle password visibility"
+                                        @onclick="TogglePasswordVisibility">
+                                    <i data-lucide="@(_showPassword ? "eye-off" : "eye")"
+                                       aria-hidden="true"></i>
+                                </button>
+                            </span>
+                        </label>
+
+                        <label class="remember">
+                            <InputCheckbox @bind-Value="_signIn.RememberMe" />
+                            <span>Keep me signed in</span>
+                        </label>
+
+                        <button type="submit"
+                                class="btn-primary"
+                                disabled="@_isBusy">
+                            Continue to my reservations
+                            <i data-lucide="arrow-right" aria-hidden="true"></i>
+                        </button>
+                    </EditForm>
+
+                    <div class="divider">Or continue with</div>
+
+                    <div class="social-buttons">
+                        <button type="button"
+                                class="btn-social placeholder"
+                                @onclick='() => ShowSocialPlaceholder("Google")'>
+                            Google
+                        </button>
+
+                        <button type="button"
+                                class="btn-social placeholder"
+                                @onclick='() => ShowSocialPlaceholder("Apple")'>
+                            Apple
+                        </button>
+                    </div>
                 </div>
             }
             else
             {
                 <div class="auth-panel">
-                <p class="field-hint">Join the VIP circle for priority reservations and curated menus.</p>
+                    <p class="field-hint">
+                        Create an account to save favorite restaurants and manage your reservations easily.
+                    </p>
 
-                <EditForm Model="_signUp" OnValidSubmit="HandleSignUpAsync" class="login-form">
-                    <label class="field">
-                        <span class="field-label">Full name</span>
-                        <span class="field-control">
-                            <i data-lucide="user" class="field-icon" aria-hidden="true"></i>
-                            <InputText @bind-Value="_signUp.FullName" class="field-input" autocomplete="name" placeholder="Jane Doe" />
-                        </span>
-                    </label>
-
-                    <div class="field-grid">
+                    <EditForm Model="_signUp"
+                              OnValidSubmit="HandleSignUpAsync"
+                              class="login-form">
                         <label class="field">
-                            <span class="field-label">Email</span>
+                            <span class="field-label">Full name</span>
+
                             <span class="field-control">
-                                <i data-lucide="mail" class="field-icon" aria-hidden="true"></i>
-                                <InputText @bind-Value="_signUp.Email" class="field-input" type="email" autocomplete="username" placeholder="you@example.com" />
+                                <i data-lucide="user"
+                                   class="field-icon"
+                                   aria-hidden="true"></i>
+
+                                <InputText @bind-Value="_signUp.FullName"
+                                           class="field-input"
+                                           autocomplete="name"
+                                           placeholder="Jane Doe" />
                             </span>
                         </label>
 
-                        <label class="field">
-                            <span class="field-label">Phone</span>
-                            <span class="field-control">
-                                <i data-lucide="phone" class="field-icon" aria-hidden="true"></i>
-                                <InputText @bind-Value="_signUp.Phone" class="field-input" type="tel" autocomplete="tel" placeholder="+1 555 000 0000" />
-                            </span>
-                        </label>
-                    </div>
+                        <div class="field-grid">
+                            <label class="field">
+                                <span class="field-label">Email address</span>
 
-                    <label class="field">
-                        <span class="field-label">Password</span>
-                        <span class="field-control">
-                            <i data-lucide="lock" class="field-icon" aria-hidden="true"></i>
-                            <InputText @bind-Value="_signUp.Password" class="field-input" type="@PasswordInputType" autocomplete="new-password" placeholder="••••••••" />
-                            <button type="button" class="field-toggle" aria-label="Toggle password visibility" @onclick="TogglePasswordVisibility">
-                                <i data-lucide="@(_showPassword ? "eye-off" : "eye")" aria-hidden="true"></i>
-                            </button>
-                        </span>
-                        <span class="password-strength strength-@PasswordStrength" aria-hidden="true">
-                            @for (var i = 0; i < 4; i++)
-                            {
-                                var index = i;
-                                <span class="password-strength-bar @(index < PasswordStrength ? "filled" : "")"></span>
-                            }
-                        </span>
-                    </label>
+                                <span class="field-control">
+                                    <i data-lucide="mail"
+                                       class="field-icon"
+                                       aria-hidden="true"></i>
 
-                    <label class="field">
-                        <span class="field-label">Confirm password</span>
-                        <span class="field-control">
-                            <i data-lucide="shield-check" class="field-icon" aria-hidden="true"></i>
-                            <InputText @bind-Value="_signUp.ConfirmPassword" class="field-input" type="@ConfirmPasswordInputType" autocomplete="new-password" placeholder="••••••••" />
-                            <button type="button" class="field-toggle" aria-label="Toggle confirm password visibility" @onclick="ToggleConfirmPasswordVisibility">
-                                <i data-lucide="@(_showConfirmPassword ? "eye-off" : "eye")" aria-hidden="true"></i>
-                            </button>
-                        </span>
-                        @if (PasswordsMismatch)
-                        {
-                            <span class="field-error" role="alert">Passwords do not match.</span>
-                        }
-                    </label>
-
-                    <fieldset class="field">
-                        <legend class="field-label">Account type</legend>
-                        <div class="field-grid account-type-grid">
-                            <label class="remember">
-                                <input type="radio" name="account-type" value="Client" checked='@(_signUp.Type == UserVO.UserType.Client)' @onchange='() => _signUp.Type = UserVO.UserType.Client' />
-                                <span>Client</span>
+                                    <InputText @bind-Value="_signUp.Email"
+                                               class="field-input"
+                                               type="email"
+                                               autocomplete="username"
+                                               placeholder="you@example.com" />
+                                </span>
                             </label>
-                            <label class="remember">
-                                <input type="radio" name="account-type" value="Owner" checked='@(_signUp.Type == UserVO.UserType.Owner)' @onchange='() => _signUp.Type = UserVO.UserType.Owner' />
-                                <span>Owner</span>
+
+                            <label class="field">
+                                <span class="field-label">Phone number</span>
+
+                                <span class="field-control">
+                                    <i data-lucide="phone"
+                                       class="field-icon"
+                                       aria-hidden="true"></i>
+
+                                    <InputText @bind-Value="_signUp.Phone"
+                                               class="field-input"
+                                               type="tel"
+                                               autocomplete="tel"
+                                               placeholder="+1 555 000 0000" />
+                                </span>
                             </label>
                         </div>
-                    </fieldset>
 
-                    <button type="submit" class="btn-primary" disabled="@_isBusy">
-                        Create Membership <i data-lucide="arrow-right" aria-hidden="true"></i>
-                    </button>
-                </EditForm>
+                        <label class="field">
+                            <span class="field-label">Password</span>
+
+                            <span class="field-control">
+                                <i data-lucide="lock"
+                                   class="field-icon"
+                                   aria-hidden="true"></i>
+
+                                <InputText @bind-Value="_signUp.Password"
+                                           class="field-input"
+                                           type="@PasswordInputType"
+                                           autocomplete="new-password"
+                                           placeholder="Create a password" />
+
+                                <button type="button"
+                                        class="field-toggle"
+                                        aria-label="Toggle password visibility"
+                                        @onclick="TogglePasswordVisibility">
+                                    <i data-lucide="@(_showPassword ? "eye-off" : "eye")"
+                                       aria-hidden="true"></i>
+                                </button>
+                            </span>
+
+                            <span class="password-strength strength-@PasswordStrength"
+                                  aria-label="Password strength">
+                                @for (var i = 0 ; i < 4 ; i++)
+                                {
+                                    var index = i;
+
+                                    <span class="password-strength-bar @(index < PasswordStrength ? "filled" : "")"></span>
+                                }
+                            </span>
+                        </label>
+
+                        <label class="field">
+                            <span class="field-label">Confirm password</span>
+
+                            <span class="field-control">
+                                <i data-lucide="shield-check"
+                                   class="field-icon"
+                                   aria-hidden="true"></i>
+
+                                <InputText @bind-Value="_signUp.ConfirmPassword"
+                                           class="field-input"
+                                           type="@ConfirmPasswordInputType"
+                                           autocomplete="new-password"
+                                           placeholder="Confirm your password" />
+
+                                <button type="button"
+                                        class="field-toggle"
+                                        aria-label="Toggle confirm password visibility"
+                                        @onclick="ToggleConfirmPasswordVisibility">
+                                    <i data-lucide="@(_showConfirmPassword ? "eye-off" : "eye")"
+                                       aria-hidden="true"></i>
+                                </button>
+                            </span>
+
+                            @if (PasswordsMismatch)
+                            {
+                                <span class="field-error" role="alert">
+                                    Passwords do not match.
+                                </span>
+                            }
+                        </label>
+
+                        <fieldset class="field">
+                            <legend class="field-label">I am joining as</legend>
+
+                            <div class="field-grid account-type-grid">
+                                <label class="remember">
+                                    <input type="radio"
+                                           name="account-type"
+                                           value="Client"
+                                           checked="@(_signUp.Type == UserVO.UserType.Client)"
+                                           @onchange='() => _signUp.Type = UserVO.UserType.Client' />
+                                    <span>Guest</span>
+                                </label>
+
+                                <label class="remember">
+                                    <input type="radio"
+                                           name="account-type"
+                                           value="Owner"
+                                           checked="@(_signUp.Type == UserVO.UserType.Owner)"
+                                           @onchange='() => _signUp.Type = UserVO.UserType.Owner' />
+                                    <span>Restaurant owner</span>
+                                </label>
+                            </div>
+                        </fieldset>
+
+                        <button type="submit"
+                                class="btn-primary"
+                                disabled="@_isBusy">
+                            Create my account
+                            <i data-lucide="arrow-right" aria-hidden="true"></i>
+                        </button>
+                    </EditForm>
                 </div>
             }
 
             @if (_isSignIn)
             {
-                <p class="auth-footer">Not a member yet? <button type="button" class="link-button" @onclick="ShowSignUp">Create an account</button></p>
+                <p class="auth-footer">
+                    New to Brilliant Booking?
+
+                    <button type="button"
+                            class="link-button"
+                            @onclick="ShowSignUp">
+                        Create an account
+                    </button>
+                </p>
             }
             else
             {
-                <p class="auth-footer">Already a member? <button type="button" class="link-button" @onclick="ShowSignIn">Sign in</button></p>
+                <p class="auth-footer">
+                    Already have an account?
+
+                    <button type="button"
+                            class="link-button"
+                            @onclick="ShowSignIn">
+                        Sign in
+                    </button>
+                </p>
             }
         </section>
     </div>
-</div>
-
-
+</main>
