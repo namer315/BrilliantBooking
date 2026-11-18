@@ -122,9 +122,9 @@ public class MessageBoxService : IMessageBoxService
         Changed?.Invoke();
     }
 
-    public void ShowToastSuccess(string message , string title = "Confirmation")
+    public async Task ShowToastSuccess(string message , string title = "Confirmation")
     {
-        _ = ShowToastAsync(message , title , MessageBox.MessageBoxType.Success);
+        await ShowToastAsync(message , title , MessageBox.MessageBoxType.Success);
     }
     public async Task ShowToastDanger(string message , string title = "Error")
     {
@@ -136,7 +136,7 @@ public class MessageBoxService : IMessageBoxService
     #region General
     public async void ShowMessage(string message , string title = "Confirmation")
     {
-        await ShowMessageBoxSuccess(message , title);
+        await ShowToastSuccess(message , title);
     }
     public async void ShowException(Exception ex , string title = "Error")
     {

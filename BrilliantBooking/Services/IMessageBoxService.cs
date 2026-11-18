@@ -35,7 +35,7 @@ public interface IMessageBoxService
 
     Task ShowToastAsync(string message, string title, MessageBox.MessageBoxType type = MessageBox.MessageBoxType.Primary);
     void CloseToast();
-    void ShowToastSuccess(string message , string title);
+    Task ShowToastSuccess(string message , string title);
 
     #endregion
 }
