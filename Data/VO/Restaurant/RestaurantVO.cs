@@ -1,4 +1,5 @@
 using Data.VO.Operations;
+using Data.VO.Location;
 
 namespace Data.VO.Restaurant;
 
@@ -28,6 +29,7 @@ public class RestaurantVO : EntityBase
     public virtual int TableCapacity { get; set; }
 
     public virtual RestaurantOwnerVO Owner { get; set; }
+    public virtual CityVO City { get; set; }
     public virtual IList<RestaurantHourVO> OpeningHourList { get; set; } = new List<RestaurantHourVO>();
     public virtual IList<RestaurantPhotoVO> PhotoList { get; set; } = new List<RestaurantPhotoVO>();
     //public virtual IList<TableVO> TableList { get; set; } = new List<TableVO>();
@@ -58,6 +60,7 @@ public class RestaurantMap : EntityWithIdMapping<RestaurantVO>
         Map(x => x.TableCapacity).Not.Nullable().Default("0");
 
         References(x => x.Owner, "Owner").Cascade.None();
+        References(x => x.City, "City").Not.Nullable().Index("IX_Restaurants_CityId");
 
         HasMany(x => x.OpeningHourList).KeyColumn("Restaurant").Inverse().Cascade.AllDeleteOrphan();
         HasMany(x => x.PhotoList).KeyColumn("Restaurant").OrderBy("Sequence").Inverse().Cascade.AllDeleteOrphan();

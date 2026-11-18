@@ -43,6 +43,7 @@ public partial class Program
             {
                 DataBaseName = "BrilliantBooking"
             });
+            _= Task.Run( () => new FDM.StartFDM().Init());
             // update DB
 
             var app = builder.Build();

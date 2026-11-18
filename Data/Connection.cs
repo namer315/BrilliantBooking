@@ -145,7 +145,6 @@ public class Connection
     public static async Task DataBaseConnect(Connection? defaultConnection = null)
     {
         Connection connection = LoadOrCreateConfig(defaultConnection: defaultConnection);
-        connection.Server = "southafserver.brillianterp.com,4325";
         //connection.SessionConnect_Login();
         await connection.SessionConnect();
         //await DataBaseUpdate(connection);

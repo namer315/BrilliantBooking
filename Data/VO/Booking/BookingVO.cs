@@ -9,7 +9,7 @@ namespace Data.VO.Booking;
 /// Table reservation made by a customer.
 /// Source: myBookings[] and bookingState in index4.html.
 /// </summary>
-public class BookingVO : EntityBase
+public class BookingVO : EntityBaseWithCode
 {
     //public int PartySize { get; set; } = 2
     public virtual string Reference { get; set; } = string.Empty;
@@ -46,11 +46,11 @@ public class BookingVO : EntityBase
 
 }
 
-public class BookingMap : EntityWithIdMapping<BookingVO>
+public class BookingMap : EntityBaseWithIdCodeMapping<BookingVO>
 {
     public BookingMap()
     {
-        Map(x => x.Reference).Length(int.MaxValue).Not.Nullable().Unique();
+        Map(x => x.Reference).Length(int.MaxValue);
         Map(x => x.Date).Not.Nullable();
         Map(x => x.FromTime).Not.Nullable();
         Map(x => x.ToTime).Not.Nullable();
@@ -59,6 +59,7 @@ public class BookingMap : EntityWithIdMapping<BookingVO>
             .CustomType<EnumStringType<BookingVO.BookingStatus>>()
             .Length(50)
             .Not.Nullable();
+
         Map(x => x.Occasion).Length(100).Not.Nullable();
         //Map(x => x.Dietary).Length(500).Not.Nullable();
 

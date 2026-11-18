@@ -1,4 +1,5 @@
-﻿using Data.DAO;
+﻿using Business.Extensions;
+using Data.DAO;
 using Data.Exceptions;
 using Data.Managers;
 using Data.Search;
@@ -26,6 +27,10 @@ public class BookingBE
 
         BookingVO booking = new();
 
+        await _dao.GetNextUniqueCode(booking);
+        await _dao.GetNextUniqueNumber(booking);
+
+        //booking.Reference = "TBL-8942-CPT";
         booking.GuestCount = 2;
         booking.Date = DateOnly.FromDateTime(DateTime.UtcNow.AddHours(3));
         booking.FromTime = DateTime.UtcNow.AddHours(3).TimeOfDay;
@@ -40,13 +45,14 @@ public class BookingBE
 
     public async Task<BookingVO> Persist(BookingVO booking)
     {
-        Validation(booking);
+        await Validation(booking);
 
        return await _dao.Merge(booking);
     }
 
-    private void Validation(BookingVO booking)
+    private async Task Validation(BookingVO booking)
     {
-
+        await _dao.GetNextUniqueCode(booking);
+        await _dao.GetNextUniqueNumber(booking);
     }
 }

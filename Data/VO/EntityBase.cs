@@ -26,6 +26,10 @@ public abstract class EntityBaseWithCode : EntityBase
     public virtual string Code { get; set; }
     public virtual long Number { get; set; }
 }
+public abstract class EntityBaseWithNameCode : EntityBaseWithCode
+{
+    public virtual string Name { get; set; }
+}
 /// <summary>
 /// Reusable base mapping for entities deriving from <see cref="EntityBase"/>.
 /// Maps the Guid primary key (GuidComb), audit columns and the optimistic-lock
@@ -59,9 +63,27 @@ public class EntityBaseWithNameMapping<T> : ClassMap<T> where T : EntityBaseWith
         OptimisticLock.Version().DynamicUpdate();
     }
 }
-public class EntityBaseCodeWithIdMapping<T> : ClassMap<T> where T : EntityBaseWithCode
+public class EntityBaseWithIdNameCodeMapping<T> : ClassMap<T> where T : EntityBaseWithNameCode
 {
-    public EntityBaseCodeWithIdMapping()
+    public EntityBaseWithIdNameCodeMapping()
+    {
+        base.Cache.NonStrictReadWrite();
+
+        Id(e => e.Id)
+            .GeneratedBy.GuidComb();
+
+        Map(e => e.Name).Length(int.MaxValue).Not.Nullable();
+
+        Map(e => e.Code);
+        Map(e => e.Number);
+
+        OptimisticLock.Version().DynamicUpdate();
+    }
+}
+
+public class EntityBaseWithIdCodeMapping<T> : ClassMap<T> where T : EntityBaseWithCode
+{
+    public EntityBaseWithIdCodeMapping()
     {
         base.Cache.NonStrictReadWrite();
 
@@ -95,7 +117,7 @@ public class EntityWithDatesMapping<T> : ClassMap<T> where T : EntityBase
         OptimisticLock.Version().DynamicUpdate();
     }
 }
-public class EntityCodeWithDatesMapping<T> : EntityBaseCodeWithIdMapping<T> where T : EntityBaseWithCode
+public class EntityCodeWithDatesMapping<T> : EntityBaseWithIdCodeMapping<T> where T : EntityBaseWithCode
 {
     public EntityCodeWithDatesMapping()
     {
@@ -123,7 +145,7 @@ public class EntityWithCreatedAtMapping<T> : ClassMap<T> where T : EntityBase
         OptimisticLock.Version().DynamicUpdate();
     }
 }
-public class EntityCodeWithCreatedAtMapping<T> : EntityBaseCodeWithIdMapping<T> where T : EntityBaseWithCode
+public class EntityCodeWithCreatedAtMapping<T> : EntityBaseWithIdCodeMapping<T> where T : EntityBaseWithCode
 {
     public EntityCodeWithCreatedAtMapping()
     {
