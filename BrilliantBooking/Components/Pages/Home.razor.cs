@@ -197,10 +197,10 @@ public partial class HomeBase : ComponentBase, IDisposable
         ShowReviewForm = false;
     }
 
-    public void TriggerBookingFromModal()
+    public async void TriggerBookingFromModal()
     {
         if (ActiveModalRestaurant is null) return;
-        StartBooking(ActiveModalRestaurant);
+        await StartBooking(ActiveModalRestaurant);
     }
 
     public async Task StartBooking(Restaurant restaurant)
