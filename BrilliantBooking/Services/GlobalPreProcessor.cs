@@ -1,4 +1,5 @@
 ﻿using Data.DTO;
+using Data.Common;
 using Data.VO;
 using FDM;
 using Microsoft.AspNetCore.DataProtection;
@@ -12,15 +13,12 @@ namespace BrilliantBooking.Services;
 public class GlobalPreProcessor
 {
     private GlobalPreProcessorFDM _fdm = new GlobalPreProcessorFDM();
-    private const string LoginCredentialsCookieName =
-        "BrilliantBooking.LoginCredentials";
-
     private readonly IDataProtector _loginCredentialsProtector;
     private readonly SessionService _sessionService;
     public GlobalPreProcessor(IDataProtectionProvider dataProtectionProvider, SessionService sessionService)
     {
         _loginCredentialsProtector = dataProtectionProvider.CreateProtector(
-            "BrilliantBooking.LoginCredentials.v1");
+            NameKeys.LoginCredentialsProtectionPurpose);
         _sessionService = sessionService;
     }
 
@@ -82,14 +80,14 @@ public class GlobalPreProcessor
     }
     public bool HasLoginCredentialsCookie(HttpContext context)
     {
-        return CookieExists(context , LoginCredentialsCookieName);
+        return CookieExists(context , NameKeys.LoginCredentialsCookieName);
     }
 
     public SignInDTO GetRememberedSignIn(HttpContext context)
     {
         ArgumentNullException.ThrowIfNull(context);
 
-        if (!context.Request.Cookies.TryGetValue(LoginCredentialsCookieName , out var cookieValue)
+        if (!context.Request.Cookies.TryGetValue(NameKeys.LoginCredentialsCookieName , out var cookieValue)
             || string.IsNullOrWhiteSpace(cookieValue))
         {
             return null;

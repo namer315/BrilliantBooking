@@ -35,7 +35,7 @@ public class UserSessionManager
             var context = _httpContext?.HttpContext;
 
             return context?.Items?.ContainsKey(NameKeys.UserSessionKey) == true
-                || context?.Session?.GetString(NameKeys.UserSessionKey) is not null;
+                || (context?.Session?.GetString(NameKeys.UserSessionKey) is string s && !s.Equals("null"));
         }
     }
 

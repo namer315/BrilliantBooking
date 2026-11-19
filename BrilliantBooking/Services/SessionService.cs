@@ -1,6 +1,8 @@
-﻿using Data.Common;
+﻿using BrilliantBooking.Extensions;
+using Data.Common;
 using Data.Managers;
 using Data.VO;
+using Microsoft.JSInterop;
 using System.Globalization;
 using System.Text.Json;
 
@@ -8,6 +10,7 @@ namespace BrilliantBooking.Services;
 
 public class SessionService
 {
+    private readonly IJSRuntime _js;
     private readonly IHttpContextAccessor _httpContextAccessor;
     public ISession Session
     {
@@ -36,9 +39,10 @@ public class SessionService
     public Guid? UserSessionKey { get { return IskeyExist ? GetObject<Guid?>(NameKeys.UserSessionKey) : null; } }
     public bool IsPrivateUser { get { return UserSessionKey is Guid guid  && guid != Guid.Empty /*&& id != OnlineUserSessionManager.PublicKey;*/ ; } }
 
-    public SessionService(IHttpContextAccessor httpContextAccessor)
+    public SessionService(IHttpContextAccessor httpContextAccessor , IJSRuntime js)
     {
         _httpContextAccessor = httpContextAccessor;
+        _js = js;
     }
 
     #region Session Methods
@@ -108,10 +112,13 @@ public class SessionService
         //await LoginAsPublicUser();
 
     }
-    public void LogOut()
+    public async Task LogOut()
     {
-        RemoveObject(NameKeys.UserSessionKey);
+        await SetObject<object>(NameKeys.UserSessionKey , null);
         UserSessionManager.LogOut();
+        await _js.RemoveCookieAsync(NameKeys.LoginCredentialsCookieName);
+        //_httpContextAccessor.HttpContext?.Response.Cookies.Delete(NameKeys.LoginCredentialsCookieName);
+
         //await new UserTrackerFDM().LogOut();
         //await LoginAsPublicUser();
 

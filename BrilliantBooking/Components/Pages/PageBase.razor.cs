@@ -22,7 +22,7 @@ public partial class PageBase
         set
         {
             _sessionService = value;
-            value.SendOnlineUserKeyToBackEnd();
+            //value.SendOnlineUserKeyToBackEnd();
         }
     }
 

@@ -7,4 +7,6 @@ namespace Data.Common;
 public class NameKeys
 {
     public const string UserSessionKey = "UserSessionKey";
+    public const string LoginCredentialsCookieName = "BrilliantBooking.LoginCredentials";
+    public const string LoginCredentialsProtectionPurpose = "BrilliantBooking.LoginCredentials.v1";
 }

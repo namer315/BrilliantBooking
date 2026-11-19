@@ -1,4 +1,5 @@
 using BrilliantBooking.Extensions;
+using Data.Common;
 using Data.DTO;
 using Data.VO;
 using FDM;
@@ -92,18 +93,18 @@ public partial class PageLogin
 
                 if (_signIn.RememberMe)
                 {
-                    var protector = DataProtectionProvider.CreateProtector("BrilliantBooking.LoginCredentials.v1");
+                    var protector = DataProtectionProvider.CreateProtector(NameKeys.LoginCredentialsProtectionPurpose);
                     var signInJson = JsonSerializer.Serialize(_signIn);
                     var protectedCredentials = protector.Protect(signInJson);
                     var cookieValue = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(protectedCredentials));
 
-                    await JS.SetCookieAsync("BrilliantBooking.LoginCredentials", cookieValue, 30);
+                    await JS.SetCookieAsync(NameKeys.LoginCredentialsCookieName, cookieValue, 30);
                 }
 
                 if(user.Owner is null)
-                    NavigationManager.NavigateTo("/Explore");
+                    NavigationManager.NavigateTo("/Explore" , true);
                 else
-                    NavigationManager.NavigateTo("/App/Restaurant");
+                    NavigationManager.NavigateTo("/App/Restaurant", true);
 
                 ShowMessage("Signed in successfully.", "Welcome");
             }

@@ -1,3 +1,4 @@
+using BrilliantBooking.Extensions;
 using BrilliantBooking.Services;
 using Data.Managers;
 using Data.VO;
@@ -9,6 +10,7 @@ namespace BrilliantBooking.Components.Layout;
 public partial class UserAccountMenu : ComponentBase
 {
     [Inject] private NavigationManager NavigationManager { get; set; } = default!;
+    [Inject] private LoadingService LoadingService { get; set; } = default!;
     [Inject] private SessionService SessionService { get; set; } = default!;
     [Inject] private IMessageBoxService MessageBox { get; set; } = default!;
 
@@ -72,11 +74,11 @@ public partial class UserAccountMenu : ComponentBase
         }
     }
 
-    private void LogOut()
+    private async Task LogOut()
     {
         try
         {
-            SessionService.LogOut();
+            await SessionService.LogOut().ShowProcessing(LoadingService);
             IsMenuOpen = false;
             NavigationManager.NavigateTo("/" , forceLoad: true);
         }
