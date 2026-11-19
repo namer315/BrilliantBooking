@@ -1,10 +1,8 @@
 ﻿using Business;
+using Data.DAO;
 using Data.Search;
 using Data.VO.Booking;
 using Data.VO.Restaurant;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace FDM;
 
@@ -14,6 +12,9 @@ public class BookingFDM
 
     public async Task<IList<BookingVO>> GetBookingBy(BookingSH search)
         => await _be.GetBookingBy(search);
+
+    public async Task<BookingVO> GetBookingBy(Guid id)
+        => await new BookingDAO().GetBookingBy(id);
 
     public async Task<BookingVO> GetNew(RestaurantVO restaurant)
         => await _be.GetNew(restaurant);

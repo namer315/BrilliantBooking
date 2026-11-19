@@ -1,5 +1,7 @@
-﻿using Business.Extensions;
+﻿using Business.Common;
+using Business.Extensions;
 using Data.DAO;
+using Data.DTO.Common;
 using Data.Exceptions;
 using Data.Managers;
 using Data.Search;
@@ -46,8 +48,12 @@ public class BookingBE
     public async Task<BookingVO> Persist(BookingVO booking)
     {
         await Validation(booking);
+        booking = await _dao.Merge(booking);
 
-       return await _dao.Merge(booking);
+        EmailDTO email = EmailBuilderBE.CreateBookingEmail(booking);
+        await EmailBE.SendAsync(email);
+
+        return booking;
     }
 
     private async Task Validation(BookingVO booking)
