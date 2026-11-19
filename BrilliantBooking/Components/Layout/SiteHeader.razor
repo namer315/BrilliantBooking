@@ -6,7 +6,6 @@
 
 @implements IDisposable
 @using BrilliantBooking.Services
-@using Data.Managers
 
 <header class="sticky top-0 z-40 sf-glass-nav transition-colors duration-300">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -50,13 +49,7 @@
                 <span>Saved (@UiState.Favorites.Count)</span>
             </button>
 
-            @if (ShowLoginButton)
-            {
-                <button type="button" @onclick="NavigateToLogin" aria-label="Log in" class="min-h-11 px-4 py-1.5 rounded-full bg-apple-blue text-white text-xs font-semibold flex items-center space-x-1.5 shadow-md shadow-apple-blue/30 hover:opacity-90 transition focus-visible:ring-2 focus-visible:ring-apple-blue">
-                    <i data-lucide="log-in" class="w-3.5 h-3.5"></i>
-                    <span>Log in</span>
-                </button>
-            }
+            <UserAccountMenu />
 
             <button type="button" @onclick="ToggleTheme" class="min-h-11 min-w-11 p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition text-stone-600 dark:text-stone-300 focus-visible:ring-2 focus-visible:ring-apple-blue" title="Toggle Light/Dark Theme" aria-label="Toggle light or dark theme">
                 <i data-lucide="@(UiState.IsDark ? "sun" : "moon")" class="w-4 h-4"></i>
@@ -77,24 +70,13 @@
                 <span>Restaurant Staff Operations</span>
                 <span class="text-xs bg-apple-green/20 text-apple-green font-semibold px-2 py-0.5 rounded-full">Live</span>
             </a>
-            @if (ShowLoginButton)
-            {
-                <a href="/login" class="flex w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-apple-blue hover:bg-stone-200/50 dark:hover:bg-stone-800 items-center space-x-2">
-                    <i data-lucide="log-in" class="w-4 h-4"></i>
-                    <span>Log in</span>
-                </a>
-            }
+            <UserAccountMenu />
         </div>
     }
 </header>
 
 @code {
     private bool IsExploreActive => IsActive("Explore") || string.IsNullOrEmpty(Navigation.ToBaseRelativePath(Navigation.Uri).TrimEnd('/'));
-
-    private bool ShowLoginButton => !(UserSessionManager.IskeyExist && UserSessionManager.CurrentUser is not null);
-
-    private void NavigateToLogin() => Navigation.NavigateTo("/login");
-
 
     [Inject] private IMessageBoxService MessageBoxService { get; set; } = default!;
 

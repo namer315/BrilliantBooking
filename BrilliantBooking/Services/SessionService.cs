@@ -64,9 +64,9 @@ public class SessionService
         // Otherwise, deserialize the JSON string back into the object and return it
         return value == null ? default : JsonSerializer.Deserialize<T>(value);
     }
-    public void Remove(string key)
+    public void RemoveObject(string key)
     {
-        Session.Remove(NameKeys.UserSessionKey);
+        Session.Remove(key);
     }
 
     #endregion Session Methods
@@ -104,6 +104,14 @@ public class SessionService
     //}
     public async Task LogOutUserSessionKeys()
     {
+        //await new UserTrackerFDM().LogOut();
+        //await LoginAsPublicUser();
+
+    }
+    public void LogOut()
+    {
+        RemoveObject(NameKeys.UserSessionKey);
+        UserSessionManager.LogOut();
         //await new UserTrackerFDM().LogOut();
         //await LoginAsPublicUser();
 

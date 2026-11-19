@@ -14,6 +14,22 @@ public class UserVO : EntityBase
 
     public virtual string Password { get; set; }
 
+    public virtual UserType Type
+    { 
+         get {
+            if(Owner is not null)
+            {
+                return UserType.Owner;
+            }
+            else if (Customer is not null)
+            {
+                return UserType.Client;
+            }
+            else
+                return UserType.Management;
+        }
+    }
+
     public virtual RestaurantOwnerVO Owner { get; set; }
     public virtual CustomerVO Customer { get; set; }
 

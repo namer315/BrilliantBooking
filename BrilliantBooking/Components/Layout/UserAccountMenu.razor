@@ -1,0 +1,52 @@
+@rendermode @(new InteractiveServerRenderMode(false))
+
+@if (!IsAuthenticated)
+{
+    <button type="button" @onclick="NavigateToLogin" aria-label="Log in" class="min-h-11 px-4 py-1.5 rounded-full bg-apple-blue text-white text-xs font-semibold flex items-center space-x-1.5 shadow-md shadow-apple-blue/30 hover:opacity-90 transition focus-visible:ring-2 focus-visible:ring-apple-blue">
+        <i data-lucide="log-in" class="w-3.5 h-3.5"></i>
+        <span>Log in</span>
+    </button>
+}
+else
+{
+    <div class="user-account-menu relative" @onkeydown="HandleKeyDown">
+        <button type="button"
+                @onclick="ToggleMenu"
+                class="user-account-trigger min-h-11 min-w-11 p-2 rounded-full transition focus-visible:ring-2 focus-visible:ring-apple-blue"
+                aria-label="Open account menu"
+                aria-haspopup="menu"
+                aria-expanded="@IsMenuOpen">
+            <span class="user-account-icon" aria-hidden="true">
+                <i data-lucide="@RoleIcon" class="w-4 h-4"></i>
+            </span>
+        </button>
+
+        @if (IsMenuOpen)
+        {
+            <button type="button" class="user-account-dismiss-layer" @onclick="CloseMenu" aria-label="Close account menu"></button>
+            <div class="user-account-popover" role="menu" aria-label="Account menu" tabindex="-1">
+                <div class="user-account-summary">
+                    <span class="user-account-summary-icon" aria-hidden="true">
+                        <i data-lucide="@RoleIcon" class="w-4 h-4"></i>
+                    </span>
+                    <div class="min-w-0">
+                        <p class="truncate text-sm font-semibold text-stone-900 dark:text-white">@CurrentUser?.Name</p>
+                        <p class="truncate text-xs text-stone-500 dark:text-stone-400">@RoleLabel</p>
+                    </div>
+                </div>
+
+                <div class="user-account-divider" role="separator"></div>
+
+                <a href="@RoleRoute" @onclick="CloseMenu" class="user-account-option" role="menuitem">
+                    <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                    <span>@RoleRouteLabel</span>
+                </a>
+
+                <button type="button" @onclick="LogOut" class="user-account-option user-account-logout" role="menuitem">
+                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                    <span>Log out</span>
+                </button>
+            </div>
+        }
+    </div>
+}
