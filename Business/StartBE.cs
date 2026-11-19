@@ -10,11 +10,16 @@ public class StartBE
     {
         try
         {
+            try
+            {
+                await Common.EmailBE.LoadConfigAsync();
+            }
+            catch (FileNotFoundException exF) { }
+
             await new CountryBE().PersistTopCountriesWithCities();
         }
         catch (Exception ex)
         {
-
         }
     }
 }
