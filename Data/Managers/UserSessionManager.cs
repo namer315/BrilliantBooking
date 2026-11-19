@@ -2,13 +2,7 @@
 using Data.DTO;
 using Data.VO;
 using Microsoft.AspNetCore.Http;
-using System;
-using System;
-using System.Collections.Generic;
-using System.Collections.Generic;
 using System.Text;
-using System.Text;
-using System.Text.Json;
 using System.Text.Json;
 
 
@@ -38,7 +32,10 @@ public class UserSessionManager
     {
         get
         {
-            return _httpContext?.HttpContext?.Items?.ContainsKey(NameKeys.UserSessionKey) ?? false;
+            var context = _httpContext?.HttpContext;
+
+            return context?.Items?.ContainsKey(NameKeys.UserSessionKey) == true
+                || context?.Session?.GetString(NameKeys.UserSessionKey) is not null;
         }
     }
 
