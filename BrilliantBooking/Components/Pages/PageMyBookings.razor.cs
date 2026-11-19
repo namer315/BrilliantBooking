@@ -1,3 +1,4 @@
+using BrilliantBooking.Extensions;
 using Business;
 using Data.Search;
 using Data.VO.Booking;
@@ -38,7 +39,7 @@ public partial class PageMyBookings
     private async Task dgSearch()
     {
         if (!IsCustomer) return;
-        BookingList = await _fdm.GetBookingBy(Search);
+        BookingList = await _fdm.GetBookingBy(Search).ShowProcessing(this);
         //var oceanGrill = new RestaurantVO { Id = Guid.NewGuid(), Name = "Ocean Grill & Raw Bar" };
         //var petitManoir = new RestaurantVO { Id = Guid.NewGuid(), Name = "Le Petit Manoir" };
 

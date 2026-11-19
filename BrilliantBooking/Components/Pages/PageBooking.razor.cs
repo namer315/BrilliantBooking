@@ -1,3 +1,4 @@
+using BrilliantBooking.Extensions;
 using Data.VO.Booking;
 using Data.VO.Operations;
 using Data.VO.Restaurant;
@@ -49,7 +50,7 @@ public partial class PageBooking
             throw new ArgumentException($"Invalid restaurant id: '{Restaurant}'.");
         }
         restaurant = new RestaurantVO { Id = restaurantId };
-        Booking = await _fdm.GetNew(restaurant);
+        Booking = await _fdm.GetNew(restaurant).ShowProcessing(this);
     }
 
 
@@ -169,7 +170,7 @@ public partial class PageBooking
     {
         try
         {
-            Booking = await _fdm.Persist(Booking);
+            Booking = await _fdm.Persist(Booking).ShowProcessing(this);
         }
         catch(Exception ex)
         {
