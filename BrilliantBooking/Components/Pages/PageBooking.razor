@@ -258,6 +258,12 @@
 
                 <form @onsubmit="SubmitGuestDetails" @onsubmit:preventDefault class="space-y-4">
                     <div>
+                        <label for="booking-reference" class="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1">Booking reference <span class="font-normal normal-case tracking-normal text-stone-400">(optional)</span></label>
+                        <input id="booking-reference" type="text" @bind="Booking.Reference" @bind:event="oninput" maxlength="100" placeholder="Add a reference for this reservation" class="w-full bg-[#F0EEE9] dark:bg-stone-800 border border-stone-300/80 dark:border-stone-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-apple-blue" />
+                        <p class="mt-1.5 text-[11px] text-stone-400">For example, a company name or event reference.</p>
+                    </div>
+
+                    <div>
                         <label class="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Special Occasion</label>
                         <div class="flex flex-wrap gap-2">
                             @foreach (var occasion in Occasions)
@@ -328,6 +334,10 @@
                             <div class="flex justify-between pb-2 border-b border-stone-200 dark:border-stone-700">
                                 <span class="text-stone-500 text-xs">Party Size</span>
                                 <span class="font-semibold text-xs">@Booking.GuestCount Guests</span>
+                            </div>
+                            <div class="flex justify-between pb-2 border-b border-stone-200 dark:border-stone-700">
+                                <span class="text-stone-500 text-xs">Booking reference</span>
+                                <span class="font-semibold text-xs text-right">@(string.IsNullOrWhiteSpace(Booking.Reference) ? "Not provided" : Booking.Reference)</span>
                             </div>
                             <div class="flex justify-between pb-2 border-b border-stone-200 dark:border-stone-700">
                                 <span class="text-stone-500 text-xs">Seating Area / Table</span>
