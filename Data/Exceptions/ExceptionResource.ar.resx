@@ -126,4 +126,7 @@
   <data name="InvalidUser" xml:space="preserve">
     <value>بيانات المستخدم غير صالحة.</value>
   </data>
+  <data name="ObjectNotFound" xml:space="preserve">
+    <value>لم يتم العثور على {0}.</value>
+  </data>
 </root>

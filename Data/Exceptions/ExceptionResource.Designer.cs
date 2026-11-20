@@ -86,5 +86,14 @@ namespace Data.Exceptions {
                 return ResourceManager.GetString("InvalidUser", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The {0} was not found..
+        /// </summary>
+        internal static string ObjectNotFound {
+            get {
+                return ResourceManager.GetString("ObjectNotFound", resourceCulture);
+            }
+        }
     }
 }

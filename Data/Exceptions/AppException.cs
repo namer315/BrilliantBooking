@@ -58,6 +58,7 @@ public enum ErrorCode
 {
     InvalidUser,
     BookingNotFound,
+    ObjectNotFound,
     AccessDenied,
     /// <summary>
     /// Indicates that a required input field was left empty.

@@ -104,5 +104,14 @@ namespace Data.Localization {
                 return ResourceManager.GetString("Processing", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Restaurant.
+        /// </summary>
+        public static string Restaurant {
+            get {
+                return ResourceManager.GetString("Restaurant", resourceCulture);
+            }
+        }
     }
 }
