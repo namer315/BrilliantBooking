@@ -120,8 +120,8 @@ internal class EmailBE
         }
         catch (Exception exception)
         {
+            Console.Error.WriteLine($"Email delivery failed. SMTP host: '{config?.SmtpHost ?? "(unknown)"}', recipient: '{email.To}', error: {exception.Message}");
             config = null;
-            Console.Error.WriteLine($"Email delivery failed. SMTP host: '{config.SmtpHost}', recipient: '{email.To}', error: {exception.Message}");
         }
     }
 }

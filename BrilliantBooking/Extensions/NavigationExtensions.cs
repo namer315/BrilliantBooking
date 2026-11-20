@@ -19,7 +19,7 @@ public static class NavigationExtensions
             uri = RouteUrlService.UrlNew(Data.VO.MenuVO.NavigationRoutes.Booking, queryString);
         }
         else
-            uri = RouteUrlService.Url(Data.VO.MenuVO.NavigationRoutes.Booking , queryString);
+            uri = RouteUrlService.Url(Data.VO.MenuVO.NavigationRoutes.Booking , id , queryString);
 
         NavigationManager.NavigateTo(uri , true);
     }

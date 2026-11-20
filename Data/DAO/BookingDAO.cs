@@ -10,6 +10,7 @@ public class BookingDAO : NHibernateRepository
     public async Task<BookingVO> GetBookingBy(Guid id)
     {
         IQuery query = Session.CreateQuery(@"
+            SELECT booking
             FROM BookingVO booking
                 LEFT JOIN booking.Restaurant restaurant
                 LEFT JOIN booking.BookingTable bookingTable

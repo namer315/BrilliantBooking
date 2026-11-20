@@ -1,5 +1,4 @@
 using BrilliantBooking.Extensions;
-using Business;
 using Data.Search;
 using Data.VO.Booking;
 using Data.VO.Restaurant;
@@ -14,13 +13,13 @@ public partial class PageMyBookings
     private BookingSH Search { get; set; } = new();
 
     public IList<BookingVO> BookingList { get; private set; } = new List<BookingVO>();
-    public string BookingsTab { get; private set; } = "active";
+    public BookingVO.BookingStatus BookingsTab { get; private set; } = BookingVO.BookingStatus.Active;
     public string LookupCode { get; set; } = "";
 
     //public bool IsCustomer => SessionService.HasValidSessionKeys;
 
     public IEnumerable<BookingVO> VisibleBookings => BookingList.Where(b =>
-        BookingsTab == "active"
+        BookingsTab == BookingVO.BookingStatus.Active
             ? b.Status == BookingVO.BookingStatus.Active
             : b.Status != BookingVO.BookingStatus.Active);
 
@@ -51,12 +50,12 @@ public partial class PageMyBookings
         //await Task.CompletedTask;
     }
 
-    public void SetBookingsTab(string tab) => BookingsTab = tab;
+    public void SetBookingsTab(BookingVO.BookingStatus tab) => BookingsTab = tab;
 
     public void CancelBooking(BookingVO booking) => booking.Status = BookingVO.BookingStatus.Cancelled;
 
-    public async Task ModifyBooking() =>
-        await JS.InvokeVoidAsync("alert", "Modification request sent to host.");
+    public void ModifyBooking(BookingVO booking) =>
+        NavigationManager.NavigateToBooking(booking.Id);
 
     public void RebookRestaurant(RestaurantVO restaurant) =>
         NavigationManager.NavigateTo($"/App/Restaurant/{restaurant.Id}");
