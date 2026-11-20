@@ -16,8 +16,8 @@ public class BookingFDM
     public async Task<BookingVO> GetBookingBy(Guid id)
         => await new BookingDAO().GetBookingBy(id);
 
-    public async Task<BookingVO> GetNew(RestaurantVO restaurant)
-        => await _be.GetNew(restaurant);
+    public async Task<BookingVO> GetNew(Guid restaurantId)
+        => await _be.GetNew(restaurantId);
 
     public async Task<BookingVO> Persist(BookingVO booking)
         => await _be.Persist(booking);

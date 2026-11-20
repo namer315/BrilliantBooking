@@ -3,6 +3,7 @@ using Business.Extensions;
 using Data.DAO;
 using Data.DTO.Common;
 using Data.Exceptions;
+using Data.Localization;
 using Data.Managers;
 using Data.Search;
 using Data.VO.Booking;
@@ -22,7 +23,7 @@ public class BookingBE
         return await _dao.GetBookingBy(search);
     }
 
-    public async Task<BookingVO> GetNew(RestaurantVO restaurant)
+    public async Task<BookingVO> GetNew(Guid restaurantId)
     {
         if (!UserSessionManager.IskeyExist || UserSessionManager.CurrentUser.Customer is null)
             throw new AppException(ErrorCode.AccessDenied);
@@ -40,7 +41,11 @@ public class BookingBE
         booking.Customer = UserSessionManager.CurrentUser.Customer;
 
         //booking.Restaurant = (await new RestaurantBE().GetRestaurantLsitBy(new()))[0];
-        booking.Restaurant = await new RestaurantDAO().GetRestaurantBy(restaurant.Id);
+        booking.Restaurant = await new RestaurantDAO().GetRestaurantBy(restaurantId);
+
+        if(booking.Restaurant is null)
+            throw new AppException(ErrorCode.ObjectNotFound , Resources.Restaurant);
+        //throw new AppException(ErrorCode.NotFound , $"Restaurant with id '{restaurantId}' not found.");
 
         return booking;
     }

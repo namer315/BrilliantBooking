@@ -14,8 +14,13 @@ public partial class PageBooking
     private BookingVO Booking = new();
     private BookingFDM _fdm = new();
 
+    #region SupplyParameterFromQuery
+    private Guid? restaurantId;
+    [SupplyParameterFromQuery]
+    public string? qR { set => value.ValidateQueryGuidParameter(NavigationManager , "Restaurant" , guid => restaurantId = guid); }
 
-    [Parameter] public string? Restaurant { get; set; }
+    #endregion
+
 
     public IReadOnlyList<(int Offset , string Label)> DateShortcuts { get; } = new[]
     {
@@ -44,13 +49,14 @@ public partial class PageBooking
 
     private async Task beginEdit()
     {
-        RestaurantVO restaurant;
-        if (!Guid.TryParse(Restaurant , out Guid restaurantId))
+        if (GetEntityId() is Guid id && id != Guid.Empty)
         {
-            throw new ArgumentException($"Invalid restaurant id: '{Restaurant}'.");
+            Booking = await _fdm.GetBookingBy(id).ShowProcessing(this);
         }
-        restaurant = new RestaurantVO { Id = restaurantId };
-        Booking = await _fdm.GetNew(restaurant).ShowProcessing(this);
+        else
+        {
+            Booking = await _fdm.GetNew(restaurantId.Value).ShowProcessing(this);
+        }
     }
 
 

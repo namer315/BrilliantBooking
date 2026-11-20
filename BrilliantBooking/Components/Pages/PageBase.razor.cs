@@ -1,7 +1,9 @@
 using BrilliantBooking.Services;
 using Data.Managers;
+using Data.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using static Data.VO.MenuVO;
 
 namespace BrilliantBooking.Components.Pages;
 
@@ -62,7 +64,7 @@ public partial class PageBase
     protected Guid? GetEntityId()
     {
         // 1. Handle "New" (Case-insensitive)
-        if (string.Equals(Id , /*RouteManager.New*/ "New" , StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(Id , RouteUrlService.New , StringComparison.OrdinalIgnoreCase))
         {
             return null; // Null implies "Create Mode"
         }
@@ -90,6 +92,22 @@ public partial class PageBase
     public void ShowWarning(string text , string title = "Warning")
     {
         MessageBoxService?.ShowWarning(text , title);
+    }
+
+    #endregion
+
+    #region Navigation
+    public void NavigateTo(NavigationRoutes route)
+    {
+        NavigationManager.NavigateTo(RouteUrlService.Url(route));
+    }
+    public void NavigateTo(NavigationRoutes route , Guid id)
+    {
+        NavigationManager.NavigateTo(RouteUrlService.Url(route , id));
+    }
+    public void NavigateToNew(NavigationRoutes route)
+    {
+        NavigationManager.NavigateTo(RouteUrlService.UrlNew(route));
     }
 
     #endregion

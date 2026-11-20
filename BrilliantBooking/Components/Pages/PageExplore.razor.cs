@@ -6,6 +6,7 @@ using FDM;
 using Microsoft.AspNetCore.Components;
 using System.Diagnostics;
 using static BrilliantBooking.Components.Pages.HomeBase;
+using static Data.VO.MenuVO;
 
 namespace BrilliantBooking.Components.Pages;
 
@@ -80,8 +81,8 @@ public partial class PageExplore
     }
 
 
-    private void StartBooking(RestaurantVO item)
+    private void StartBooking(RestaurantVO restaurant)
     {
-        NavigationManager.NavigateTo($"/Booking/{item.Id}");
+        NavigationManager.NavigateToBooking(restaurant: restaurant);
     }
 }
