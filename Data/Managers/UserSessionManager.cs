@@ -50,7 +50,7 @@ public class UserSessionManager
                 return guid;
 
             var value = ctx.Session?.GetString(NameKeys.UserSessionKey);
-            return value is not null
+            return value is not null && !value.Equals("null")
                 ? JsonSerializer.Deserialize<Guid>(value)
                 : throw new InvalidOperationException("Current Online User Key cannot be found.");
         }
@@ -77,6 +77,16 @@ public class UserSessionManager
         private set
         {
             UserSessionList[CurrentKey].CurrentUser = value;
+        }
+    }
+
+    public static UserVO? CurrentUserIfExists
+    {
+        get
+        {
+            if (IskeyExist &&CurrentKey is Guid currentKey && currentKey != Guid.Empty)
+                return UserSessionList[currentKey].CurrentUser;
+            return null;
         }
     }
 

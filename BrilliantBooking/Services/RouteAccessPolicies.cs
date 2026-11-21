@@ -39,7 +39,7 @@ public sealed record RouteAccessPolicy(
     {
         var isAuthenticated = UserSessionManager.IskeyExist
             && UserSessionManager.CurrentUser is not null;
-        var userType = UserSessionManager.CurrentUser?.Type;
+        var userType = UserSessionManager.CurrentUserIfExists?.Type;
 
         if (Visibility != RouteVisibility.Private)
             return true;

@@ -15,33 +15,43 @@
 
     [Parameter] public Type DefaultLayout { get; set; } = default!;
 
+
+    // [Inject] public MessageBoxService MessageBoxService { get; set; } = default!;
+
     private bool _isAllowed;
 
     protected override void OnParametersSet()
     {
-        var routeAttribute = RouteData.PageType
-            .GetCustomAttributes(inherit: true)
-            .OfType<NavigationRouteAttribute>()
-            .FirstOrDefault();
-
-        // Pages without NavigationRouteAttribute remain available.
-        if (routeAttribute is null)
+        try
         {
+            var routeAttribute = RouteData.PageType
+                .GetCustomAttributes(inherit: true)
+                .OfType<NavigationRouteAttribute>()
+                .FirstOrDefault();
+
+            // Pages without NavigationRouteAttribute remain available.
+            if (routeAttribute is null)
+            {
+                _isAllowed = true;
+                return;
+            }
+
+            var accessPolicy = RouteAccessPolicies.Get(RouteData.PageType);
+            _isAllowed = accessPolicy.Allows();
+
+            if (_isAllowed)
+            {
+                // NavigationManager.NavigateTo(isAuthenticated ? "/Explore" : "/login");
+            }
+            else
+            {
+                NavigationManager.NavigateTo(RouteUrlService.Url(MenuVO.NavigationRoutes.LogIn), true);
+            }
             _isAllowed = true;
-            return;
         }
-
-        var accessPolicy = RouteAccessPolicies.Get(RouteData.PageType);
-        _isAllowed = accessPolicy.Allows();
-
-        if (_isAllowed)
+        catch (Exception ex)
         {
-            // NavigationManager.NavigateTo(isAuthenticated ? "/Explore" : "/login");
+            // MessageBoxService.ShowException(ex);
         }
-        else
-        {
-            NavigationManager.NavigateTo(RouteUrlService.Url(MenuVO.NavigationRoutes.LogIn));
-        }
-        _isAllowed = true;
     }
 }
