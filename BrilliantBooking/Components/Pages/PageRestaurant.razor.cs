@@ -1,14 +1,19 @@
 using BrilliantBooking.Extensions;
+using BrilliantBooking.Services;
 using Data.DTO;
+using Data.VO;
 using Data.VO.Location;
 using Data.VO.Operations;
 using Data.VO.Restaurant;
 using FDM;
 using Microsoft.AspNetCore.Components.Forms;
 using System.ComponentModel.DataAnnotations;
+using static Data.VO.MenuVO;
 
 namespace BrilliantBooking.Components.Pages;
 
+[NavigationRoute(NavigationRoutes.Resturant)]
+[RouteAccess(UserVO.UserType.Owner, UserVO.UserType.Management)]
 public partial class PageRestaurant
 {
     private RestaurantVO Restaurant = new RestaurantVO();

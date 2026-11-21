@@ -1,5 +1,6 @@
 using BrilliantBooking.Extensions;
 using BrilliantBooking.Services;
+using BrilliantBooking.Services;
 using Data.Search;
 using Data.VO.Restaurant;
 using FDM;
@@ -10,6 +11,8 @@ using static Data.VO.MenuVO;
 
 namespace BrilliantBooking.Components.Pages;
 
+[NavigationRoute(NavigationRoutes.Explore)]
+[RouteAccess]
 public partial class PageExplore
 {
     private RestaurantFDM _fdm = new();

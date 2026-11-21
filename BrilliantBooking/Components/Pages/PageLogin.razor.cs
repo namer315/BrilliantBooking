@@ -2,15 +2,19 @@ using BrilliantBooking.Extensions;
 using Data.Common;
 using Data.DTO;
 using Data.VO;
+using BrilliantBooking.Services;
 using FDM;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Text;
 using System.Text.Json;
+using static Data.VO.MenuVO;
 
 namespace BrilliantBooking.Components.Pages;
 
+[NavigationRoute(NavigationRoutes.LogIn)]
+[RouteAccess]
 public partial class PageLogin
 {
     [Inject] private IDataProtectionProvider DataProtectionProvider { get; set; } = default!;

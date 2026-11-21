@@ -1,14 +1,16 @@
 using BrilliantBooking.Extensions;
+using BrilliantBooking.Services;
 using Data.VO.Booking;
 using Data.VO.Operations;
-using Data.VO.Restaurant;
 using FDM;
 using Microsoft.AspNetCore.Components;
 using System.Globalization;
-using static BrilliantBooking.Components.Pages.HomeBase;
+using static Data.VO.MenuVO;
 
 namespace BrilliantBooking.Components.Pages;
 
+[NavigationRoute(NavigationRoutes.Booking)]
+[RouteAccess]
 public partial class PageBooking
 {
     private BookingVO Booking = new();

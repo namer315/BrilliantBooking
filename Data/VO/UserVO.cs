@@ -39,7 +39,8 @@ public class UserVO : EntityBase
     {
         Owner,
         Client,
-        Management
+        Management,
+        Public
     }
 }
 

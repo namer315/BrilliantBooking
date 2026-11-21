@@ -1,0 +1,47 @@
+@using Data.Managers
+@using Data.VO
+@using Microsoft.AspNetCore.Components.Routing
+@using BrilliantBooking.Services
+@using Data.Services
+@inject NavigationManager NavigationManager
+
+@if (_isAllowed)
+{
+    <RouteView RouteData="RouteData" DefaultLayout="DefaultLayout" />
+}
+
+@code {
+    [Parameter, EditorRequired] public RouteData RouteData { get; set; } = default!;
+
+    [Parameter] public Type DefaultLayout { get; set; } = default!;
+
+    private bool _isAllowed;
+
+    protected override void OnParametersSet()
+    {
+        var routeAttribute = RouteData.PageType
+            .GetCustomAttributes(inherit: true)
+            .OfType<NavigationRouteAttribute>()
+            .FirstOrDefault();
+
+        // Pages without NavigationRouteAttribute remain available.
+        if (routeAttribute is null)
+        {
+            _isAllowed = true;
+            return;
+        }
+
+        var accessPolicy = RouteAccessPolicies.Get(RouteData.PageType);
+        _isAllowed = accessPolicy.Allows();
+
+        if (_isAllowed)
+        {
+            // NavigationManager.NavigateTo(isAuthenticated ? "/Explore" : "/login");
+        }
+        else
+        {
+            NavigationManager.NavigateTo(RouteUrlService.Url(MenuVO.NavigationRoutes.LogIn));
+        }
+        _isAllowed = true;
+    }
+}

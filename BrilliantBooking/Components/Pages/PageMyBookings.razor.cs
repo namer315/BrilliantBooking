@@ -1,12 +1,17 @@
 using BrilliantBooking.Extensions;
 using Data.Search;
+using Data.VO;
+using BrilliantBooking.Services;
 using Data.VO.Booking;
 using Data.VO.Restaurant;
 using FDM;
 using Microsoft.JSInterop;
+using static Data.VO.MenuVO;
 
 namespace BrilliantBooking.Components.Pages;
 
+[NavigationRoute(NavigationRoutes.Booking)]
+[RouteAccess(UserVO.UserType.Client)]
 public partial class PageMyBookings
 {
     private BookingFDM _fdm { get; set; } = new();
