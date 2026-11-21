@@ -3,6 +3,7 @@
 @inject BookingUiStateService UiState
 @inject NavigationManager Navigation
 @inject IJSRuntime JavaScript
+@inject ILogger<SiteHeader> Logger
 
 @implements IDisposable
 @using BrilliantBooking.Services
@@ -76,6 +77,9 @@
 </header>
 
 @code {
+    private readonly CancellationTokenSource _iconRefreshCancellation = new();
+    private bool _disposed;
+
     private bool IsExploreActive => IsActive("Explore") || string.IsNullOrEmpty(Navigation.ToBaseRelativePath(Navigation.Uri).TrimEnd('/'));
 
     [Inject] private IMessageBoxService MessageBoxService { get; set; } = default!;
@@ -95,14 +99,9 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        try
+        if (!_disposed)
         {
-            await JavaScript.InvokeVoidAsync("refreshReserveIcons");
-            StateHasChanged();
-        }
-        catch (Exception ex)
-        {
-            MessageBoxService.ShowException(ex);
+            await JavaScript.RefreshReserveIconsAsync(_iconRefreshCancellation.Token, Logger);
         }
     }
 
@@ -125,7 +124,15 @@
 
     public void Dispose()
     {
+        if (_disposed)
+        {
+            return;
+        }
+
+        _disposed = true;
         UiState.Changed -= OnStateChanged;
         Navigation.LocationChanged -= OnLocationChanged;
+        _iconRefreshCancellation.Cancel();
+        _iconRefreshCancellation.Dispose();
     }
 }
