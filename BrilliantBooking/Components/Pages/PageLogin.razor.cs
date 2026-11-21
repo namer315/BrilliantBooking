@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using System.Text;
 using System.Text.Json;
 using static Data.VO.MenuVO;
+using Data.Exceptions;
 
 namespace BrilliantBooking.Components.Pages;
 
@@ -91,26 +92,40 @@ public partial class PageLogin
         _errorMessage = null;
         await RunAsync(async () =>
         {
-            if (await _fdm.SignInAsync(_signIn) is UserVO user)
+            try
             {
-                await SessionService.SetOnlineUserSessionAsync(user);
-
-                if (_signIn.RememberMe)
+                if (await _fdm.SignInAsync(_signIn) is UserVO user)
                 {
-                    var protector = DataProtectionProvider.CreateProtector(NameKeys.LoginCredentialsProtectionPurpose);
-                    var signInJson = JsonSerializer.Serialize(_signIn);
-                    var protectedCredentials = protector.Protect(signInJson);
-                    var cookieValue = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(protectedCredentials));
+                    await SessionService.SetOnlineUserSessionAsync(user);
 
-                    await JS.SetCookieAsync(NameKeys.LoginCredentialsCookieName, cookieValue, 30);
+                    if (_signIn.RememberMe)
+                    {
+                        var protector = DataProtectionProvider.CreateProtector(NameKeys.LoginCredentialsProtectionPurpose);
+                        var signInJson = JsonSerializer.Serialize(_signIn);
+                        var protectedCredentials = protector.Protect(signInJson);
+                        var cookieValue = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(protectedCredentials));
+
+                        await JS.SetCookieAsync(NameKeys.LoginCredentialsCookieName , cookieValue , 30);
+                    }
+
+                    if (user.Owner is null)
+                        NavigationManager.NavigateTo("/Explore" , true);
+                    else
+                        NavigationManager.NavigateTo("/App/Restaurant" , true);
+
+                    ShowMessage("Signed in successfully." , "Welcome");
                 }
-
-                if(user.Owner is null)
-                    NavigationManager.NavigateTo("/Explore" , true);
+            }
+            catch (Exception ex)
+            {
+                if(ex.HResult == (int)ErrorCode.UserNotRegistered)
+                {
+                    ShowException(ex);
+                }
                 else
-                    NavigationManager.NavigateTo("/App/Restaurant", true);
-
-                ShowMessage("Signed in successfully.", "Welcome");
+                {
+                    throw ex;
+                }
             }
         });
     }

@@ -126,6 +126,9 @@
   <data name="InvalidUser" xml:space="preserve">
     <value>بيانات المستخدم غير صالحة.</value>
   </data>
+  <data name="UserNotRegistered" xml:space="preserve">
+    <value>يبدو أنك غير مسجل بعد. هل ترغب في إنشاء حساب؟</value>
+  </data>
   <data name="ObjectNotFound" xml:space="preserve">
     <value>لم يتم العثور على {0}.</value>
   </data>

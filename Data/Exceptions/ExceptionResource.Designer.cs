@@ -88,6 +88,15 @@ namespace Data.Exceptions {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to It looks like you are not registered yet. Would you like to create an account?.
+        /// </summary>
+        internal static string UserNotRegistered {
+            get {
+                return ResourceManager.GetString("UserNotRegistered", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to The {0} was not found..
         /// </summary>
         internal static string ObjectNotFound {

@@ -19,9 +19,11 @@ public class UserBE
             throw new AppException(ErrorCode.FieldIsRequired, $"{Resources.Email} , {Resources.Password}");
         // Encrypt password once and reuse the value
         string passwordEncrypt = DataEncryptorBE.EncryptString(signIn.Password);
-        UserVO user = await new UserDAO().GetUserBy(signIn.Email , passwordEncrypt);
+        UserVO user = await new UserDAO().GetUserBy(signIn.Email/* , passwordEncrypt*/);
         if (user is null)
-            throw new Exception("The email or password you entered is incorrect. Please check your details and try again.");
+            throw new AppException(ErrorCode.UserNotRegistered);
+        if (!user.Password.Equals(passwordEncrypt))
+            throw new Exception("The password you entered is incorrect. Please re-enter your password.");
 
         UserSessionManager.LogIn(user, signIn);
 

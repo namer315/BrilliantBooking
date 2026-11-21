@@ -12,11 +12,13 @@ public class AppException : Exception
         : base(GetMessage(errorCode))
     {
         ErrorCode = errorCode;
+        HResult = (int)errorCode;
     }
     public AppException(ErrorCode errorCode , params object[] args)
         : base(FormatMessage(errorCode , args))
     {
         ErrorCode = errorCode;
+        HResult = (int)errorCode;
     }
 
     private static string FormatMessage(ErrorCode errorCode , object[] args)
@@ -57,6 +59,7 @@ public class AppException : Exception
 public enum ErrorCode
 {
     InvalidUser,
+    UserNotRegistered,
     BookingNotFound,
     ObjectNotFound,
     AccessDenied,

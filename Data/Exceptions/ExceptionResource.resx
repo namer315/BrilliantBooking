@@ -126,6 +126,9 @@
   <data name="InvalidUser" xml:space="preserve">
     <value>Invalid user data.</value>
   </data>
+  <data name="UserNotRegistered" xml:space="preserve">
+    <value>It looks like you are not registered yet. Would you like to create an account?</value>
+  </data>
   <data name="ObjectNotFound" xml:space="preserve">
     <value>The {0} was not found.</value>
   </data>
