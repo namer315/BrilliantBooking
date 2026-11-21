@@ -28,13 +28,13 @@
             {
                 <article class="restaurant-card" @key="restaurant.Id" @onclick="() => OpenRestaurant(restaurant.Id)">
                     <div class="restaurant-card-image">
-                        @if (!string.IsNullOrWhiteSpace(restaurant.ImageUrl))
+                        @if (GetImageSrc(restaurant) is string img && !string.IsNullOrEmpty(img))
                         {
-                            <img src="@restaurant.ImageUrl" alt="@restaurant.Name" loading="lazy" />
+                            <img src="@img" alt="@restaurant.Name" loading="lazy" />
                         }
                         else
                         {
-                            <div class="restaurant-card-placeholder" aria-hidden="true">@restaurant.Name.Substring(0, 1)</div>
+                            <div class="restaurant-card-placeholder" aria-hidden="true">@restaurant.Name.Substring(0 , 1)</div>
                         }
                         @if (!string.IsNullOrWhiteSpace(restaurant.Badge))
                         {
@@ -45,7 +45,7 @@
                     <div class="restaurant-card-body">
                         <div class="restaurant-card-meta">
                             <span class="restaurant-cuisine">@restaurant.Cuisine</span>
-                            <span class="restaurant-price" aria-label="Price level @restaurant.PriceLevel of 4">@(new string('$', restaurant.PriceLevel))</span>
+                            <span class="restaurant-price" aria-label="Price level @restaurant.PriceLevel of 4">@(new string('$' , restaurant.PriceLevel))</span>
                         </div>
 
                         <h2 class="restaurant-name">@restaurant.Name</h2>
@@ -73,7 +73,7 @@
             </button>
 
             <ul class="pager-pages">
-                @for (int page = 1; page <= TotalPages; page++)
+                @for (int page = 1 ; page <= TotalPages ; page++)
                 {
                     var pageNumber = page;
                     if (pageNumber == 1 || pageNumber == TotalPages || Math.Abs(pageNumber - CurrentPage) <= 1)

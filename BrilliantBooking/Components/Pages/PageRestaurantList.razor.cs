@@ -56,4 +56,12 @@ public partial class PageRestaurantList
     {
         NavigationManager.NavigateTo($"/App/Restaurant/{id}");
     }
+
+    private string GetImageSrc(RestaurantVO restaurant)
+    {
+        var photo = restaurant.PhotoList.FirstOrDefault();
+        return photo?.Photo is { Length: > 0 } bytes
+            ? bytes.ToImage()
+            : "";
+    }
 }
