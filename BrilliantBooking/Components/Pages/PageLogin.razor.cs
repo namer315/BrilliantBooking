@@ -129,7 +129,15 @@ public partial class PageLogin
         {
             if (await _fdm.SignUpAsync(_signUp) is UserVO user)
             {
-                ShowMessage("Account created successfully.", "Welcome");
+
+                _signIn.Email = user.Email;
+                _signIn.Password = _signUp.Password;
+
+                ShowMessage($"Your account has been created successfully, {user.Name}. Welcome to Brilliant Booking!", "Welcome");
+                _isSignIn = true;
+
+                ShowSignIn();
+                await HandleSignInAsync();
             }
         });
     }
@@ -139,7 +147,7 @@ public partial class PageLogin
         _isBusy = true;
         try
         {
-            await action().ShowProcessing(this);
+            await action();
         }
         catch (Exception ex)
         {

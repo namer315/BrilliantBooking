@@ -78,7 +78,7 @@
                     </p>
 
                     <EditForm Model="_signIn"
-                              OnValidSubmit="HandleSignInAsync"
+                              OnValidSubmit="@(() => HandleSignInAsync().ShowProcessing(this))"
                               class="login-form">
                         <label class="field">
                             <span class="field-label">Email address</span>
@@ -166,7 +166,7 @@
                     </p>
 
                     <EditForm Model="_signUp"
-                              OnValidSubmit="HandleSignUpAsync"
+                              OnValidSubmit=@(() => HandleSignUpAsync().ShowProcessing(this))"
                               class="login-form">
                         <label class="field">
                             <span class="field-label">Full name</span>
