@@ -1,3 +1,4 @@
+using BrilliantBooking.Extensions;
 using BrilliantBooking.Services;
 using Data.Managers;
 using Data.Services;
@@ -7,10 +8,13 @@ using static Data.VO.MenuVO;
 
 namespace BrilliantBooking.Components.Pages;
 
-public partial class PageBase
+public partial class PageBase : IDisposable
 {
+    private readonly CancellationTokenSource _iconRefreshCancellation = new();
+    private bool _disposed;
+
     [Inject] public NavigationManager NavigationManager { get; set; }
-    //[Inject] private ILogger<PageBase> Logger { get; set; }
+    [Inject] private ILogger<PageBase> Logger { get; set; } = default!;
     [Inject] public IJSRuntime JS { get; set; }
 
     protected SessionService _sessionService;
@@ -50,11 +54,22 @@ public partial class PageBase
     #region life
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        //if (firstRender)
+        if (!_disposed)
         {
-            await JS.InvokeVoidAsync("refreshReserveIcons");
-            StateHasChanged();
+            await JS.RefreshReserveIconsAsync(_iconRefreshCancellation.Token, Logger);
         }
+    }
+
+    public virtual void Dispose()
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        _disposed = true;
+        _iconRefreshCancellation.Cancel();
+        _iconRefreshCancellation.Dispose();
     }
     #endregion
 

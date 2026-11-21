@@ -4,7 +4,7 @@ using Microsoft.JSInterop;
 
 namespace BrilliantBooking.Components.Pages;
 
-public partial class HomeBase : ComponentBase, IDisposable
+public partial class HomeBase : PageBase
 {
     [Inject] protected IJSRuntime JavaScript { get; set; } = null!;
     [Inject] public BookingUiStateService UiState { get; set; } = null!;
@@ -124,16 +124,12 @@ public partial class HomeBase : ComponentBase, IDisposable
         UiState.Changed += OnStateChanged;
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        await JavaScript.InvokeVoidAsync("refreshReserveIcons");
-    }
-
     private void OnStateChanged() => InvokeAsync(StateHasChanged);
 
-    public void Dispose()
+    public override void Dispose()
     {
         UiState.Changed -= OnStateChanged;
+        base.Dispose();
     }
 
     public async Task SwitchView(string view)
