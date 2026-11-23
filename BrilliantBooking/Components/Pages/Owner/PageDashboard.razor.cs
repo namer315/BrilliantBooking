@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Search;
+using Data.VO.Booking;
 using Data.VO.Operations;
 using Data.VO.Restaurant;
 using FDM;
@@ -13,15 +14,15 @@ namespace BrilliantBooking.Components.Pages.Owner;
 public partial class PageDashboard : PageBase
 {
     private readonly DashboardFDM _fdm = new();
-    private readonly DashboardSH Search = new();
+    //private readonly DashboardSH Search = new();
+    private readonly BookingSH Search = new();
+    private IList<BookingVO> BookingList = new List<BookingVO>();
     private IList<RestaurantVO> ResturantList = new List<RestaurantVO>();
     private int _selectedVenueIndex;
 
-    private IList<RestaurantVO> Venues => ResturantList;
-    private RestaurantVO SelectedVenue => Venues.Count == 0 ? new RestaurantVO() : Venues[_selectedVenueIndex];
-    private IList<TableVO> Tables => SelectedVenue.FloorList.FirstOrDefault()?.TableList ?? new List<TableVO>();
+    private IList<TableVO> Tables => Search.Resturant?.FloorList.FirstOrDefault()?.TableList ?? new List<TableVO>();
     private IList<ArrivalVO> Arrivals { get; } = new List<ArrivalVO>();
-    private int SelectedVenueIndex => _selectedVenueIndex;
+
     private int TotalShiftCovers => 42;
     private int ShiftCapacity => 60;
     private int CapacityPercentage => TotalShiftCovers * 100 / ShiftCapacity;
@@ -34,6 +35,7 @@ public partial class PageDashboard : PageBase
         try
         {
             await beginEdit();
+            await dgSearch();
         }
         catch (Exception ex)
         {
@@ -41,37 +43,48 @@ public partial class PageDashboard : PageBase
         }
     }
 
+    private async Task dgSearch()
+    {
+        BookingList = await _fdm.GetBookingList(Search);
+    }
+
     private async Task beginEdit()
     {
         ResturantList = await _fdm.GetResturantList();
         Search.Resturant = ResturantList.FirstOrDefault();
+        //Search.Resturant = CreateSampleVenues()[0];
 
         //var venues = await _fdm.GetOperationsVenuesAsync();
         //ResturantList = venues.Count > 0 ? venues : CreateSampleVenues();
         PopulateSampleArrivals();
     }
 
-    private void OnVenueChanged(ChangeEventArgs args)
+    private async Task OnVenueChanged(ChangeEventArgs args)
     {
-        if (ResturantList is { Count: > 0 } && args.Value is Guid resturantId)
+        if (ResturantList is { Count: > 0 } && Guid.TryParse(args.Value.ToString() , out Guid resturantId))
         {
             Search.Resturant = ResturantList.FirstOrDefault(x => x.Id == resturantId);
-        }
-        if (int.TryParse(args.Value?.ToString(), out var venueIndex) && venueIndex >= 0 && venueIndex < ResturantList.Count)
-        {
-            _selectedVenueIndex = venueIndex;
             PopulateSampleArrivals();
+            await dgSearch();
         }
     }
 
     private async Task RefreshOperationsAsync()
     {
-        var venues = await _fdm.GetOperationsVenuesAsync();
-        if (venues.Count > 0)
+        try
         {
-            ResturantList = venues;
-            _selectedVenueIndex = Math.Min(_selectedVenueIndex, ResturantList.Count - 1);
-            PopulateSampleArrivals();
+            await dgSearch();
+            var venues = await _fdm.GetOperationsVenuesAsync();
+            if (venues.Count > 0)
+            {
+                //ResturantList = venues;
+                _selectedVenueIndex = Math.Min(_selectedVenueIndex , ResturantList.Count - 1);
+                PopulateSampleArrivals();
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowException(ex);
         }
     }
 
@@ -120,17 +133,17 @@ public partial class PageDashboard : PageBase
             new ArrivalVO
             {
                 Time = new TimeSpan(19, 30, 0), GuestName = "Vance Party", PartySize = 4,
-                TableName = "Table 04", Tags = "Gluten-Free", Status = "Seated", Restaurant = SelectedVenue
+                TableName = "Table 04", Tags = "Gluten-Free", Status = "Seated", Restaurant = Search.Resturant
             },
             new ArrivalVO
             {
                 Time = new TimeSpan(19, 45, 0), GuestName = "Dr. A. Smith", PartySize = 2,
-                TableName = "Table 12", Tags = "VIP", Status = "Expected", Restaurant = SelectedVenue
+                TableName = "Table 12", Tags = "VIP", Status = "Expected", Restaurant = Search.Resturant
             },
             new ArrivalVO
             {
                 Time = new TimeSpan(20, 15, 0), GuestName = "Claire Dupont", PartySize = 6,
-                TableName = "Patio Booth P1", Tags = "Birthday", Status = "Expected", Restaurant = SelectedVenue
+                TableName = "Patio Booth P1", Tags = "Birthday", Status = "Expected", Restaurant = Search.Resturant
             }
         })
         {

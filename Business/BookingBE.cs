@@ -17,7 +17,9 @@ public class BookingBE
 
     public async Task<IList<BookingVO>> GetBookingBy(BookingSH search)
     {
-        if(!UserSessionManager.IskeyExist || UserSessionManager.CurrentUser.Customer is null)
+        if(!UserSessionManager.IskeyExist
+            || (UserSessionManager.CurrentUser.Type == Data.VO.UserVO.UserType.Client && UserSessionManager.CurrentUser.Customer is null)
+            || (UserSessionManager.CurrentUser.Type == Data.VO.UserVO.UserType.Owner && search.Resturant is null))
             throw new AppException(ErrorCode.AccessDenied);
 
         return await _dao.GetBookingBy(search);
@@ -56,7 +58,7 @@ public class BookingBE
         booking = await _dao.Merge(booking);
 
         EmailDTO email = EmailBuilderBE.CreateBookingEmail(booking);
-        await EmailBE.SendAsync(email);
+        //await EmailBE.SendAsync(email);
 
         return booking;
     }

@@ -39,6 +39,12 @@ public class BookingDAO : NHibernateRepository
             conditions.Add("restaurant.Name like :text");
             parameters.Add(("text" , $"%{search.Text}%"));
         }
+        if (search.Resturant is not null)
+        {
+
+            conditions.Add("restaurant.Id = :restaurantId");
+            parameters.Add(("restaurantId" , search.Resturant.Id));
+        }
 
         string where = conditions.Count > 0
             ? "WHERE " + string.Join(" AND " , conditions)
