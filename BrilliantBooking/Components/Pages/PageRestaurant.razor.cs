@@ -146,7 +146,7 @@ public partial class PageRestaurant
 
     protected async Task OnPhotosSelected(InputFileChangeEventArgs e)
     {
-        IList<FileDTO> files = await e.ToFileDTOs(5);
+        IList<FileDTO> files = await e.ToFileList(50);
 
         _fdm.AddPhotos(Restaurant , files);
         SelectedPhotoIndex = 0;

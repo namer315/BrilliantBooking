@@ -41,9 +41,9 @@ public static class ComponentExtensions
     public static string ToImage(this byte[] bytes , string imageType = "jpeg")
         => $"data:image/jpeg;base64,{Convert.ToBase64String(bytes)}";
 
-    public static async Task<List<FileDTO>> ToFileDTOs(this InputFileChangeEventArgs e , int maxFiles , long maxFileSize = 10 * 1024 * 1024)
+    public static async Task<IList<FileDTO>> ToFileList(this InputFileChangeEventArgs e , int maxFiles , long maxFileSize = 10 * 1024 * 1024)
     {
-        List<FileDTO> files = new();
+        IList<FileDTO> files = new List<FileDTO>();
 
         foreach (var file in e.GetMultipleFiles(maxFiles))
         {
