@@ -15,13 +15,18 @@ public class UserBE
 
     public async Task<UserVO> SignInAsync(SignInDTO signIn)
     {
-        if (string.IsNullOrWhiteSpace(signIn.Email) || string.IsNullOrWhiteSpace(signIn.Password))
-            throw new AppException(ErrorCode.FieldIsRequired, $"{Resources.Email} , {Resources.Password}");
-        // Encrypt password once and reuse the value
-        string passwordEncrypt = DataEncryptorBE.EncryptString(signIn.Password);
+        if (string.IsNullOrWhiteSpace(signIn.Email))
+            throw new AppException(ErrorCode.FieldIsRequired, Resources.Email);
+
         UserVO user = await new UserDAO().GetUserBy(signIn.Email/* , passwordEncrypt*/);
         if (user is null)
             throw new AppException(ErrorCode.UserNotRegistered);
+
+        if (string.IsNullOrWhiteSpace(signIn.Password))
+            throw new AppException(ErrorCode.FieldIsRequired , Resources.Password);
+        // Encrypt password once and reuse the value
+        string passwordEncrypt = DataEncryptorBE.EncryptString(signIn.Password);
+
         if (!user.Password.Equals(passwordEncrypt))
             throw new Exception("The password you entered is incorrect. Please re-enter your password.");
 
