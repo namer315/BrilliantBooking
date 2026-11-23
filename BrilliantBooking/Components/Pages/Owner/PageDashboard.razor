@@ -1,0 +1,137 @@
+﻿@page "/Owner/Dashboard"
+@rendermode @(new InteractiveServerRenderMode(false))
+@inherits PageBase
+@using Data.VO.Operations
+@using Data.VO.Restaurant
+
+<main class="dashboard-shell">
+    <section class="operations-section">
+        <div class="operations-banner apple-card">
+            <div class="operations-heading-row">
+                <div>
+                    <div class="operations-title-row">
+                        <span class="live-indicator" aria-hidden="true"></span>
+                        <h1>Floor Operations Console</h1>
+                    </div>
+                    <p class="muted-copy">Live shift capacity, table statuses, and walk-in allocation</p>
+                </div>
+
+                <div class="operations-actions">
+                    <label class="sr-only" for="venue-select">Operational venue</label>
+                    <select id="venue-select" class="venue-select" value="@SelectedVenueIndex" @onchange="OnVenueChanged">
+                        @for (var index = 0; index < Venues.Count; index++)
+                        {
+                            <option value="@index">@Venues[index].Name</option>
+                        }
+                    </select>
+                    <button class="icon-button" type="button" title="Refresh live map" aria-label="Refresh live map" @onclick="RefreshOperationsAsync">
+                        <i data-lucide="refresh-cw" class="icon"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <span class="metric-label">Total Shift Covers</span>
+                    <strong class="metric-value">@TotalShiftCovers / @ShiftCapacity</strong>
+                    <span class="metric-support positive">@CapacityPercentage% Capacity</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Active Tables</span>
+                    <strong class="metric-value blue">@ActiveTableCount Active</strong>
+                    <span class="metric-support">@ReservedTableCount Reserved</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Upcoming Arrivals</span>
+                    <strong class="metric-value orange">@Arrivals.Count Parties</strong>
+                    <span class="metric-support">Next at @NextArrivalTime</span>
+                </div>
+                @* TODO: Keep this card commented until ArrivalVO has a first-class VIP designation property. *@
+                @* <div class="metric-card">
+                    <span class="metric-label">VIP Guests Tonight</span>
+                    <strong class="metric-value purple">3 VIPs</strong>
+                    <span class="metric-support purple-copy">Special Dietary Notes</span>
+                </div> *@
+            </div>
+        </div>
+
+        <div class="operations-content-grid">
+            <section class="floor-card apple-card" aria-labelledby="floor-status-heading">
+                <div class="card-heading-row">
+                    <h2 id="floor-status-heading"><i data-lucide="map" class="heading-icon"></i>Floor Status Manager</h2>
+                    <span class="muted-copy">Select a table to change status</span>
+                </div>
+
+                <div class="floorplan-frame">
+                    <svg viewBox="0 0 800 450" class="floorplan" role="img" aria-label="Live floor management map">
+                        <rect x="20" y="20" width="760" height="410" rx="20" class="floor-boundary" />
+                        <text x="40" y="45" class="floor-caption">LIVE FLOOR MANAGEMENT MAP</text>
+
+                        @if (Tables.Count > 0)
+                        {
+                            <g class="table-node @(GetTableClass(Tables[0]))" tabindex="0" role="button" aria-label="@GetTableLabel(Tables[0])" @onclick="() => ToggleTableStatus(Tables[0])">
+                                <circle cx="120" cy="140" r="35" />
+                                <text x="120" y="144" class="table-name">@Tables[0].Name</text>
+                                <text x="120" y="190" class="table-status">@GetTableStatus(Tables[0])</text>
+                            </g>
+                        }
+                        @if (Tables.Count > 1)
+                        {
+                            <g class="table-node @(GetTableClass(Tables[1]))" tabindex="0" role="button" aria-label="@GetTableLabel(Tables[1])" @onclick="() => ToggleTableStatus(Tables[1])">
+                                <rect x="260" y="105" width="90" height="70" rx="12" />
+                                <text x="305" y="145" class="table-name">@Tables[1].Name</text>
+                                <text x="305" y="195" class="table-status">@GetTableStatus(Tables[1])</text>
+                            </g>
+                        }
+                        @if (Tables.Count > 2)
+                        {
+                            <g class="table-node @(GetTableClass(Tables[2]))" tabindex="0" role="button" aria-label="@GetTableLabel(Tables[2])" @onclick="() => ToggleTableStatus(Tables[2])">
+                                <circle cx="500" cy="140" r="35" />
+                                <text x="500" y="144" class="table-name">@Tables[2].Name</text>
+                                <text x="500" y="190" class="table-status">@GetTableStatus(Tables[2])</text>
+                            </g>
+                        }
+                    </svg>
+                </div>
+
+                <div class="floor-footer">
+                    <div class="status-legend" aria-label="Table status legend">
+                        <span><i class="status-dot available"></i>Available</span>
+                        <span><i class="status-dot reserved"></i>Reserved</span>
+                        <span><i class="status-dot selected"></i>Selected</span>
+                    </div>
+                    @* TODO: TableVO has no Blocked/Cleaning status or persistence command yet. Keep this action deferred until that VO contract exists. *@
+                    @* <button class="secondary-button" type="button">+ Manual Table Block</button> *@
+                </div>
+            </section>
+
+            <section class="arrivals-card apple-card" aria-labelledby="arrivals-heading">
+                <h2 id="arrivals-heading" class="card-heading"><i data-lucide="clock" class="heading-icon"></i>Shift Arrivals Stream</h2>
+                <div class="arrivals-list">
+                    @foreach (var arrival in Arrivals)
+                    {
+                        <article class="arrival-item @GetArrivalClass(arrival)">
+                            <div>
+                                <div class="arrival-title-row">
+                                    <strong>@arrival.Time.ToString(@"hh\:mm")</strong>
+                                    <span>@arrival.GuestName (@arrival.PartySize)</span>
+                                </div>
+                                <span class="arrival-detail">@arrival.TableName • @arrival.Tags</span>
+                            </div>
+                            @if (string.Equals(arrival.Status, "Seated", StringComparison.OrdinalIgnoreCase))
+                            {
+                                <span class="arrival-status seated">@arrival.Status</span>
+                            }
+                            else
+                            {
+                                <button class="seat-button" type="button" @onclick="() => SeatGuest(arrival)">@arrival.Status</button>
+                            }
+                        </article>
+                    }
+                </div>
+            </section>
+        </div>
+    </section>
+</main>
+
+
