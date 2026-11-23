@@ -18,10 +18,10 @@
 
                 <div class="operations-actions">
                     <label class="sr-only" for="venue-select">Operational venue</label>
-                    <select id="venue-select" class="venue-select" value="@SelectedVenueIndex" @onchange="OnVenueChanged">
-                        @for (var index = 0; index < Venues.Count; index++)
+                    <select id="venue-select" class="venue-select" value="@Search.Resturant?.Id" @onchange="OnVenueChanged">
+                        @for (var index = 0 ; index < ResturantList.Count ; index++)
                         {
-                            <option value="@index">@Venues[index].Name</option>
+                            <option value="@ResturantList[index].Id">@ResturantList[index].Name</option>
                         }
                     </select>
                     <button class="icon-button" type="button" title="Refresh live map" aria-label="Refresh live map" @onclick="RefreshOperationsAsync">

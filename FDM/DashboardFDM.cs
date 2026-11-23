@@ -11,4 +11,7 @@ public class DashboardFDM
 
     public async Task<IList<RestaurantVO>> GetOperationsVenuesAsync()
         => await _be.GetOperationsVenuesAsync();
+
+    public async Task<IList<RestaurantVO>> GetResturantList()
+        => await new RestaurantBE().GetResturantList();
 }

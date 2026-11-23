@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Search;
 using Data.VO.Operations;
 using Data.VO.Restaurant;
 using FDM;
@@ -12,6 +13,7 @@ namespace BrilliantBooking.Components.Pages.Owner;
 public partial class PageDashboard : PageBase
 {
     private readonly DashboardFDM _fdm = new();
+    private readonly DashboardSH Search = new();
     private IList<RestaurantVO> ResturantList = new List<RestaurantVO>();
     private int _selectedVenueIndex;
 
@@ -41,15 +43,21 @@ public partial class PageDashboard : PageBase
 
     private async Task beginEdit()
     {
-        //ResturantList = await _fdm.GetResturantList()
-        var venues = await _fdm.GetOperationsVenuesAsync();
-        ResturantList = venues.Count > 0 ? venues : CreateSampleVenues();
+        ResturantList = await _fdm.GetResturantList();
+        Search.Resturant = ResturantList.FirstOrDefault();
+
+        //var venues = await _fdm.GetOperationsVenuesAsync();
+        //ResturantList = venues.Count > 0 ? venues : CreateSampleVenues();
         PopulateSampleArrivals();
     }
 
     private void OnVenueChanged(ChangeEventArgs args)
     {
-        if (int.TryParse(args.Value?.ToString(), out var venueIndex) && venueIndex >= 0 && venueIndex < Venues.Count)
+        if (ResturantList is { Count: > 0 } && args.Value is Guid resturantId)
+        {
+            Search.Resturant = ResturantList.FirstOrDefault(x => x.Id == resturantId);
+        }
+        if (int.TryParse(args.Value?.ToString(), out var venueIndex) && venueIndex >= 0 && venueIndex < ResturantList.Count)
         {
             _selectedVenueIndex = venueIndex;
             PopulateSampleArrivals();

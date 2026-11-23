@@ -63,12 +63,25 @@ public sealed class RestaurantDAO : NHibernateRepository
         string query = $@"
             SELECT DISTINCT restaurant
             FROM RestaurantVO restaurant
-            LEFT JOIN restaurant.Owner owner
-            LEFT JOIN FETCH restaurant.PhotoList photo
+                LEFT JOIN restaurant.Owner owner
+                LEFT JOIN FETCH restaurant.PhotoList photo
             {where}
             ORDER BY restaurant.Name
         ";
 
         return await RunHQLAsync<RestaurantVO>(query, parameters, search);
+    }
+
+    public async Task<IList> GetResturantList()
+    {
+        IQuery q = Session.CreateQuery(@"
+            SELECT restaurant.Id, restaurant.Name
+            FROM RestaurantVO restaurant 
+                LEFT JOIN restaurant.Owner owner
+            WHERE owner.Id = :ownerId
+			")
+            .SetParameter("ownerId" , UserSessionManager.CurrentUser.Owner.Id);
+
+        return await q.ListAsync();
     }
 }

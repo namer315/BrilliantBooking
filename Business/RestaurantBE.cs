@@ -4,6 +4,7 @@ using Data.Managers;
 using Data.Search;
 using Data.VO.Operations;
 using Data.VO.Restaurant;
+using System.Collections;
 
 namespace Business;
 
@@ -216,5 +217,24 @@ public class RestaurantBE
         using HttpClient client = new();
 
         return await client.GetByteArrayAsync(imageUrl);
+    }
+
+    public async Task<IList<RestaurantVO>> GetResturantList()
+    {
+        IList rawData = await _dao.GetResturantList();
+
+        IList<RestaurantVO> restaurantList = new List<RestaurantVO>();
+        int index;
+        foreach (object[] row in rawData)
+        {
+            index = 0;
+            RestaurantVO restaurant = new RestaurantVO();
+            restaurant.Id = (Guid)row[index++];
+            restaurant.Name = Convert.ToString(row[index++]);
+
+            restaurantList.Add(restaurant);
+        }
+
+        return restaurantList;
     }
 }
