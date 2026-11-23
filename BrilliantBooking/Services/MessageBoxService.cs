@@ -6,7 +6,7 @@ namespace BrilliantBooking.Services;
 public class MessageBoxService : IMessageBoxService
 {
     #region MessageBox
-    private TaskCompletionSource? _completion;
+    private TaskCompletionSource<MessageBox.MessageBoxResult>? _completion;
 
     public event Action? Changed;
 
@@ -18,18 +18,27 @@ public class MessageBoxService : IMessageBoxService
 
     public MessageBox.MessageBoxType Type { get; private set; } = MessageBox.MessageBoxType.Primary;
 
-    public async Task ShowAsync(string message , string title , MessageBox.MessageBoxType type = MessageBox.MessageBoxType.Primary)
+    public MessageBox.MessageBoxButtonMode ButtonMode { get; private set; } = MessageBox.MessageBoxButtonMode.OK;
+
+    public async Task<MessageBox.MessageBoxResult> ShowAsync(string message , string title , MessageBox.MessageBoxType type = MessageBox.MessageBoxType.Primary, MessageBox.MessageBoxButtonMode buttonMode = MessageBox.MessageBoxButtonMode.OK)
     {
-        _completion?.TrySetResult();
+        _completion?.TrySetResult(MessageBox.MessageBoxResult.Cancel);
 
         Title = title;
         Message = message;
         Type = type;
+        ButtonMode = buttonMode;
         IsVisible = true;
-        _completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        _completion = new TaskCompletionSource<MessageBox.MessageBoxResult>(TaskCreationOptions.RunContinuationsAsynchronously);
 
         Changed?.Invoke();
-        await _completion.Task;
+
+        if (buttonMode == MessageBox.MessageBoxButtonMode.OK)
+        {
+            return MessageBox.MessageBoxResult.OK;
+        }
+
+        return await _completion.Task;
     }
 
 
@@ -45,19 +54,19 @@ public class MessageBoxService : IMessageBoxService
     {
         _ = ShowAsync(message , title , MessageBox.MessageBoxType.Warning);
     }
-    public async Task ShowMessageBoxDanger(string message , string title = "Error")
+    public async Task<MessageBox.MessageBoxResult> ShowMessageBoxDanger(string message , string title = "Error" , MessageBox.MessageBoxButtonMode buttonMode = MessageBox.MessageBoxButtonMode.OK)
     {
-        await ShowAsync(message , title , MessageBox.MessageBoxType.Danger);
+        return await ShowAsync(message , title , MessageBox.MessageBoxType.Danger, buttonMode);
     }
     //public async void ShowException(Exception ex , string title = "Error")
     //{
     //    _ = ShowAsync(ex.Message , title , MessageBox.MessageBoxType.Danger);
     //}
 
-    public void Close()
+    public void Close(MessageBox.MessageBoxResult result = MessageBox.MessageBoxResult.Cancel)
     {
         IsVisible = false;
-        _completion?.TrySetResult();
+        _completion?.TrySetResult(result);
         _completion = null;
 
         Changed?.Invoke();
@@ -138,18 +147,23 @@ public class MessageBoxService : IMessageBoxService
     {
         await ShowToastSuccess(message , title);
     }
-    public async void ShowException(Exception ex , string title = "Error")
+    public async Task<MessageBox.MessageBoxResult> ShowExceptionAsync(Exception ex , string title = "Error" , MessageBox.MessageBoxButtonMode buttonMode = MessageBox.MessageBoxButtonMode.OK)
     {
         switch (ex)
         {
-            case AppException appException:
+            case AppException appException when buttonMode == MessageBox.MessageBoxButtonMode.OK:
                 await ShowToastDanger(ex.Message , title);
+                return MessageBox.MessageBoxResult.OK;
                 break;
             default:
-                await ShowMessageBoxDanger(ex.Message , title);
+                return await ShowMessageBoxDanger(ex.Message , title, buttonMode);
                 break;
         }
 
+    }
+    public void ShowException(Exception ex , string title = "Error" , MessageBox.MessageBoxButtonMode buttonMode = MessageBox.MessageBoxButtonMode.OK)
+    {
+        _ = ShowExceptionAsync(ex , title , buttonMode);
     }
     #endregion
 }

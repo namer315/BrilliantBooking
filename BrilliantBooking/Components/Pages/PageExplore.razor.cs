@@ -5,6 +5,7 @@ using Data.Search;
 using Data.VO.Restaurant;
 using FDM;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using System.Diagnostics;
 using static BrilliantBooking.Components.Pages.HomeBase;
 using static Data.VO.MenuVO;
@@ -44,6 +45,14 @@ public partial class PageExplore
         catch(Exception ex)
         {
             ShowException(ex);
+        }
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("refreshReserveIcons");
+            //StateHasChanged();
         }
     }
 

@@ -15,12 +15,15 @@ public interface IMessageBoxService
 
     MessageBox.MessageBoxType Type { get; }
 
-    Task ShowAsync(string message, string title, MessageBox.MessageBoxType type = MessageBox.MessageBoxType.Primary);
+    MessageBox.MessageBoxButtonMode ButtonMode { get; }
+
+    Task<MessageBox.MessageBoxResult> ShowAsync(string message, string title, MessageBox.MessageBoxType type = MessageBox.MessageBoxType.Primary, MessageBox.MessageBoxButtonMode buttonMode = MessageBox.MessageBoxButtonMode.OK);
     void ShowMessage(string message , string title);
-    void ShowException(Exception ex , string title = "Error");
+    void ShowException(Exception ex , string title = "Error" , MessageBox.MessageBoxButtonMode buttonMode = MessageBox.MessageBoxButtonMode.OK);
+    Task<MessageBox.MessageBoxResult> ShowExceptionAsync(Exception ex , string title = "Error" , MessageBox.MessageBoxButtonMode buttonMode = MessageBox.MessageBoxButtonMode.OK);
     void ShowWarning(string message , string title);
 
-    void Close();
+    void Close(MessageBox.MessageBoxResult result = MessageBox.MessageBoxResult.Cancel);
     #endregion
 
     #region Toast

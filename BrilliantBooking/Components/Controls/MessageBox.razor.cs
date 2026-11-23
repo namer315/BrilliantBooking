@@ -27,6 +27,42 @@ public partial class MessageBox
         Danger = 4
     }
 
+    /// <summary>
+    /// Defines the buttons displayed by a message box.
+    /// </summary>
+    public enum MessageBoxButtonMode
+    {
+        /// <summary>Displays an OK button.</summary>
+        OK = 0,
+
+        /// <summary>Displays Cancel and OK buttons.</summary>
+        CancelOK = 1,
+
+        /// <summary>Displays Yes and No buttons.</summary>
+        YesNo = 2,
+
+        /// <summary>Displays Yes, No, and Cancel buttons.</summary>
+        YesNoCancel = 3
+    }
+
+    /// <summary>
+    /// Defines the action selected from a message box.
+    /// </summary>
+    public enum MessageBoxResult
+    {
+        /// <summary>The OK button was selected.</summary>
+        OK = 0,
+
+        /// <summary>The Cancel action was selected.</summary>
+        Cancel = 1,
+
+        /// <summary>The Yes button was selected.</summary>
+        Yes = 2,
+
+        /// <summary>The No button was selected.</summary>
+        No = 3
+    }
+
     private readonly string _titleId = $"mb-title-{Guid.NewGuid():N}";
     private readonly string _messageId = $"mb-message-{Guid.NewGuid():N}";
 
@@ -36,9 +72,11 @@ public partial class MessageBox
 
     [Parameter] public MessageBoxType Type { get; set; } = MessageBoxType.Primary;
 
+    [Parameter] public MessageBoxButtonMode ButtonMode { get; set; } = MessageBoxButtonMode.OK;
+
     [Parameter] public bool IsVisible { get; set; }
 
-    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public EventCallback<MessageBoxResult> OnClose { get; set; }
 
     private string _iconClass => Type switch
     {
@@ -85,9 +123,9 @@ public partial class MessageBox
         _ => "border-t-4 border-apple-dark-gray"
     };
 
-    private async Task HandleClose()
+    private async Task HandleClose(MessageBoxResult result = MessageBoxResult.Cancel)
     {
-        await OnClose.InvokeAsync();
+        await OnClose.InvokeAsync(result);
     }
 
     private async Task HandleKeyDown(KeyboardEventArgs e)

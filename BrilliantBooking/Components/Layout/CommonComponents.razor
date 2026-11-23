@@ -4,7 +4,8 @@
             Title="@MessageBoxService.Title"
             Message="@MessageBoxService.Message"
             Type="@MessageBoxService.Type"
-            OnClose="@(() => MessageBoxService.Close())" />
+            ButtonMode="@MessageBoxService.ButtonMode"
+            OnClose="@(result => MessageBoxService.Close(result))" />
 
 <Toast IsVisible="@MessageBoxService.IsToastVisible"
        Title="@MessageBoxService.ToastTitle"

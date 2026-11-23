@@ -19,16 +19,59 @@
                 <button type="button"
                         class="-m-1 rounded-full p-1 text-stone-400 hover:bg-stone-100 hover:text-stone-600 dark:hover:bg-stone-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-apple-blue"
                         aria-label="Close"
-                        @onclick="HandleClose">
+                        @onclick="() => HandleClose()">
                     <i class="fa-solid fa-xmark" aria-hidden="true"></i>
                 </button>
             </div>
-            <div class="flex justify-center border-t border-stone-100 dark:border-stone-800 px-6 py-4">
-                <button type="button"
-                        class="min-w-[120px] rounded-full px-6 py-2 text-sm font-medium text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 @_buttonClass"
-                        @onclick="HandleClose">
-                    OK
-                </button>
+            <div class="flex justify-center gap-3 border-t border-stone-100 dark:border-stone-800 px-6 py-4">
+                @if (ButtonMode is MessageBox.MessageBoxButtonMode.OK or MessageBox.MessageBoxButtonMode.CancelOK)
+                {
+                    @if (ButtonMode == MessageBox.MessageBoxButtonMode.CancelOK)
+                    {
+                        <button type="button"
+                                class="min-w-[120px] rounded-full bg-stone-200 px-6 py-2 text-sm font-medium text-stone-700 transition-colors hover:bg-stone-300 dark:bg-stone-700 dark:text-stone-100 dark:hover:bg-stone-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-stone-400"
+                                @onclick="() => HandleClose(MessageBox.MessageBoxResult.Cancel)">
+                            Cancel
+                        </button>
+                    }
+
+                    <button type="button"
+                            class="min-w-[120px] rounded-full px-6 py-2 text-sm font-medium text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 @_buttonClass"
+                            @onclick="() => HandleClose(MessageBox.MessageBoxResult.OK)">
+                        OK
+                    </button>
+                }
+                else if (ButtonMode == MessageBox.MessageBoxButtonMode.YesNo)
+                {
+                    <button type="button"
+                            class="min-w-[120px] rounded-full bg-stone-200 px-6 py-2 text-sm font-medium text-stone-700 transition-colors hover:bg-stone-300 dark:bg-stone-700 dark:text-stone-100 dark:hover:bg-stone-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-stone-400"
+                            @onclick="() => HandleClose(MessageBox.MessageBoxResult.Yes)">
+                        Yes
+                    </button>
+                    <button type="button"
+                            class="min-w-[120px] rounded-full px-6 py-2 text-sm font-medium text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 @_buttonClass"
+                            @onclick="() => HandleClose(MessageBox.MessageBoxResult.No)">
+                        No
+                    </button>
+                }
+                else if (ButtonMode == MessageBox.MessageBoxButtonMode.YesNoCancel)
+                {
+                    <button type="button"
+                            class="min-w-[120px] rounded-full bg-stone-200 px-6 py-2 text-sm font-medium text-stone-700 transition-colors hover:bg-stone-300 dark:bg-stone-700 dark:text-stone-100 dark:hover:bg-stone-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-stone-400"
+                            @onclick="() => HandleClose(MessageBox.MessageBoxResult.Yes)">
+                        Yes
+                    </button>
+                    <button type="button"
+                            class="min-w-[120px] rounded-full px-6 py-2 text-sm font-medium text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 @_buttonClass"
+                            @onclick="() => HandleClose(MessageBox.MessageBoxResult.No)">
+                        No
+                    </button>
+                    <button type="button"
+                            class="min-w-[120px] rounded-full bg-stone-200 px-6 py-2 text-sm font-medium text-stone-700 transition-colors hover:bg-stone-300 dark:bg-stone-700 dark:text-stone-100 dark:hover:bg-stone-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-stone-400"
+                            @onclick="() => HandleClose(MessageBox.MessageBoxResult.Cancel)">
+                        Cancel
+                    </button>
+                }
             </div>
         </div>
     </div>

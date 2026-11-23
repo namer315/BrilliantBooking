@@ -1,3 +1,4 @@
+using BrilliantBooking.Components.Controls;
 using BrilliantBooking.Extensions;
 using BrilliantBooking.Services;
 using Data.Managers;
@@ -103,6 +104,10 @@ public partial class PageBase : IDisposable
     public void ShowException(Exception ex , string title = "Error")
     {
         MessageBoxService.ShowException(ex , title);
+    }
+    public async Task<MessageBox.MessageBoxResult> ShowExceptionAsync(Exception ex , string title = "Error" , MessageBox.MessageBoxButtonMode buttonMode = MessageBox.MessageBoxButtonMode.OK)
+    {
+        return await MessageBoxService.ShowExceptionAsync(ex , title, buttonMode);
     }
     public void ShowWarning(string text , string title = "Warning")
     {

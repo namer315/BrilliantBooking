@@ -78,7 +78,7 @@
                     </p>
 
                     <EditForm Model="_signIn"
-                              OnValidSubmit="@(() => HandleSignInAsync().ShowProcessing(this))"
+                              OnValidSubmit="@(() => HandleSignInAsync())"
                               class="login-form">
                         <label class="field">
                             <span class="field-label">Email address</span>
