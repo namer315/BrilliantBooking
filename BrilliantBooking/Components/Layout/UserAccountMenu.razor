@@ -1,3 +1,4 @@
+@using Data.Managers
 @rendermode @(new InteractiveServerRenderMode(false))
 
 @if (!IsAuthenticated)
@@ -37,10 +38,31 @@ else
 
                 <div class="user-account-divider" role="separator"></div>
 
-                <a href="@RoleRoute" @onclick="CloseMenu" class="user-account-option" role="menuitem">
+                @* <a href="@RoleRoute" @onclick="CloseMenu" class="user-account-option" role="menuitem">
                     <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
                     <span>@RoleRouteLabel</span>
-                </a>
+                </a> *@
+
+                @switch (UserSessionManager.CurrentUser.Type)
+                {
+                    case Data.VO.UserVO.UserType.Owner:
+                    {
+                        <button type="button" @onclick="@(() => NavigateTo(Data.VO.MenuVO.NavigationRoutes.Dashboard))" class="user-account-option user-account-logout" role="menuitem">
+                            <i data-lucide="log-out" class="w-4 h-4"></i>
+                            <span>Dashboard</span>
+                        </button>
+                    }
+                    break;
+
+                    case Data.VO.UserVO.UserType.Client:
+                    {
+                        <button type="button" @onclick="@(() => NavigateTo(Data.VO.MenuVO.NavigationRoutes.Booking))" class="user-account-option user-account-logout" role="menuitem">
+                            <i data-lucide="log-out" class="w-4 h-4"></i>
+                            <span>My Booking</span>
+                        </button>
+                    }
+                    break;
+                }
 
                 <button type="button" @onclick="LogOut" class="user-account-option user-account-logout" role="menuitem">
                     <i data-lucide="log-out" class="w-4 h-4"></i>
@@ -50,25 +72,25 @@ else
         }
 
         <script>
-            window.userAccountMenu = {
-                register(element, dotNetReference) {
-                    const handler = event => {
-                        if (!element.contains(event.target)) {
-                            dotNetReference.invokeMethodAsync('CloseFromOutside');
+                window.userAccountMenu = {
+                    register(element, dotNetReference) {
+                        const handler = event => {
+                            if (!element.contains(event.target)) {
+                                dotNetReference.invokeMethodAsync('CloseFromOutside');
+                            }
+                        };
+
+                        element._outsideClickHandler = handler;
+                        document.addEventListener('pointerdown', handler);
+                    },
+
+                    unregister(element) {
+                        if (element?._outsideClickHandler) {
+                            document.removeEventListener('pointerdown', element._outsideClickHandler);
+                            delete element._outsideClickHandler;
                         }
-                    };
-
-                    element._outsideClickHandler = handler;
-                    document.addEventListener('pointerdown', handler);
-                },
-
-                unregister(element) {
-                    if (element?._outsideClickHandler) {
-                        document.removeEventListener('pointerdown', element._outsideClickHandler);
-                        delete element._outsideClickHandler;
                     }
-                }
-            };
+                };
         </script>
     </div>
 }

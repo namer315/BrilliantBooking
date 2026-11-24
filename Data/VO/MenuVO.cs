@@ -14,6 +14,7 @@ public class MenuVO
 
         Resturant,
 
-        Explore
+        Explore,
+        Dashboard
     }
 }

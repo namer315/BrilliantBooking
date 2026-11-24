@@ -43,16 +43,17 @@ public sealed class RouteUrlService
 
     private static string GetBaseSegment(NavigationRoutes route)
     {
-        return $"/{route.ToString()}";
-        //return route switch
-        //{
-        //    EntityRoute.LogIn => "/login",
-        //    EntityRoute.LogOut => "/logout",
-        //    EntityRoute.Booking => "/booking",
-        //    EntityRoute.Customers => "/customers",
-        //    EntityRoute.Orders => "/orders",
-        //    EntityRoute.Products => "/products",
-        //    _ => throw new ArgumentOutOfRangeException(nameof(route) , route , "Unsupported route enum value.")
-        //};
+        //return $"/{route.ToString()}";
+        return route switch
+        {
+            //NavigationRoutes.LogIn => "/login",
+            //NavigationRoutes.LogOut => "/logout",
+            //NavigationRoutes.Booking => "/booking",
+            //NavigationRoutes.Customers => "/customers",
+            NavigationRoutes.Resturant => "App/Resturant",
+            NavigationRoutes.Dashboard => "/Owner/Dashboard",
+            _ => $"/{route.ToString()}"
+            //_ => throw new ArgumentOutOfRangeException(nameof(route) , route , "Unsupported route enum value.")
+        };
     }
 }

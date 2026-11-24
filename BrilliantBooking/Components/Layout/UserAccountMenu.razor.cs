@@ -1,10 +1,12 @@
 using BrilliantBooking.Extensions;
 using BrilliantBooking.Services;
+using Business;
 using Data.Managers;
 using Data.VO;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
+using static Data.VO.MenuVO;
 
 namespace BrilliantBooking.Components.Layout;
 
@@ -130,5 +132,11 @@ public partial class UserAccountMenu : ComponentBase, IAsyncDisposable
         {
             MessageBox.ShowException(ex);
         }
+    }
+
+
+    private void NavigateTo(NavigationRoutes route)
+    {
+        NavigationManager.NavigateTo(Data.Services.RouteUrlService.Url(route) , forceLoad: true);
     }
 }
