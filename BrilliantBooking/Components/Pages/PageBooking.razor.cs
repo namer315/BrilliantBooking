@@ -62,9 +62,15 @@ public partial class PageBooking
     }
 
 
-    private void GoToBookingStep(int step)
+    private async Task GoToBookingStep(int step)
     {
+        bool enteringTableSelection = Booking.Step != 2 && step == 2;
         Booking.Step = step;
+
+        if (enteringTableSelection)
+        {
+            await CheckAvilableTables();
+        }
     }
 
     private void SelectDateShortcut(int offset)
@@ -93,9 +99,9 @@ public partial class PageBooking
         };
     }
 
-    private void SubmitGuestDetails()
+    private async Task SubmitGuestDetails()
     {
-        GoToBookingStep(4);
+        await GoToBookingStep(4);
     }
     public void ToggleOccasion(string occasion) => Booking.Occasion = Booking.Occasion == occasion ? "" : occasion;
     public void ToggleDietary(string item)
@@ -197,7 +203,7 @@ public partial class PageBooking
     }
 
 
-    private async void CheckAvilableTables()
+    private async Task CheckAvilableTables()
     {
         await _fdm.CheckAvilableTables(Booking , Floors).ShowProcessing(this);
     }
