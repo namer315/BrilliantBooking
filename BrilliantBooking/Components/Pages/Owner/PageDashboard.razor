@@ -131,6 +131,92 @@
                 </div>
             </section>
         </div>
+
+        <section class="bookings-card apple-card" aria-labelledby="bookings-heading">
+            <div class="card-heading-row bookings-heading-row">
+                <div>
+                    <h2 id="bookings-heading" class="card-heading"><i data-lucide="calendar-days" class="heading-icon"></i>Booking Management</h2>
+                    <p class="muted-copy">Search reservations, review guest details, and update the booking status.</p>
+                </div>
+                <span class="booking-count">@BookingList.Count booking@(BookingList.Count == 1 ? string.Empty : "s")</span>
+            </div>
+
+            <div class="booking-filters" role="search" aria-label="Filter bookings">
+                <div class="booking-filter booking-search-filter">
+                    <label for="booking-search">Search bookings</label>
+                    <div class="search-input-wrapper">
+                        <i data-lucide="search" class="filter-icon" aria-hidden="true"></i>
+                        <input id="booking-search" type="search" value="@Search.Text" placeholder="Reference, guest, phone, occasion..." @onchange="OnBookingTextChanged" />
+                    </div>
+                </div>
+                <div class="booking-filter">
+                    <label for="booking-from-date">From date</label>
+                    <input id="booking-from-date" type="date" value="@(Search.FromDate?.ToString("yyyy-MM-dd"))" @onchange="OnFromDateChanged" />
+                </div>
+                <div class="booking-filter">
+                    <label for="booking-to-date">To date</label>
+                    <input id="booking-to-date" type="date" value="@(Search.ToDate?.ToString("yyyy-MM-dd"))" @onchange="OnToDateChanged" />
+                </div>
+                <button class="secondary-button booking-reset-button" type="button" @onclick="ResetBookingFiltersAsync">Reset</button>
+            </div>
+
+            @if (BookingList.Count == 0)
+            {
+                <div class="booking-empty-state" role="status">
+                    <i data-lucide="calendar-search" class="empty-state-icon" aria-hidden="true"></i>
+                    <strong>No bookings found</strong>
+                    <span>Try adjusting the date range or search term.</span>
+                </div>
+            }
+            else
+            {
+                <div class="booking-table-wrapper">
+                    <table class="booking-table">
+                        <caption class="sr-only">Bookings for the selected restaurant</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Booking</th>
+                                <th scope="col">Guest</th>
+                                <th scope="col">Date &amp; time</th>
+                                <th scope="col">Party</th>
+                                <th scope="col">Table</th>
+                                <th scope="col">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var booking in BookingList)
+                            {
+                                <tr>
+                                    <td>
+                                        <strong class="booking-reference">@(string.IsNullOrWhiteSpace(booking.Reference) ? "Unassigned" : booking.Reference)</strong>
+                                        <span class="booking-secondary-text">@booking.Occasion</span>
+                                    </td>
+                                    <td>
+                                        <strong>@(booking.Customer?.Name ?? "Unknown guest")</strong>
+                                        <span class="booking-secondary-text">@(booking.Customer?.Phone ?? booking.Customer?.Email ?? "No contact details")</span>
+                                    </td>
+                                    <td>
+                                        <strong>@booking.Date.ToString("dd MMM yyyy")</strong>
+                                        <span class="booking-secondary-text">@booking.FromTime.ToString(@"hh\:mm") – @booking.ToTime.ToString(@"hh\:mm")</span>
+                                    </td>
+                                    <td>@booking.GuestCount guests</td>
+                                    <td>@(booking.BookingTable?.Name ?? "Unassigned")</td>
+                                    <td>
+                                        <label class="sr-only" for="booking-status-@booking.Id">Status for @booking.Reference</label>
+                                        <select id="booking-status-@booking.Id" class="booking-status-select status-@booking.Status.ToString().ToLowerInvariant()" value="@booking.Status" @onchange="args => OnBookingStatusChanged(booking, args)">
+                                            @foreach (var status in BookingStatuses)
+                                            {
+                                                <option value="@status">@status</option>
+                                            }
+                                        </select>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </section>
     </section>
 </main>
 

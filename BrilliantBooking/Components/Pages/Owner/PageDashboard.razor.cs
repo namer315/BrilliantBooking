@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Data.Extensions;
 using Data.Search;
 using Data.VO.Booking;
 using Data.VO.Operations;
@@ -19,6 +16,9 @@ public partial class PageDashboard : PageBase
     private IList<BookingVO> BookingList = new List<BookingVO>();
     private IList<RestaurantVO> ResturantList = new List<RestaurantVO>();
     private int _selectedVenueIndex;
+
+    private static IReadOnlyList<BookingVO.BookingStatus> BookingStatuses { get; } =
+        Enum.GetValues<BookingVO.BookingStatus>();
 
     private IList<TableVO> Tables => Search.Resturant?.FloorList.FirstOrDefault()?.TableList ?? new List<TableVO>();
     private IList<ArrivalVO> Arrivals { get; } = new List<ArrivalVO>();
@@ -61,13 +61,65 @@ public partial class PageDashboard : PageBase
 
     private async Task OnVenueChanged(ChangeEventArgs args)
     {
-        if (ResturantList is { Count: > 0 } && Guid.TryParse(args.Value.ToString() , out Guid resturantId))
+        if (ResturantList is { Count: > 0 } && Guid.TryParse(args.Value?.ToString() , out Guid resturantId))
         {
             Search.Resturant = ResturantList.FirstOrDefault(x => x.Id == resturantId);
             PopulateSampleArrivals();
             await dgSearch();
         }
     }
+    #region Booking Management
+
+    private async Task OnBookingTextChanged(ChangeEventArgs args)
+    {
+        Search.Text = args.Value?.ToString() ?? string.Empty;
+        await RefreshBookingListAsync();
+    }
+
+    private async Task OnFromDateChanged(ChangeEventArgs args)
+    {
+        Search.FromDate = args.Value.ParseDateOnlyOrNull();
+        await RefreshBookingListAsync();
+    }
+
+    private async Task OnToDateChanged(ChangeEventArgs args)
+    {
+        Search.ToDate = args.Value.ParseDateOnlyOrNull();
+        await RefreshBookingListAsync();
+    }
+
+    private async Task ResetBookingFiltersAsync()
+    {
+        Search.Text = string.Empty;
+        Search.FromDate = null;
+        Search.ToDate = null;
+        await RefreshBookingListAsync();
+    }
+
+    private async Task OnBookingStatusChanged(BookingVO booking, ChangeEventArgs args)
+    {
+        if (Enum.TryParse<BookingVO.BookingStatus>(args.Value?.ToString(), out var status))
+        {
+            booking.Status = status;
+            BookingList = BookingList.ToList();
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task RefreshBookingListAsync()
+    {
+        try
+        {
+            await dgSearch();
+        }
+        catch (Exception ex)
+        {
+            ShowException(ex);
+        }
+    }
+
+    #endregion Booking Management
+
 
     private async Task RefreshOperationsAsync()
     {

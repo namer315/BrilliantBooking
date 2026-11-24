@@ -10,4 +10,6 @@ public class BookingSH : Pagination
 {
     public CustomerVO Customer { get; set; }
     public RestaurantVO Resturant { get; set; }
+    public DateOnly? FromDate { get; set; }
+    public DateOnly? ToDate { get; set; }
 }

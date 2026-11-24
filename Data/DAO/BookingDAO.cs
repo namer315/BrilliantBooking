@@ -36,8 +36,32 @@ public class BookingDAO : NHibernateRepository
 
         if (!string.IsNullOrEmpty(search.Text))
         {
-            conditions.Add("restaurant.Name like :text");
-            parameters.Add(("text" , $"%{search.Text}%"));
+            conditions.Add("(lower(booking.Reference) like :text "
+                + "OR lower(booking.Occasion) like :text "
+                + "OR lower(booking.Note) like :text "
+                + "OR lower(booking.ConfirmationCode) like :text "
+                + "OR lower(customer.Name) like :text "
+                + "OR lower(customer.Phone) like :text "
+                + "OR lower(customer.Email) like :text "
+                + "OR lower(restaurant.Name) like :text "
+                + "OR lower(restaurant.Cuisine) like :text "
+                + "OR lower(restaurant.Location) like :text "
+                + "OR lower(restaurant.Address) like :text "
+                + "OR lower(bookingTable.Name) like :text "
+                + "OR lower(bookingTable.Zone) like :text)");
+            parameters.Add(("text" , $"%{search.Text.Trim().ToLowerInvariant()}%"));
+        }
+
+        if (search.FromDate.HasValue)
+        {
+            conditions.Add("booking.Date >= :fromDate");
+            parameters.Add(("fromDate" , search.FromDate.Value));
+        }
+
+        if (search.ToDate.HasValue)
+        {
+            conditions.Add("booking.Date <= :toDate");
+            parameters.Add(("toDate" , search.ToDate.Value));
         }
         if (search.Resturant is not null)
         {
