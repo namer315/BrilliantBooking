@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Business;
 using Data.Search;
 using Data.VO.Booking;
+using Data.VO.Operations;
 using Data.VO.Restaurant;
 
 namespace FDM;
@@ -22,4 +23,12 @@ public class DashboardFDM
 
     public async Task<IList<BookingVO>> GetBookingList(BookingSH search)
         => await new BookingBE().GetBookingBy(search);
+
+    public async Task<IList<TableVO>> GetTableListBy(RestaurantVO? resturant)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<IList<FloorVO>> GetFloorListBy(RestaurantVO resturant)
+        => await new FloorBE().GetFloorListBy(resturant);
 }

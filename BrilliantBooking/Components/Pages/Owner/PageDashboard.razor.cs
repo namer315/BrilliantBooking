@@ -20,14 +20,15 @@ public partial class PageDashboard : PageBase
     private static IReadOnlyList<BookingVO.BookingStatus> BookingStatuses { get; } =
         Enum.GetValues<BookingVO.BookingStatus>();
 
-    private IList<TableVO> Tables => Search.Resturant?.FloorList.FirstOrDefault()?.TableList ?? new List<TableVO>();
+    private IList<FloorVO> FloorList { get; set; }
+    private IList<TableVO> TableList => FloorList is { Count : > 0}? FloorList[0].TableList : new List<TableVO>();
     private IList<ArrivalVO> Arrivals { get; } = new List<ArrivalVO>();
 
     private int TotalShiftCovers => 42;
     private int ShiftCapacity => 60;
     private int CapacityPercentage => TotalShiftCovers * 100 / ShiftCapacity;
-    private int ActiveTableCount => Tables.Count(table => table.Status != TableVO.TableStatus.Available);
-    private int ReservedTableCount => Tables.Count(table => table.Status == TableVO.TableStatus.Reserved);
+    private int ActiveTableCount => TableList.Count(table => table.Status != TableVO.TableStatus.Available);
+    private int ReservedTableCount => TableList.Count(table => table.Status == TableVO.TableStatus.Reserved);
     private string NextArrivalTime => Arrivals.Count == 0 ? "--:--" : Arrivals.Min(arrival => arrival.Time).ToString(@"hh\:mm");
 
     protected override async Task OnInitializedAsync()
@@ -52,6 +53,7 @@ public partial class PageDashboard : PageBase
     {
         ResturantList = await _fdm.GetResturantList();
         Search.Resturant = ResturantList.FirstOrDefault();
+        //IList<TableVO> TableList = await _fdm.GetTableListBy(Search.Resturant);
         //Search.Resturant = CreateSampleVenues()[0];
 
         //var venues = await _fdm.GetOperationsVenuesAsync();
@@ -64,6 +66,7 @@ public partial class PageDashboard : PageBase
         if (ResturantList is { Count: > 0 } && Guid.TryParse(args.Value?.ToString() , out Guid resturantId))
         {
             Search.Resturant = ResturantList.FirstOrDefault(x => x.Id == resturantId);
+            FloorList = await _fdm.GetFloorListBy(Search.Resturant);
             PopulateSampleArrivals();
             await dgSearch();
         }

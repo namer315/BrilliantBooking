@@ -45,6 +45,6 @@ public class TableMap : EntityBaseWithNameMapping<TableVO>
         Map(x => x.Description).Length(500).Nullable();
 
         //References(x => x.Restaurant , "Restaurant").Not.Nullable().Index("IX_Tables_RestaurantId");
-        References(x => x.Floor , "Floor").Not.Nullable();
+        References(x => x.Floor , "Floor").Not.Nullable().LazyLoad();
     }
 }
