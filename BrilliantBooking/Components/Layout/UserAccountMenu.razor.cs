@@ -4,17 +4,61 @@ using Data.Managers;
 using Data.VO;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.JSInterop;
 
 namespace BrilliantBooking.Components.Layout;
 
-public partial class UserAccountMenu : ComponentBase
+public partial class UserAccountMenu : ComponentBase, IAsyncDisposable
 {
     [Inject] private NavigationManager NavigationManager { get; set; } = default!;
     [Inject] private LoadingService LoadingService { get; set; } = default!;
     [Inject] private SessionService SessionService { get; set; } = default!;
     [Inject] private IMessageBoxService MessageBox { get; set; } = default!;
+    [Inject] private IJSRuntime JS { get; set; } = default!;
 
+    private ElementReference MenuElement;
+    private DotNetObjectReference<UserAccountMenu>? DotNetReference;
     private bool IsMenuOpen { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && IsAuthenticated)
+        {
+            // To close the menu if i click out side the menu
+            DotNetReference = DotNetObjectReference.Create(this);
+
+            await JS.InvokeVoidAsync(
+                "userAccountMenu.register",
+                MenuElement,
+                DotNetReference);
+        }
+    }
+
+    [JSInvokable]
+    public Task CloseFromOutside()
+    {
+        return InvokeAsync(() =>
+        {
+            if (IsMenuOpen)
+            {
+                IsMenuOpen = false;
+                StateHasChanged();
+            }
+        });
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("userAccountMenu.unregister", MenuElement);
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+
+        DotNetReference?.Dispose();
+    }
 
     private UserVO? CurrentUser => UserSessionManager.CurrentUser;
 

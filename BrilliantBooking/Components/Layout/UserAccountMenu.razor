@@ -9,7 +9,7 @@
 }
 else
 {
-    <div class="user-account-menu relative" @onkeydown="HandleKeyDown">
+    <div @ref="MenuElement" class="user-account-menu relative" @onkeydown="HandleKeyDown">
         <button type="button"
                 @onclick="ToggleMenu"
                 class="user-account-trigger min-h-11 min-w-11 p-2 rounded-full transition focus-visible:ring-2 focus-visible:ring-apple-blue"
@@ -48,5 +48,27 @@ else
                 </button>
             </div>
         }
+
+        <script>
+            window.userAccountMenu = {
+                register(element, dotNetReference) {
+                    const handler = event => {
+                        if (!element.contains(event.target)) {
+                            dotNetReference.invokeMethodAsync('CloseFromOutside');
+                        }
+                    };
+
+                    element._outsideClickHandler = handler;
+                    document.addEventListener('pointerdown', handler);
+                },
+
+                unregister(element) {
+                    if (element?._outsideClickHandler) {
+                        document.removeEventListener('pointerdown', element._outsideClickHandler);
+                        delete element._outsideClickHandler;
+                    }
+                }
+            };
+        </script>
     </div>
 }
