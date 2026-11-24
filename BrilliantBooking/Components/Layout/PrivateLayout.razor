@@ -6,12 +6,58 @@
 <div class="flex min-h-screen w-full">
     <PrivateNav></PrivateNav>
 
-    <main class="min-h-screen min-w-0 flex-1">
+    <main class="private-layout-main min-h-screen min-w-0 flex-1">
+        <header class="private-layout-top-bar" aria-label="Account navigation">
+            <UserAccountMenu />
+        </header>
+
         @Body
     </main>
 </div>
 
 <CommonComponents />
+
+<style>
+    .private-layout-main {
+        position: relative;
+        overflow: visible;
+    }
+
+    .private-layout-top-bar {
+        position: sticky;
+        top: 0;
+        z-index: 45;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        min-height: 4.5rem;
+        padding: 0.75rem clamp(1rem, 3vw, 2rem);
+        background: rgba(248, 247, 244, 0.78);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        backdrop-filter: saturate(180%) blur(20px);
+        -webkit-backdrop-filter: saturate(180%) blur(20px);
+    }
+
+    .dark .private-layout-top-bar {
+        background: rgba(18, 17, 16, 0.82);
+        border-bottom-color: rgba(255, 255, 255, 0.08);
+    }
+
+    @@media (max-width: 767.98px) {
+        .private-layout-top-bar {
+            min-height: 4.25rem;
+            padding-left: 4.5rem;
+            padding-right: 0.75rem;
+        }
+    }
+
+    @@media (prefers-reduced-motion: reduce) {
+        .private-layout-top-bar {
+            scroll-behavior: auto;
+        }
+    }
+</style>
+
 @code {
     [CascadingParameter] public HttpContext? HttpContext { get; set; }
     [Inject] protected SessionService SessionService { get; set; }
