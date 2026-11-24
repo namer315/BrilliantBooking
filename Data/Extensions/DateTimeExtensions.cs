@@ -110,7 +110,7 @@ public static class DateTimeExtensions
     {
         return dateTime.Date;
     }
-
+    
     /// <summary>
     /// Sets the DateTime to the end of the day (23:59:59.9999999).
     /// </summary>
@@ -123,4 +123,10 @@ public static class DateTimeExtensions
 
     public static DateOnly? ParseDateOnlyOrNull(this object? value)
         => DateOnly.TryParse(value?.ToString() , out var date) ? date : null;
+
+    extension(DateOnly)
+    {
+        public static DateOnly Date
+            => DateOnly.FromDateTime(DateTime.Today);
+    }
 }

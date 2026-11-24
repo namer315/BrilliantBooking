@@ -91,7 +91,7 @@ public partial class PageDashboard : PageBase
     private async Task ResetBookingFiltersAsync()
     {
         Search.Text = string.Empty;
-        Search.FromDate = null;
+        Search.FromDate = DateOnly.Date;
         Search.ToDate = null;
         await RefreshBookingListAsync();
     }
