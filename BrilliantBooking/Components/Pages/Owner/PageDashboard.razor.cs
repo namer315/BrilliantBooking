@@ -51,13 +51,13 @@ public partial class PageDashboard : PageBase
 
     private async Task beginEdit()
     {
+        Search.FromDate = DateOnly.Date;
+
         ResturantList = await _fdm.GetResturantList();
         Search.Resturant = ResturantList.FirstOrDefault();
-        //IList<TableVO> TableList = await _fdm.GetTableListBy(Search.Resturant);
-        //Search.Resturant = CreateSampleVenues()[0];
 
-        //var venues = await _fdm.GetOperationsVenuesAsync();
-        //ResturantList = venues.Count > 0 ? venues : CreateSampleVenues();
+        FloorList = await _fdm.GetFloorListBy(Search.Resturant);
+
         PopulateSampleArrivals();
     }
 

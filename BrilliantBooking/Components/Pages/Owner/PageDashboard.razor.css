@@ -430,7 +430,7 @@
 
 .booking-filters {
     display: grid;
-    grid-template-columns: minmax(16rem, 2fr) repeat(2, minmax(8.5rem, 1fr)) auto;
+    grid-template-columns: minmax(16rem, 2fr) repeat(2, minmax(8.5rem, 1fr)) auto auto;
     align-items: end;
     gap: 0.75rem;
     margin-top: 1.25rem;
@@ -489,6 +489,7 @@
 
 .booking-filter input:focus,
 .booking-status-select:focus,
+.booking-refresh-button:focus-visible,
 .booking-reset-button:focus-visible {
     outline: 3px solid rgba(0, 113, 227, 0.2);
     outline-offset: 1px;
@@ -500,6 +501,12 @@
     padding: 0 0.85rem;
     border-radius: 0.7rem;
     cursor: pointer;
+}
+
+.booking-refresh-button {
+    width: 2.35rem;
+    height: 2.35rem;
+    border-radius: 0.7rem;
 }
 
 .booking-table-wrapper {
@@ -568,6 +575,18 @@
     border-color: rgba(52, 199, 89, 0.45);
     background: rgba(52, 199, 89, 0.12);
     color: #15803d;
+}
+
+.booking-status-select.status-booked {
+    border-color: rgba(0, 113, 227, 0.35);
+    background: rgba(0, 113, 227, 0.1);
+    color: #005bb5;
+}
+
+.booking-status-select.status-completed {
+    border-color: rgba(120, 113, 108, 0.35);
+    background: rgba(120, 113, 108, 0.1);
+    color: #57534e;
 }
 
 .booking-status-select.status-past {
@@ -670,6 +689,10 @@
 
     .booking-reset-button {
         width: 100%;
+    }
+
+    .booking-refresh-button {
+        justify-self: start;
     }
 }
 

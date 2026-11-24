@@ -39,7 +39,9 @@ public class BookingVO : EntityBaseWithCode
 
     public enum BookingStatus
     {
+        Booked,
         Active,
+        Completed,
         Past,
         Cancelled
     }

@@ -179,10 +179,11 @@ public partial class PageBooking
         try
         {
             Booking = await _fdm.Persist(Booking).ShowProcessing(this);
+            NavigateTo(NavigationRoutes.Booking);
         }
         catch(Exception ex)
         {
-
+            ShowException(ex);
         }
     }
     private void Save()
@@ -193,5 +194,11 @@ public partial class PageBooking
     private void ViewMyBookings()
     {
 
+    }
+
+
+    private async void CheckAvilableTables()
+    {
+        await _fdm.CheckAvilableTables(Booking , Floors).ShowProcessing(this);
     }
 }

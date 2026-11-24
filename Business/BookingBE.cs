@@ -7,6 +7,7 @@ using Data.Localization;
 using Data.Managers;
 using Data.Search;
 using Data.VO.Booking;
+using Data.VO.Operations;
 using Data.VO.Restaurant;
 
 namespace Business;
@@ -14,6 +15,38 @@ namespace Business;
 public class BookingBE
 {
     private BookingDAO _dao = new BookingDAO();
+
+    public async Task CheckAvilableTables(BookingVO booking , IList<FloorVO> floorList)
+    {
+        IList<TableVO> tableList = floorList.SelectMany(x => x.TableList).ToList();
+        IList<BookingVO> bookingList = await _dao.GetBookingBy(new BookingSH()
+        {
+            Date = booking.Date ,
+            FromTime = booking.FromTime ,
+            ToTime = booking.ToTime
+        });
+
+        foreach (BookingVO existBooking in bookingList)
+        {
+            TableVO table = tableList.FirstOrDefault(x => x.Id == existBooking.BookingTable?.Id);
+
+            if (table is null)
+                continue;
+            
+            table.Status = TableVO.TableStatus.Reserved;            
+        }
+
+        foreach (TableVO table in tableList.Where(x => !bookingList.Any(y => y.BookingTable?.Id == x.Id)))
+        {
+            table.Status = TableVO.TableStatus.Available;
+        }
+        if (booking.BookingTable is not null
+            && tableList.FirstOrDefault(x => x.Id == booking.BookingTable?.Id) is TableVO bookingTable
+            && bookingTable.Status == TableVO.TableStatus.Reserved)
+        {
+            booking.BookingTable = null;
+        }
+    }
 
     public async Task<IList<BookingVO>> GetBookingBy(BookingSH search)
     {

@@ -7,6 +7,8 @@
 
 @implements IDisposable
 @using BrilliantBooking.Services
+@using Data.Services
+@using static Data.VO.MenuVO
 
 <header class="sticky top-0 z-40 sf-glass-nav transition-colors duration-300">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -37,7 +39,7 @@
         </nav> *@
         <nav class="hidden lg:flex items-center space-x-1 sf-segmented p-1" aria-label="Main">
             <a href="/Explore" class="@NavClass(IsExploreActive) px-4 py-1.5 text-xs font-medium rounded-md transition-all focus-visible:ring-2 focus-visible:ring-apple-blue" aria-current="@(IsExploreActive ? "page" : null)">Explore</a>
-            <a href="/bookings" class="@NavClass(IsActive("bookings")) px-4 py-1.5 text-xs font-medium rounded-md transition-all focus-visible:ring-2 focus-visible:ring-apple-blue" aria-current="@(IsActive("bookings") ? "page" : null)">My Bookings</a>
+            <a href="@RouteUrlService.Url(NavigationRoutes.Booking)" class="@NavClass(IsActive("bookings")) px-4 py-1.5 text-xs font-medium rounded-md transition-all focus-visible:ring-2 focus-visible:ring-apple-blue" aria-current="@(IsActive("bookings") ? "page" : null)">My Bookings</a>
             <a href="/ops" class="@NavClass(IsActive("ops")) px-4 py-1.5 text-xs font-medium rounded-md transition-all flex items-center space-x-1 focus-visible:ring-2 focus-visible:ring-apple-blue" aria-current="@(IsActive("ops") ? "page" : null)">
                 <span class="w-2 h-2 rounded-full bg-apple-green animate-pulse"></span>
                 <span>Live Operations</span>
@@ -66,7 +68,7 @@
     {
         <div class="lg:hidden border-b border-stone-200 dark:border-stone-800 bg-[#F8F7F4]/95 dark:bg-stone-900/95 backdrop-blur-xl px-4 py-3 space-y-2">
             <a href="/" class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium hover:bg-stone-200/50 dark:hover:bg-stone-800">Explore Restaurants</a>
-            <a href="/bookings" class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium hover:bg-stone-200/50 dark:hover:bg-stone-800">My Reservations</a>
+            <a href="@RouteUrlService.Url(NavigationRoutes.Booking)" class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium hover:bg-stone-200/50 dark:hover:bg-stone-800">My Reservations</a>
             <a href="/ops" class="flex w-full text-left px-3 py-2 rounded-lg text-sm font-medium hover:bg-stone-200/50 dark:hover:bg-stone-800 items-center justify-between">
                 <span>Restaurant Staff Operations</span>
                 <span class="text-xs bg-apple-green/20 text-apple-green font-semibold px-2 py-0.5 rounded-full">Live</span>

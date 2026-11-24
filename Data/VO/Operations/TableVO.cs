@@ -29,8 +29,9 @@ public class TableVO : EntityBaseWithName
     public enum TableStatus
     {
         Available,
-        Selected,
-        Reserved
+        Reserved,
+        Seated,
+        Selected ,
     }
 }
 

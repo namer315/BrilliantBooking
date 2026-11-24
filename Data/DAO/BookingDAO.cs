@@ -34,6 +34,35 @@ public class BookingDAO : NHibernateRepository
             parameters.Add(("customerId" , search.Customer.Id));
         }
 
+        if (search.Date.HasValue)
+        {
+            conditions.Add("booking.Date = :date");
+            parameters.Add(("date" , search.Date.Value));
+        }
+
+        if (search.FromTime.HasValue && search.ToTime.HasValue)
+        {
+            //booking.FromTime BETWEEN :fromTime AND :fromTime
+            //OR booking.ToTime BETWEEN: toTime AND :toTime
+            conditions.Add(@"(
+                booking.FromTime < :toTime
+                AND booking.ToTime > :fromTime
+                )");
+            parameters.Add(("fromTime" , search.FromTime.Value));
+            parameters.Add(("toTime" , search.ToTime.Value));
+        }
+        /*if (search.FromTime.HasValue)
+        {
+            conditions.Add("booking.FromTime >= :fromTime");
+            parameters.Add(("fromTime" , search.FromTime.Value));
+        }
+
+        if (search.ToTime.HasValue)
+        {
+            conditions.Add("booking.ToTime <= :toTime");
+            parameters.Add(("toTime" , search.ToTime.Value));
+        }*/
+
         if (!string.IsNullOrEmpty(search.Text))
         {
             conditions.Add("(lower(booking.Reference) like :text "
