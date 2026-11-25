@@ -48,14 +48,13 @@ public class BookingBE
                 switch (status)
                 {
                     case BookingStatus.Completed:
+                    case BookingStatus.Cancelled:
                     {
                         booking.Status = status;
                         booking.BookingTable.Status = TableVO.TableStatus.Available;
                         await _dao.Update(booking , nameof(BookingVO.Status) , booking.Status);
                         await _dao.Update(booking.BookingTable , nameof(TableVO.Status) , booking.BookingTable.Status);
                     }
-                        break;
-                    case BookingStatus.Cancelled:
                         break;
                     default:
                         throw new AppException(
@@ -65,13 +64,13 @@ public class BookingBE
                 }
             }
             break;
-            case BookingStatus.Completed:
-                break;
+            //case BookingStatus.Completed:
+            //    break;
             //case BookingStatus.Past:
             //    break;
-            case BookingStatus.Cancelled:
+            //case BookingStatus.Cancelled:
 
-                break;
+            //    break;
             default:
                 throw new AppException(
                     ErrorCode.BookingStatusChangeNotAllowed ,
