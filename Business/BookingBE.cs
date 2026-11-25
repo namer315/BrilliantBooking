@@ -50,7 +50,7 @@ public class BookingBE
                     case BookingStatus.Completed:
                     {
                         booking.Status = status;
-                        booking.BookingTable.Status = TableVO.TableStatus.Seated;
+                        booking.BookingTable.Status = TableVO.TableStatus.Available;
                         await _dao.Update(booking , nameof(BookingVO.Status) , booking.Status);
                         await _dao.Update(booking.BookingTable , nameof(TableVO.Status) , booking.BookingTable.Status);
                     }

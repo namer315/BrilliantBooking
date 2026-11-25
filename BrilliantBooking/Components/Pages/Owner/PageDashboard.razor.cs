@@ -178,6 +178,8 @@ public partial class PageDashboard : PageBase
         {
             TableVO.TableStatus.Available => TableVO.TableStatus.Selected,
             TableVO.TableStatus.Selected => TableVO.TableStatus.Reserved,
+            TableVO.TableStatus.Reserved => TableVO.TableStatus.Seated,
+            TableVO.TableStatus.Seated => TableVO.TableStatus.Available,
             _ => TableVO.TableStatus.Available
         };
     }
@@ -190,7 +192,9 @@ public partial class PageDashboard : PageBase
     private static string GetTableClass(TableVO table)
         => table.Status switch
         {
+            TableVO.TableStatus.Available => "available",
             TableVO.TableStatus.Reserved => "reserved",
+            TableVO.TableStatus.Seated => "seated",
             TableVO.TableStatus.Selected => "selected",
             _ => "available"
         };
@@ -198,7 +202,9 @@ public partial class PageDashboard : PageBase
     private static string GetTableStatus(TableVO table)
         => table.Status switch
         {
+            TableVO.TableStatus.Available => "AVAILABLE",
             TableVO.TableStatus.Reserved => "RESERVED",
+            TableVO.TableStatus.Seated => "SEATED",
             TableVO.TableStatus.Selected => "SELECTED",
             _ => "AVAILABLE"
         };

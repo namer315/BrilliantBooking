@@ -252,6 +252,12 @@
     stroke: #ff9500;
 }
 
+.table-node.seated circle,
+.table-node.seated rect {
+    fill: #af52de;
+    stroke: #af52de;
+}
+
 .table-node.selected circle,
 .table-node.selected rect {
     fill: #0071e3;
@@ -287,6 +293,10 @@
 
 .table-node.reserved .table-status {
     fill: #d97706;
+}
+
+.table-node.seated .table-status {
+    fill: #9333a8;
 }
 
 .table-node.selected .table-status {
@@ -325,6 +335,10 @@
 
 .status-dot.reserved {
     background: #ff9500;
+}
+
+.status-dot.seated {
+    background: #af52de;
 }
 
 .status-dot.selected {
