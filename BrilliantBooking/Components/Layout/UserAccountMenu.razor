@@ -51,6 +51,10 @@ else
                             <i data-lucide="log-out" class="w-4 h-4"></i>
                             <span>Dashboard</span>
                         </button>
+                        <button type="button" @onclick="@(() => NavigateTo(Data.VO.MenuVO.NavigationRoutes.Explore))" class="user-account-option user-account-logout" role="menuitem">
+                            <i data-lucide="log-out" class="w-4 h-4"></i>
+                            <span>Explore</span>
+                        </button>
                     }
                     break;
 
