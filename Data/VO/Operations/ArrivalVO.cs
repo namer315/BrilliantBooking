@@ -1,3 +1,4 @@
+using Data.VO.Booking;
 using Data.VO.Restaurant;
 using FluentNHibernate.Mapping;
 
@@ -15,7 +16,8 @@ public class ArrivalVO : EntityBase
     public virtual string TableName { get; set; } = string.Empty;
     public virtual string Tags { get; set; } = string.Empty;
     public virtual string Status { get; set; } = string.Empty;
-    public virtual RestaurantVO Restaurant { get; set; } = null!;
+    public virtual RestaurantVO Restaurant { get; set; }
+    public virtual BookingVO Booking { get; set; }
 }
 
 public class ArrivalMap : EntityWithIdMapping<ArrivalVO>
@@ -29,6 +31,7 @@ public class ArrivalMap : EntityWithIdMapping<ArrivalVO>
         Map(x => x.Tags).Length(200).Not.Nullable();
         Map(x => x.Status).Length(50).Not.Nullable();
 
-        References(x => x.Restaurant, "Restaurant").Not.Nullable().Index("IX_Arrivals_RestaurantId");
+        //References(x => x.Restaurant , "Restaurant").Not.Nullable().Index("IX_Arrivals_RestaurantId");
+        References(x => x.Booking , "Restaurant").Not.Nullable().Index("IX_Arrivals_RestaurantId");
     }
 }

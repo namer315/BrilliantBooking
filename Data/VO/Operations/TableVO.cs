@@ -42,7 +42,7 @@ public class TableMap : EntityBaseWithNameMapping<TableVO>
         //Map(x => x.Name).Length(100).Not.Nullable();
         Map(x => x.GuestCount).Not.Nullable();
         //Map(x => x.Zone).Length(100).Nullable();
-        //Map(x => x.Status).CustomType<TableVO.TableStatus>().Not.Nullable();
+        Map(x => x.Status);
         Map(x => x.Description).Length(500).Nullable();
 
         //References(x => x.Restaurant , "Restaurant").Not.Nullable().Index("IX_Tables_RestaurantId");

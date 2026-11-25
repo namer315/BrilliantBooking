@@ -39,12 +39,32 @@ public class BookingVO : EntityBaseWithCode
 
     public enum BookingStatus
     {
-        Booked,
+        //Booked,
         Active,
+        CheckedIn,        // Customer has arrived or service has started
         Completed,
         Past,
         Cancelled
     }
+    /*public enum BookingStatus
+    {
+        Unknown = 0,
+
+        Pending = 1,          // Created, waiting for customer confirmation/payment
+        PendingPayment = 2,   // Awaiting payment
+        Confirmed = 3,        // Payment received / booking accepted
+        CheckedIn = 4,        // Customer has arrived or service has started
+        InProgress = 5,       // Booking/service is currently active
+        Completed = 6,        // Service finished successfully
+        NoShow = 7,           // Customer did not arrive
+        CancelledByCustomer = 8,
+        CancelledByProvider = 9,
+        Rejected = 10,        // Provider declined the booking request
+        Expired = 11,         // Request/payment window expired
+        Rescheduled = 12,     // Booking moved to another date/time
+        Refunded = 13,        // Optional: use only if refund is part of booking status
+        Failed = 14           // Payment failed, system error, etc.
+    }*/
 
 }
 

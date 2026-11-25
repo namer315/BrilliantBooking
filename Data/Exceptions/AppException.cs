@@ -63,6 +63,7 @@ public enum ErrorCode
     BookingNotFound,
     ObjectNotFound,
     AccessDenied,
+    BookingStatusChangeNotAllowed,
     /// <summary>
     /// Indicates that a required input field was left empty.
     /// The name of the missing field must be passed as the first argument

@@ -31,4 +31,8 @@ public class DashboardFDM
 
     public async Task<IList<FloorVO>> GetFloorListBy(RestaurantVO resturant)
         => await new FloorBE().GetFloorListBy(resturant);
+
+    public async Task ChangeBookingStatus(BookingVO booking , BookingVO.BookingStatus status)
+        => await new BookingBE().ChangeBookingStatus(booking , status);
+
 }

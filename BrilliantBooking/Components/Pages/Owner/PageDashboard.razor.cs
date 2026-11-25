@@ -1,3 +1,4 @@
+using BrilliantBooking.Extensions;
 using Data.Extensions;
 using Data.Search;
 using Data.VO.Booking;
@@ -46,7 +47,36 @@ public partial class PageDashboard : PageBase
 
     private async Task dgSearch()
     {
-        BookingList = await _fdm.GetBookingList(Search);
+        await Task.Run(async () =>
+        {
+            FloorList = await _fdm.GetFloorListBy(Search.Resturant);
+            BookingList = await _fdm.GetBookingList(Search);
+            ApplyActiveBookingReservations(DateTime.Now);
+
+        }).ShowProcessing(this);
+    }
+
+    private void ApplyActiveBookingReservations(DateTime now)
+    {
+        var today = DateOnly.FromDateTime(now);
+        var currentTime = now.TimeOfDay;
+        var activeTableIds = BookingList
+            .Where(booking =>
+                booking.Status == BookingVO.BookingStatus.Active &&
+                booking.Date == today &&
+                booking.FromTime <= currentTime &&
+                currentTime < booking.ToTime &&
+                booking.BookingTable is not null)
+            .Select(booking => booking.BookingTable.Id)
+            .ToHashSet();
+
+        foreach (var table in FloorList.SelectMany(floor => floor.TableList))
+        {
+            if (activeTableIds.Contains(table.Id))
+            {
+                table.Status = TableVO.TableStatus.Reserved;
+            }
+        }
     }
 
     private async Task beginEdit()
@@ -56,8 +86,6 @@ public partial class PageDashboard : PageBase
         ResturantList = await _fdm.GetResturantList();
         Search.Resturant = ResturantList.FirstOrDefault();
 
-        FloorList = await _fdm.GetFloorListBy(Search.Resturant);
-
         PopulateSampleArrivals();
     }
 
@@ -65,8 +93,7 @@ public partial class PageDashboard : PageBase
     {
         if (ResturantList is { Count: > 0 } && Guid.TryParse(args.Value?.ToString() , out Guid resturantId))
         {
-            Search.Resturant = ResturantList.FirstOrDefault(x => x.Id == resturantId);
-            FloorList = await _fdm.GetFloorListBy(Search.Resturant);
+            Search.Resturant = ResturantList.FirstOrDefault(x => x.Id == resturantId);            
             PopulateSampleArrivals();
             await dgSearch();
         }
@@ -76,19 +103,19 @@ public partial class PageDashboard : PageBase
     private async Task OnBookingTextChanged(ChangeEventArgs args)
     {
         Search.Text = args.Value?.ToString() ?? string.Empty;
-        await RefreshBookingListAsync();
+        await RefreshBooking();
     }
 
     private async Task OnFromDateChanged(ChangeEventArgs args)
     {
         Search.FromDate = args.Value.ParseDateOnlyOrNull();
-        await RefreshBookingListAsync();
+        await RefreshBooking();
     }
 
     private async Task OnToDateChanged(ChangeEventArgs args)
     {
         Search.ToDate = args.Value.ParseDateOnlyOrNull();
-        await RefreshBookingListAsync();
+        await RefreshBooking();
     }
 
     private async Task ResetBookingFiltersAsync()
@@ -96,20 +123,22 @@ public partial class PageDashboard : PageBase
         Search.Text = string.Empty;
         Search.FromDate = DateOnly.Date;
         Search.ToDate = null;
-        await RefreshBookingListAsync();
+        await RefreshBooking();
     }
 
     private async Task OnBookingStatusChanged(BookingVO booking, ChangeEventArgs args)
     {
         if (Enum.TryParse<BookingVO.BookingStatus>(args.Value?.ToString(), out var status))
         {
-            booking.Status = status;
-            BookingList = BookingList.ToList();
-            await InvokeAsync(StateHasChanged);
+            await _fdm.ChangeBookingStatus(booking , status);
+            await dgSearch();
+            //booking.Status = status;
+            //BookingList = BookingList.ToList();
+            //await InvokeAsync(StateHasChanged);
         }
     }
 
-    private async Task RefreshBookingListAsync()
+    private async Task RefreshBooking()
     {
         try
         {

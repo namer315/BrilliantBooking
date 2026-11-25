@@ -157,7 +157,7 @@
                     <label for="booking-to-date">To date</label>
                     <input id="booking-to-date" type="date" value="@(Search.ToDate?.ToString("yyyy-MM-dd"))" @onchange="OnToDateChanged" />
                 </div>
-                <button class="icon-button booking-refresh-button" type="button" title="Refresh bookings" aria-label="Refresh bookings" @onclick="RefreshBookingListAsync">
+                <button class="icon-button booking-refresh-button" type="button" title="Refresh bookings" aria-label="Refresh bookings" @onclick="RefreshBooking">
                     <i data-lucide="refresh-cw" class="icon" aria-hidden="true"></i>
                 </button>
                 <button class="secondary-button booking-reset-button" type="button" @onclick="ResetBookingFiltersAsync">Reset</button>

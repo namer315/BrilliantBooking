@@ -9,12 +9,77 @@ using Data.Search;
 using Data.VO.Booking;
 using Data.VO.Operations;
 using Data.VO.Restaurant;
+using static Data.VO.Booking.BookingVO;
 
 namespace Business;
 
 public class BookingBE
 {
     private BookingDAO _dao = new BookingDAO();
+
+    public async Task ChangeBookingStatus(BookingVO booking , BookingStatus status)
+    {
+        switch (booking.Status)
+        {
+            case BookingStatus.Active:
+            {
+                switch (status)
+                {
+                    case BookingStatus.CheckedIn:
+                        booking.Status = status;
+                        booking.BookingTable.Status = TableVO.TableStatus.Seated;
+                        await _dao.Update(booking , nameof(BookingVO.Status) , booking.Status);
+                        await _dao.Update(booking.BookingTable , nameof(TableVO.Status) , booking.BookingTable.Status);
+                        break;
+                    case BookingStatus.Cancelled:
+                        booking.Status = status;
+                        await _dao.Update(booking , nameof(BookingVO.Status) , booking.Status);
+                        break;
+                    default:
+                        throw new AppException(
+                            ErrorCode.BookingStatusChangeNotAllowed,
+                            booking.Status,
+                            status);
+                }
+            }
+            break;
+            case BookingStatus.CheckedIn:
+            {
+                switch (status)
+                {
+                    case BookingStatus.Completed:
+                    {
+                        booking.Status = status;
+                        booking.BookingTable.Status = TableVO.TableStatus.Seated;
+                        await _dao.Update(booking , nameof(BookingVO.Status) , booking.Status);
+                        await _dao.Update(booking.BookingTable , nameof(TableVO.Status) , booking.BookingTable.Status);
+                    }
+                        break;
+                    case BookingStatus.Cancelled:
+                        break;
+                    default:
+                        throw new AppException(
+                            ErrorCode.BookingStatusChangeNotAllowed,
+                            booking.Status,
+                            status);
+                }
+            }
+            break;
+            case BookingStatus.Completed:
+                break;
+            //case BookingStatus.Past:
+            //    break;
+            case BookingStatus.Cancelled:
+
+                break;
+            default:
+                throw new AppException(
+                    ErrorCode.BookingStatusChangeNotAllowed ,
+                    booking.Status ,
+                    status);
+                break;
+        }
+    }
 
     public async Task CheckAvilableTables(BookingVO booking , IList<FloorVO> floorList)
     {

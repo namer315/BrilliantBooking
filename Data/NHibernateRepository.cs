@@ -2,6 +2,7 @@ using Data.Search;
 using Data.VO;
 using NHibernate;
 using System.Collections;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Data;
@@ -206,6 +207,112 @@ public class NHibernateRepository
             throw;
         }
     }
+
+
+    /// <summary>
+    /// Updates a single field on an entity
+    /// </summary>
+    /// <returns>The number of entities updated or deleted.</returns>
+    public async Task<int> Update<T>(T entity , string fieldName , object newValue , CancellationToken cancellationToken = default) where T : EntityBase
+    {
+        if (entity == null)
+            return -1;
+
+        var msg = new StringBuilder();
+
+        using var session = GetSession();
+        using var transaction = session.BeginTransaction();
+
+        try
+        {
+            string entityName = CleanTypeName(entity);
+
+            var query = session.CreateQuery($"UPDATE {entityName} SET {fieldName}=:newValue WHERE Id=:id")
+                        .SetParameter("newValue" , newValue)
+                        .SetParameter("id" , entity.Id);
+
+            int x = await query.ExecuteUpdateAsync(cancellationToken).ConfigureAwait(false);
+            await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
+            return x;
+        }
+        catch
+        {
+            if (transaction.IsActive)
+            {
+                transaction.Rollback();
+            }
+
+            throw;
+        }
+
+        return -1;
+    }
+
+    /// <summary>
+    /// Updates entities matching a where clause
+    /// </summary>
+    //public async Task<string> UpdateWhereAsync(EntityBase entity , string fieldName , object newValue , string whereClause , CancellationToken cancellationToken = default)
+    //{
+    //    if (entity == null || string.IsNullOrEmpty(whereClause))
+    //        return "Entity or where clause cannot be null";
+
+    //    var msg = new StringBuilder();
+    //    var userTracker = NewTracker(ReminderVO.TriggerKinds.Edit);
+
+    //    try
+    //    {
+    //        int affectedRows = await ExecuteInTransactionAsync<int>(
+    //            async (session , ct) =>
+    //            {
+    //                var query = session.CreateQuery($"UPDATE {CleanTypeName(entity)} SET {fieldName}=:newValue WHERE {whereClause}")
+    //                    .SetParameter("newValue" , newValue);
+
+    //                return await query.ExecuteUpdateAsync(ct).ConfigureAwait(false);
+    //            } ,
+    //            cancellationToken ,
+    //            IsolationLevel.ReadCommitted).ConfigureAwait(false);
+
+    //        string entityName = CleanTypeName(entity);
+    //        userTracker.Comments = $"Bulk update of {affectedRows} {entityName} records where {whereClause}";
+
+    //        await afterSavingAsync(userTracker , entity).ConfigureAwait(false);
+
+    //        msg.Append(Localize(
+    //            () => $"{DisplayName(entity)}\n تم التحديث بنجاح" ,
+    //            () => $"{DisplayName(entity)} was updated successfully"));
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        if (ex.Message.Contains("syntax error"))
+    //        {
+    //            try
+    //            {
+    //                // Fall back to full entity merge if the update fails due to syntax error
+    //                return await MergeAsync(entity , cancellationToken).ConfigureAwait(false);
+    //            }
+    //            catch (Exception mergeEx)
+    //            {
+    //                msg.Clear();
+    //                msg.Append(Localize(
+    //                    () => $"فشلت عملية التحديث: {mergeEx.Message}" ,
+    //                    () => $"Update operation failed: {mergeEx.Message}"));
+
+    //                await loggErrorMessage(entity , msg.ToString() , mergeEx).ConfigureAwait(false);
+    //                throw new Exception(msg.ToString() , mergeEx);
+    //            }
+    //        }
+
+    //        msg.Append(Localize(
+    //            () => $"{DisplayName(entity)}\n فشلت عملية التحديث: {ex.Message}" ,
+    //            () => $"{DisplayName(entity)} update failed: {ex.Message}"));
+
+    //        await loggErrorMessage(entity , msg.ToString() , ex).ConfigureAwait(false);
+    //        throw new Exception(msg.ToString() , ex);
+    //    }
+
+    //    return msg.ToString();
+    //}
+    private static string CleanTypeName(EntityBase entity) => entity.GetType().Name.Replace("Proxy" , "");
 
     public IReadOnlyList<T> Query<T>(
         string hql,

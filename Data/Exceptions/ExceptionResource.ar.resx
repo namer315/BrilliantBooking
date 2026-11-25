@@ -132,4 +132,7 @@
   <data name="ObjectNotFound" xml:space="preserve">
     <value>لم يتم العثور على {0}.</value>
   </data>
+  <data name="BookingStatusChangeNotAllowed" xml:space="preserve">
+    <value>لا يمكن تغيير حالة الحجز من '{0}' إلى '{1}'.</value>
+  </data>
 </root>
