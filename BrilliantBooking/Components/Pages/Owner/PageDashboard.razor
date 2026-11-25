@@ -62,36 +62,46 @@
                     <span class="muted-copy">Select a table to change status</span>
                 </div>
 
+                @if (FloorList.Count > 0)
+                {
+                    <div class="floor-tabs" role="tablist" aria-label="Restaurant floors">
+                        @for (var index = 0; index < FloorList.Count; index++)
+                        {
+                            var floorIndex = index;
+                            <button class="floor-tab @(_selectedFloorIndex == floorIndex ? "active" : string.Empty)"
+                                    type="button"
+                                    role="tab"
+                                    aria-selected="@(_selectedFloorIndex == floorIndex)"
+                                    @onclick="() => SelectFloor(floorIndex)">
+                                @FloorList[floorIndex].Name
+                            </button>
+                        }
+                    </div>
+                }
+
                 <div class="floorplan-frame">
-                    <svg viewBox="0 0 800 450" class="floorplan" role="img" aria-label="Live floor management map">
-                        <rect x="20" y="20" width="760" height="410" rx="20" class="floor-boundary" />
+                    <svg viewBox="0 0 800 @GetFloorPlanHeight()" class="floorplan" role="img" aria-label="Live floor management map for @(SelectedFloor?.Name ?? "the selected floor")">
+                        <rect x="20" y="20" width="760" height="@GetFloorBoundaryHeight()" rx="20" class="floor-boundary" />
                         <text x="40" y="45" class="floor-caption">LIVE FLOOR MANAGEMENT MAP</text>
 
                         @if (TableList.Count > 0)
                         {
-                            <g class="table-node @(GetTableClass(TableList[0]))" tabindex="0" role="button" aria-label="@GetTableLabel(TableList[0])" @onclick="() => ToggleTableStatus(TableList[0])">
-                                <circle cx="120" cy="140" r="35" />
-                                <text x="120" y="144" class="table-name">@TableList[0].Name</text>
-                                <text x="120" y="190" class="table-status">@GetTableStatus(TableList[0])</text>
-                            </g>
-                        }
-                        @if (TableList.Count > 1)
-                        {
-                            <g class="table-node @(GetTableClass(TableList[1]))" tabindex="0" role="button" aria-label="@GetTableLabel(TableList[1])" @onclick="() => ToggleTableStatus(TableList[1])">
-                                <rect x="260" y="105" width="90" height="70" rx="12" />
-                                <text x="305" y="145" class="table-name">@TableList[1].Name</text>
-                                <text x="305" y="195" class="table-status">@GetTableStatus(TableList[1])</text>
-                            </g>
-                        }
-                        @if (TableList.Count > 2)
-                        {
-                            <g class="table-node @(GetTableClass(TableList[2]))" tabindex="0" role="button" aria-label="@GetTableLabel(TableList[2])" @onclick="() => ToggleTableStatus(TableList[2])">
-                                <circle cx="500" cy="140" r="35" />
-                                <text x="500" y="144" class="table-name">@TableList[2].Name</text>
-                                <text x="500" y="190" class="table-status">@GetTableStatus(TableList[2])</text>
-                            </g>
+                            @for (var index = 0; index < TableList.Count; index++)
+                            {
+                                var tableIndex = index;
+                                var table = TableList[tableIndex];
+                                <g class="table-node @(GetTableClass(table))" tabindex="0" role="button" aria-label="@GetTableLabel(table)" @onclick="() => ToggleTableStatus(table)">
+                                    <circle cx="@GetTableX(tableIndex)" cy="@GetTableY(tableIndex)" r="35" />
+                                    <text><tspan x="@GetTableX(tableIndex)" y="@(GetTableY(tableIndex) + 4)" class="table-name">@table.Name</tspan></text>
+                                    <text><tspan x="@GetTableX(tableIndex)" y="@(GetTableY(tableIndex) + 50)" class="table-status">@GetTableStatus(table)</tspan></text>
+                                </g>
+                            }
                         }
                     </svg>
+                    @if (TableList.Count == 0)
+                    {
+                        <div class="floor-empty-state">No tables on this floor</div>
+                    }
                 </div>
 
                 <div class="floor-footer">

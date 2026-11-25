@@ -17,12 +17,16 @@ public partial class PageDashboard : PageBase
     private IList<BookingVO> BookingList = new List<BookingVO>();
     private IList<RestaurantVO> ResturantList = new List<RestaurantVO>();
     private int _selectedVenueIndex;
+    private int _selectedFloorIndex;
 
     private static IReadOnlyList<BookingVO.BookingStatus> BookingStatuses { get; } =
         Enum.GetValues<BookingVO.BookingStatus>();
 
-    private IList<FloorVO> FloorList { get; set; }
-    private IList<TableVO> TableList => FloorList is { Count : > 0}? FloorList[0].TableList : new List<TableVO>();
+    private IList<FloorVO> FloorList { get; set; } = new List<FloorVO>();
+    private FloorVO? SelectedFloor => FloorList.Count > 0 && _selectedFloorIndex < FloorList.Count
+        ? FloorList[_selectedFloorIndex]
+        : null;
+    private IList<TableVO> TableList => SelectedFloor?.TableList ?? new List<TableVO>();
     private IList<ArrivalVO> Arrivals { get; } = new List<ArrivalVO>();
 
     private int TotalShiftCovers => 42;
@@ -50,6 +54,7 @@ public partial class PageDashboard : PageBase
         await Task.Run(async () =>
         {
             FloorList = await _fdm.GetFloorListBy(Search.Resturant);
+            _selectedFloorIndex = 0;
             BookingList = await _fdm.GetBookingList(Search);
             ApplyActiveBookingReservations(DateTime.Now);
 
@@ -98,6 +103,15 @@ public partial class PageDashboard : PageBase
             await dgSearch();
         }
     }
+
+    private void SelectFloor(int floorIndex)
+    {
+        if (floorIndex >= 0 && floorIndex < FloorList.Count)
+        {
+            _selectedFloorIndex = floorIndex;
+        }
+    }
+
     #region Booking Management
 
     private async Task OnBookingTextChanged(ChangeEventArgs args)
@@ -174,20 +188,29 @@ public partial class PageDashboard : PageBase
 
     private void ToggleTableStatus(TableVO table)
     {
-        table.Status = table.Status switch
-        {
-            TableVO.TableStatus.Available => TableVO.TableStatus.Selected,
-            TableVO.TableStatus.Selected => TableVO.TableStatus.Reserved,
-            TableVO.TableStatus.Reserved => TableVO.TableStatus.Seated,
-            TableVO.TableStatus.Seated => TableVO.TableStatus.Available,
-            _ => TableVO.TableStatus.Available
-        };
+        //table.Status = table.Status switch
+        //{
+        //    TableVO.TableStatus.Available => TableVO.TableStatus.Selected,
+        //    TableVO.TableStatus.Selected => TableVO.TableStatus.Reserved,
+        //    TableVO.TableStatus.Reserved => TableVO.TableStatus.Seated,
+        //    TableVO.TableStatus.Seated => TableVO.TableStatus.Available,
+        //    _ => TableVO.TableStatus.Available
+        //};
     }
 
     private void SeatGuest(ArrivalVO arrival)
     {
         arrival.Status = "Seated";
     }
+
+    private int GetTableX(int tableIndex) => 120 + tableIndex % 4 * 180;
+
+    private int GetTableY(int tableIndex) => 110 + tableIndex / 4 * 100;
+
+    private int GetFloorPlanHeight()
+        => Math.Max(450, (TableList.Count + 3) / 4 * 100 + 90);
+
+    private int GetFloorBoundaryHeight() => GetFloorPlanHeight() - 40;
 
     private static string GetTableClass(TableVO table)
         => table.Status switch
