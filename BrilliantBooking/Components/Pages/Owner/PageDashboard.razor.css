@@ -1,7 +1,8 @@
 .dashboard-shell {
     min-height: 100%;
-    padding: 1.5rem 1rem 3rem;
+    padding: clamp(1rem, 2.5vw, 1.5rem) clamp(0.75rem, 2.5vw, 1rem) 3rem;
     color: #1c1b1a;
+    overflow-x: hidden;
 }
 
 .operations-section {
@@ -172,6 +173,7 @@
     grid-template-columns: minmax(0, 2fr) minmax(18rem, 1fr);
     gap: 1.5rem;
     margin-top: 1.5rem;
+    min-width: 0;
 }
 
 .card-heading-row h2,
@@ -236,10 +238,14 @@
 }
 
 .floorplan-frame {
+    height: clamp(20rem, 55dvh, 36rem);
     min-height: 20rem;
     margin-top: 1rem;
     padding: 1rem;
-    overflow: auto;
+    overflow-x: auto;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
     border: 1px solid rgba(214, 211, 209, 0.75);
     border-radius: 1rem;
     background: #efece6;
@@ -248,8 +254,9 @@
 .floorplan {
     display: block;
     width: 100%;
-    min-width: 46rem;
+/*    min-width: 46rem;*/
     height: auto;
+    max-width: none;
 }
 
 .floor-boundary {
@@ -423,9 +430,19 @@
     justify-content: space-between;
     gap: 0.75rem;
     padding: 0.75rem;
+    min-width: 0;
     border-radius: 0.75rem;
     background: rgba(240, 238, 233, 0.78);
     border-left: 4px solid #d6d3d1;
+}
+
+.arrival-item > div {
+    min-width: 0;
+}
+
+.arrival-title-row,
+.arrival-detail {
+    overflow-wrap: anywhere;
 }
 
 .arrival-item.arrival-seated {
@@ -484,6 +501,12 @@
 
 .bookings-heading-row .muted-copy {
     max-width: 36rem;
+}
+
+.bookings-card,
+.booking-filters,
+.booking-table-wrapper {
+    min-width: 0;
 }
 
 .booking-count {
@@ -713,6 +736,14 @@
     .operations-content-grid {
         grid-template-columns: 1fr;
     }
+
+    .arrivals-list {
+        max-height: 18rem;
+    }
+
+    .floorplan-frame {
+        height: clamp(20rem, 60dvh, 34rem);
+    }
 }
 
 @media (max-width: 640px) {
@@ -733,9 +764,23 @@
         flex-direction: column;
     }
 
+    .operations-title-row h1 {
+        font-size: 1.125rem;
+    }
+
     .operations-actions,
     .venue-select {
         width: 100%;
+    }
+
+    .operations-actions {
+        align-items: stretch;
+    }
+
+    .operations-actions .icon-button {
+        flex: 0 0 2.75rem;
+        width: 2.75rem;
+        height: 2.75rem;
     }
 
     .venue-select {
@@ -749,6 +794,50 @@
     .card-heading-row {
         align-items: flex-start;
         flex-direction: column;
+    }
+
+    .card-heading-row h2,
+    .card-heading {
+        line-height: 1.35;
+    }
+
+    .floorplan-frame {
+        height: min(60dvh, 30rem);
+        min-height: 18rem;
+        margin-right: -0.25rem;
+        margin-left: -0.25rem;
+        padding: 0.75rem;
+    }
+
+    .floorplan {
+/*        min-width: 42rem;*/
+    }
+
+    .floor-footer {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .status-legend {
+        gap: 0.6rem;
+    }
+
+    .arrival-item {
+        align-items: flex-start;
+    }
+
+    .arrival-status,
+    .seat-button {
+        min-height: 2.25rem;
+        padding: 0.5rem 0.65rem;
+    }
+
+    .bookings-heading-row {
+        gap: 0.75rem;
+    }
+
+    .booking-count {
+        align-self: flex-start;
     }
 
     .booking-filters {
