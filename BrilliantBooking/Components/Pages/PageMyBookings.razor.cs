@@ -15,7 +15,7 @@ namespace BrilliantBooking.Components.Pages;
 public partial class PageMyBookings
 {
     private BookingFDM _fdm { get; set; } = new();
-    private BookingSH Search { get; set; } = new();
+    private readonly BookingSH Search = new() { Route = MenuVO.NavigationRoutes.Booking };
 
     public IList<BookingVO> BookingList { get; private set; } = new List<BookingVO>();
     public BookingVO.BookingStatus BookingsTab { get; private set; } = BookingVO.BookingStatus.Active;

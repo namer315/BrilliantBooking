@@ -1,6 +1,7 @@
 using BrilliantBooking.Extensions;
 using Data.Extensions;
 using Data.Search;
+using Data.VO;
 using Data.VO.Booking;
 using Data.VO.Operations;
 using Data.VO.Restaurant;
@@ -13,7 +14,7 @@ public partial class PageDashboard : PageBase
 {
     private readonly DashboardFDM _fdm = new();
     //private readonly DashboardSH Search = new();
-    private readonly BookingSH Search = new();
+    private readonly BookingSH Search = new() { Route = MenuVO.NavigationRoutes.Dashboard};
     private IList<BookingVO> BookingList = new List<BookingVO>();
     private IList<RestaurantVO> ResturantList = new List<RestaurantVO>();
     private int _selectedVenueIndex;

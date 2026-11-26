@@ -1,4 +1,5 @@
-﻿using Data.VO.Customer;
+﻿using Data.VO;
+using Data.VO.Customer;
 using Data.VO.Restaurant;
 using System;
 using System.Collections.Generic;
@@ -15,4 +16,6 @@ public class BookingSH : Pagination
     public DateOnly? ToDate { get; set; }
     public TimeSpan? FromTime { get; set; }
     public TimeSpan? ToTime { get; set; }
+
+    public MenuVO.NavigationRoutes? Route { get; set; }
 }
