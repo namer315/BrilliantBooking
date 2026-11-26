@@ -101,6 +101,12 @@ public class BookingDAO : NHibernateRepository
             parameters.Add(("restaurantId" , search.Resturant.Id));
         }
 
+        if (search.BookingStatusList is { Count: > 0 })
+        {
+            conditions.Add("booking.Status in (:bookingStatuses)");
+            parameters.Add(("bookingStatuses" , search.BookingStatusList));
+        }
+
         switch (search.Route)
         {
             case NavigationRoutes.Dashboard:

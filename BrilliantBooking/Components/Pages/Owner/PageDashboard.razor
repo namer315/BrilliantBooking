@@ -172,6 +172,21 @@
                     <i data-lucide="refresh-cw" class="icon" aria-hidden="true"></i>
                 </button>
                 <button class="secondary-button booking-reset-button" type="button" @onclick="ResetBookingFiltersAsync">Reset</button>
+                <div class="booking-filter booking-status-filter">
+                    <span class="booking-filter-label">Status</span>
+                    <div class="booking-status-toggle-list" role="group" aria-label="Filter bookings by status">
+                        @foreach (var status in BookingStatuses)
+                        {
+                            var isSelected = Search.BookingStatusList.Contains(status);
+                            <button type="button"
+                                    class="booking-status-toggle @(isSelected ? "active" : string.Empty)"
+                                    aria-pressed="@isSelected"
+                                    @onclick="() => ToggleBookingStatus(status)">
+                                @GetBookingStatusLabel(status)
+                            </button>
+                        }
+                    </div>
+                </div>
             </div>
 
             @if (BookingList.Count == 0)

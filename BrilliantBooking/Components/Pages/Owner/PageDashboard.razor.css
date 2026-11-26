@@ -536,12 +536,55 @@
     gap: 0.35rem;
 }
 
-.booking-filter label {
+.booking-filter label,
+.booking-filter-label {
     color: #78716c;
     font-size: 0.625rem;
     font-weight: 800;
     letter-spacing: 0.06em;
     text-transform: uppercase;
+}
+
+.booking-status-filter {
+    grid-column: 1 / -1;
+}
+
+.booking-status-toggle-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+}
+
+.booking-status-toggle {
+    min-height: 2.15rem;
+    padding: 0.4rem 0.8rem;
+    border: 1px solid rgba(214, 211, 209, 0.9);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.7);
+    color: #78716c;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.6875rem;
+    font-weight: 750;
+    transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.booking-status-toggle:hover {
+    border-color: rgba(0, 113, 227, 0.45);
+    color: #0071e3;
+    transform: translateY(-1px);
+}
+
+.booking-status-toggle.active {
+    border-color: #0071e3;
+    background: #0071e3;
+    color: #ffffff;
+    box-shadow: 0 3px 8px rgba(0, 113, 227, 0.2);
+}
+
+.booking-status-toggle:focus-visible {
+    outline: 3px solid rgba(0, 113, 227, 0.25);
+    outline-offset: 2px;
 }
 
 .booking-filter input,

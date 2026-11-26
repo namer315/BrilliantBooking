@@ -14,7 +14,7 @@ public partial class PageDashboard : PageBase
 {
     private readonly DashboardFDM _fdm = new();
     //private readonly DashboardSH Search = new();
-    private readonly BookingSH Search = new() { Route = MenuVO.NavigationRoutes.Dashboard};
+    private readonly BookingSH Search = new() { Route = MenuVO.NavigationRoutes.Dashboard, BookingStatusList = DefaultStatus};
     private IList<BookingVO> BookingList = new List<BookingVO>();
     private IList<RestaurantVO> ResturantList = new List<RestaurantVO>();
     private int _selectedVenueIndex;
@@ -22,6 +22,11 @@ public partial class PageDashboard : PageBase
 
     private static IReadOnlyList<BookingVO.BookingStatus> BookingStatuses { get; } =
         Enum.GetValues<BookingVO.BookingStatus>();
+    private static IList<BookingVO.BookingStatus> DefaultStatus = new List<BookingVO.BookingStatus>()
+    {
+            BookingVO.BookingStatus.Active,
+            BookingVO.BookingStatus.Cancelled,
+    };
 
     private IList<FloorVO> FloorList { get; set; } = new List<FloorVO>();
     private FloorVO? SelectedFloor => FloorList.Count > 0 && _selectedFloorIndex < FloorList.Count
@@ -138,8 +143,24 @@ public partial class PageDashboard : PageBase
         Search.Text = string.Empty;
         Search.FromDate = DateOnly.Date;
         Search.ToDate = null;
+        Search.BookingStatusList = DefaultStatus;
         await RefreshBooking();
     }
+
+    private async Task ToggleBookingStatus(BookingVO.BookingStatus status)
+    {
+        if (!Search.BookingStatusList.Remove(status))
+        {
+            Search.BookingStatusList.Add(status);
+        }
+        await RefreshBooking();
+    }
+
+    private static string GetBookingStatusLabel(BookingVO.BookingStatus status) => status switch
+    {
+        BookingVO.BookingStatus.CheckedIn => "Checked in",
+        _ => status.ToString()
+    };
 
     private async Task OnBookingStatusChanged(BookingVO booking, ChangeEventArgs args)
     {

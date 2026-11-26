@@ -1,4 +1,5 @@
 ﻿using Data.VO;
+using Data.VO.Booking;
 using Data.VO.Customer;
 using Data.VO.Restaurant;
 using System;
@@ -18,4 +19,6 @@ public class BookingSH : Pagination
     public TimeSpan? ToTime { get; set; }
 
     public MenuVO.NavigationRoutes? Route { get; set; }
+
+    public IList<BookingVO.BookingStatus> BookingStatusList { get; set; } = new List<BookingVO.BookingStatus>();
 }
