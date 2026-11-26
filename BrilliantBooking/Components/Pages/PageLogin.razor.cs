@@ -24,6 +24,7 @@ public partial class PageLogin
     private UserFDM _fdm = new UserFDM();
     private SignInDTO _signIn = new();
     private SignUpDTO _signUp = new();
+    public UserVO.UserType UserType { get; set; } = UserVO.UserType.Client;
     private bool _isSignIn = true;
     private bool _isBusy;
     private string? _errorMessage;
@@ -88,11 +89,22 @@ public partial class PageLogin
         _errorMessage = null;
     }
 
+    private void SelectClient()
+    {
+        UserType = UserVO.UserType.Client;
+    }
+
+    private void SelectOwner()
+    {
+        UserType = UserVO.UserType.Owner;
+    }
+
     private async Task HandleSignInAsync()
     {
         _errorMessage = null;
         await RunAsync(async () =>
         {
+            _signUp.Type = UserType;
             if (await _fdm.SignInAsync(_signIn) is UserVO user)
             {
                 await SessionService.SetOnlineUserSessionAsync(user);
@@ -129,6 +141,7 @@ public partial class PageLogin
 
         await RunAsync(async () =>
         {
+            _signUp.Type = UserType;
             if (await _fdm.SignUpAsync(_signUp) is UserVO user)
             {
 

@@ -282,30 +282,6 @@
                             }
                         </label>
 
-                        <fieldset class="field">
-                            <legend class="field-label">I am joining as</legend>
-
-                            <div class="field-grid account-type-grid">
-                                <label class="remember">
-                                    <input type="radio"
-                                           name="account-type"
-                                           value="Client"
-                                           checked="@(_signUp.Type == UserVO.UserType.Client)"
-                                           @onchange='() => _signUp.Type = UserVO.UserType.Client' />
-                                    <span>Guest</span>
-                                </label>
-
-                                <label class="remember">
-                                    <input type="radio"
-                                           name="account-type"
-                                           value="Owner"
-                                           checked="@(_signUp.Type == UserVO.UserType.Owner)"
-                                           @onchange='() => _signUp.Type = UserVO.UserType.Owner' />
-                                    <span>Restaurant owner</span>
-                                </label>
-                            </div>
-                        </fieldset>
-
                         <button type="submit"
                                 class="btn-primary"
                                 disabled="@_isBusy">
@@ -340,6 +316,30 @@
                     </button>
                 </p>
             }
+
+            <div class="account-type-selector"
+                 role="group"
+                 aria-labelledby="account-type-label">
+                <span id="account-type-label" class="account-type-label">
+                    Continue as
+                </span>
+
+                <div class="account-type-segmented">
+                    <button type="button"
+                            class="account-type-option @(UserType == UserVO.UserType.Client ? "active" : "")"
+                            aria-pressed="@(UserType == UserVO.UserType.Client)"
+                            @onclick="SelectClient">
+                        Guest
+                    </button>
+
+                    <button type="button"
+                            class="account-type-option @(UserType == UserVO.UserType.Owner ? "active" : "")"
+                            aria-pressed="@(UserType == UserVO.UserType.Owner)"
+                            @onclick="SelectOwner">
+                        Restaurant owner
+                    </button>
+                </div>
+            </div>
         </section>
     </div>
 </main>
