@@ -155,7 +155,7 @@ public partial class PageRestaurant
 
     protected async Task HandleFormSubmit()
     {
-        if (CurrentStep == StepTitles.Length - 1)
+        if (CurrentStep == StepTitles.Length - 1 || Restaurant.Id != Guid.Empty)
         {
             await endEdit();
         }
@@ -432,7 +432,8 @@ public partial class PageRestaurant
             SubmitErrors.Clear();
             Restaurant = await _fdm.Persist(Restaurant).ShowProcessing(this);
             SubmittedName = Restaurant.Name;
-            Submitted = true;
+            if(IsNew)
+                Submitted = true;
         }
         catch (Exception ex)
         {

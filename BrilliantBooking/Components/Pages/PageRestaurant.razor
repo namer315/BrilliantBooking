@@ -433,7 +433,7 @@
                     Back
                 </button>
 
-                @if (CurrentStep < StepTitles.Length - 1)
+                @if (CurrentStep < StepTitles.Length - 1 && Restaurant.Id == Guid.Empty)
                 {
                     <button type="submit" class="px-6 py-2.5 rounded-full bg-apple-blue text-white text-sm font-semibold shadow-md shadow-apple-blue/30 hover:opacity-90 transition motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-apple-blue">
                         Continue

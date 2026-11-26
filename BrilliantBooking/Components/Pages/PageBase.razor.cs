@@ -42,7 +42,7 @@ public partial class PageBase : IDisposable
     public string PageMode { get; set; } = null;
     // The raw string from the URL route (e.g., "New", "new", "d3b07384-...")
     [Parameter] public string? Id { get; set; }
-    //public bool IsNew => Id is not null && string.Equals(Id , RouteManager.New , StringComparison.OrdinalIgnoreCase);
+    public bool IsNew => Id is not null && string.Equals(Id , RouteUrlService.New , StringComparison.OrdinalIgnoreCase);
 
     #endregion
 
