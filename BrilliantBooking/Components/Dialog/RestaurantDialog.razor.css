@@ -30,6 +30,11 @@
     transition: background-color 160ms ease, transform 160ms ease;
 }
 
+.restaurant-carousel-control i {
+    font-size: 0.9rem;
+    line-height: 1;
+}
+
 .restaurant-carousel-control:hover {
     background: rgb(0 0 0 / 0.68);
     transform: translateY(-50%) scale(1.05);

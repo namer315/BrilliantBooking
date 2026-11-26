@@ -18,10 +18,10 @@
             @if (_imageSources.Count > 1)
             {
                 <button type="button" class="restaurant-carousel-control restaurant-carousel-previous" @onclick="ShowPreviousImage" aria-label="Show previous image">
-                    <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                    <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
                 </button>
                 <button type="button" class="restaurant-carousel-control restaurant-carousel-next" @onclick="ShowNextImage" aria-label="Show next image">
-                    <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                    <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
                 </button>
 
                 <div class="restaurant-carousel-indicators" role="tablist" aria-label="Restaurant images">
@@ -39,7 +39,7 @@
             }
 
             <button @onclick="OnClose" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-black/50 text-white backdrop-blur-md flex items-center justify-center hover:bg-black/70 transition">
-                <i data-lucide="x" class="w-5 h-5"></i>
+                <i class="fa-solid fa-xmark" aria-hidden="true"></i>
             </button>
 
             @if (!string.IsNullOrWhiteSpace(Restaurant.Badge))
@@ -55,14 +55,14 @@
                     <span class="text-stone-300">@PriceText</span>
                     <span>•</span>
                     <div class="flex items-center space-x-1 text-amber-400 font-bold">
-                        <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+                        <i class="fa-solid fa-star text-amber-400" aria-hidden="true"></i>
                         <span>@Restaurant.Rating.ToString("0.0")</span>
                         <span class="text-stone-300 font-normal text-xs">(@Restaurant.ReviewsCount reviews)</span>
                     </div>
                 </div>
                 <h2 class="text-2xl sm:text-3xl font-black tracking-tight">@Restaurant.Name</h2>
                 <p class="text-xs sm:text-sm text-stone-300 flex items-center space-x-1">
-                    <i data-lucide="map-pin" class="w-3.5 h-3.5 text-apple-blue"></i>
+                    <i class="fa-solid fa-location-dot text-apple-blue" aria-hidden="true"></i>
                     <span>@Restaurant.Location</span>
                 </p>
             </div>
@@ -106,14 +106,14 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div class="p-4 bg-[#F0EEE9] dark:bg-stone-800/60 rounded-2xl border border-stone-200 dark:border-stone-800 flex items-center space-x-3">
-                            <i data-lucide="users" class="w-5 h-5 text-apple-blue"></i>
+                            <i class="fa-solid fa-users text-apple-blue" aria-hidden="true"></i>
                             <div>
                                 <span class="block text-[10px] font-bold text-stone-400 uppercase">Table Capacity</span>
                                 <p class="text-xs font-bold">@Restaurant.TableCapacity guests per table</p>
                             </div>
                         </div>
                         <div class="p-4 bg-[#F0EEE9] dark:bg-stone-800/60 rounded-2xl border border-stone-200 dark:border-stone-800 flex items-center space-x-3">
-                            <i data-lucide="phone" class="w-5 h-5 text-apple-blue"></i>
+                            <i class="fa-solid fa-phone text-apple-blue" aria-hidden="true"></i>
                             <div>
                                 <span class="block text-[10px] font-bold text-stone-400 uppercase">Contact</span>
                                 <p class="text-xs font-bold">@Restaurant.Phone</p>
@@ -133,7 +133,7 @@
                             <p class="text-xs text-stone-500">Cross streets: @Restaurant.CrossStreet</p>
                         </div>
                         <a href="@MapsUrl" target="_blank" rel="noopener" class="px-5 py-3 bg-apple-blue hover:bg-apple-blue-hover text-white text-xs font-bold rounded-xl shadow-lg shadow-apple-blue/20 flex items-center justify-center space-x-2 transition whitespace-nowrap">
-                            <i data-lucide="navigation" class="w-4 h-4"></i>
+                            <i class="fa-solid fa-location-arrow" aria-hidden="true"></i>
                             <span>Get Directions in Google Maps</span>
                         </a>
                     </div>
@@ -146,7 +146,7 @@
                         </svg>
                         <div class="relative z-10 text-center space-y-1 animate-bounce">
                             <div class="w-12 h-12 bg-apple-blue text-white rounded-full flex items-center justify-center mx-auto shadow-2xl ring-4 ring-white dark:ring-stone-900">
-                                <i data-lucide="utensils" class="w-6 h-6"></i>
+                                <i class="fa-solid fa-utensils" aria-hidden="true"></i>
                             </div>
                             <span class="inline-block bg-black/80 text-white font-bold text-xs px-3 py-1 rounded-full shadow-lg backdrop-blur-md">@Restaurant.Name</span>
                         </div>
@@ -162,7 +162,7 @@
                             <div class="flex items-center justify-center text-amber-400 my-1">
                                 @for (var s = 0; s < 5; s++)
                                 {
-                                    <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+                                    <i class="fa-solid fa-star text-amber-400" aria-hidden="true"></i>
                                 }
                             </div>
                             <span class="text-xs text-stone-500 font-medium">Based on @Restaurant.ReviewsCount verified diner reviews</span>
@@ -186,7 +186,7 @@
                     @* <div class="p-4 bg-[#F0EEE9] dark:bg-stone-800/60 rounded-2xl border border-stone-200 dark:border-stone-800 flex items-center justify-between gap-3"> *@
                         <div class="flex items-center justify-between">
                             <h4 class="text-xs font-bold uppercase tracking-wider text-apple-blue flex items-center space-x-1">
-                                @* <i data-lucide="pen-tool" class="w-3.5 h-3.5"></i> *@
+                                @* <i class="fa-solid fa-pen-to-square" aria-hidden="true"></i> *@
                                 <i class="fa-solid fa-pen-nib"></i>
                                 <span>Leave a Verified Guest Review</span>
                             </h4>
@@ -198,7 +198,7 @@
                             <h4 class="text-sm font-bold">Leave a Verified Guest Review</h4>
                             <button @onclick="ToggleReviewForm" class="text-xs text-stone-500 hover:text-black dark:hover:text-white font-semibold underline">Write Review</button>
                             <button @onclick="ToggleReviewForm" class="px-4 py-2 bg-apple-blue hover:bg-apple-blue-hover text-white text-xs font-bold rounded-xl shadow-lg shadow-apple-blue/20 transition flex items-center space-x-1.5 whitespace-nowrap">
-                                <i data-lucide="pen-tool" class="w-3.5 h-3.5"></i>
+                                <i class="fa-solid fa-pen-to-square" aria-hidden="true"></i>
                                 <span>Write Review</span>
                             </button>
                         </div> *@
@@ -258,7 +258,7 @@
                                 <div class="flex text-amber-400">
                                     @for (var s = 0; s < review.Rating; s++)
                                     {
-                                        <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400"></i>
+                                        <i class="fa-solid fa-star text-amber-400" aria-hidden="true"></i>
                                     }
                                 </div>
                                 <p class="text-xs text-stone-600 dark:text-stone-300 leading-relaxed">@review.Comment</p>
@@ -276,7 +276,7 @@
             </div>
             <button @onclick="() => OnReserve.InvokeAsync(Restaurant)" class="px-6 py-3 bg-apple-blue hover:bg-apple-blue-hover text-white text-xs font-bold rounded-2xl shadow-lg shadow-apple-blue/20 transition flex items-center space-x-1.5">
                 <span>Reserve a Table Now</span>
-                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
             </button>
         </div>
     </div>
