@@ -1,0 +1,95 @@
+.restaurant-dialog-image {
+    animation: restaurant-dialog-image-fade 320ms ease-out;
+}
+
+.restaurant-dialog-image-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #d6d3d1, #a8a29e);
+    color: rgb(255 255 255 / 0.8);
+    font-size: 4rem;
+    font-weight: 800;
+}
+
+.restaurant-carousel-control {
+    position: absolute;
+    top: 50%;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 1px solid rgb(255 255 255 / 0.25);
+    border-radius: 9999px;
+    background: rgb(0 0 0 / 0.42);
+    color: white;
+    backdrop-filter: blur(12px);
+    transform: translateY(-50%);
+    transition: background-color 160ms ease, transform 160ms ease;
+}
+
+.restaurant-carousel-control:hover {
+    background: rgb(0 0 0 / 0.68);
+    transform: translateY(-50%) scale(1.05);
+}
+
+.restaurant-carousel-control:focus-visible,
+.restaurant-carousel-indicator:focus-visible {
+    outline: 2px solid white;
+    outline-offset: 3px;
+}
+
+.restaurant-carousel-previous {
+    left: 1rem;
+}
+
+.restaurant-carousel-next {
+    right: 1rem;
+}
+
+.restaurant-carousel-indicators {
+    position: absolute;
+    right: 0;
+    bottom: 1rem;
+    left: 0;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    gap: 0.4rem;
+}
+
+.restaurant-carousel-indicator {
+    width: 0.5rem;
+    height: 0.5rem;
+    padding: 0;
+    border: 1px solid rgb(255 255 255 / 0.7);
+    border-radius: 9999px;
+    background: rgb(255 255 255 / 0.35);
+    transition: width 160ms ease, background-color 160ms ease;
+}
+
+.restaurant-carousel-indicator.active {
+    width: 1.25rem;
+    background: white;
+}
+
+@keyframes restaurant-dialog-image-fade {
+    from {
+        opacity: 0.72;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .restaurant-dialog-image,
+    .restaurant-carousel-control,
+    .restaurant-carousel-indicator {
+        animation: none;
+        transition: none;
+    }
+}

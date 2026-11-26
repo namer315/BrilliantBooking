@@ -1,12 +1,42 @@
-@using BrilliantBooking.Extensions
 @using Data.VO.Restaurant
-@inject IJSRuntime JS
 
 <div class="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto" @onclick="OnClose">
     <div class="bg-[#F8F7F4] dark:bg-stone-900 w-full max-w-4xl rounded-3xl shadow-2xl border border-stone-200 dark:border-stone-800 overflow-hidden my-auto max-h-[92vh] flex flex-col" @onclick:stopPropagation>
         <div class="relative h-64 sm:h-72 w-full flex-shrink-0">
-            <img src="@ImageSrc" alt="@Restaurant.Name" class="w-full h-full object-cover">
+            @if (_imageSources.Count > 0)
+            {
+                <img src="@CurrentImageSrc" alt="@($"{Restaurant.Name} image {_activeImageIndex + 1} of {_imageSources.Count}")" class="restaurant-dialog-image w-full h-full object-cover" />
+            }
+            else
+            {
+                <div class="restaurant-dialog-image-placeholder w-full h-full" role="img" aria-label="No images available for @Restaurant.Name">
+                    <span>@(string.IsNullOrWhiteSpace(Restaurant.Name) ? "?" : Restaurant.Name[..1].ToUpperInvariant())</span>
+                </div>
+            }
             <div class="absolute inset-0 bg-gradient-to-t from-stone-950/90 via-black/30 to-black/20"></div>
+
+            @if (_imageSources.Count > 1)
+            {
+                <button type="button" class="restaurant-carousel-control restaurant-carousel-previous" @onclick="ShowPreviousImage" aria-label="Show previous image">
+                    <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                </button>
+                <button type="button" class="restaurant-carousel-control restaurant-carousel-next" @onclick="ShowNextImage" aria-label="Show next image">
+                    <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                </button>
+
+                <div class="restaurant-carousel-indicators" role="tablist" aria-label="Restaurant images">
+                    @for (var imageIndex = 0; imageIndex < _imageSources.Count; imageIndex++)
+                    {
+                        var selectedImageIndex = imageIndex;
+                        <button type="button"
+                                class="restaurant-carousel-indicator @(selectedImageIndex == _activeImageIndex ? "active" : string.Empty)"
+                                @onclick="() => SelectImage(selectedImageIndex)"
+                                role="tab"
+                                aria-label="Show image @(selectedImageIndex + 1)"
+                                aria-selected="@(selectedImageIndex == _activeImageIndex)"></button>
+                    }
+                </div>
+            }
 
             <button @onclick="OnClose" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-black/50 text-white backdrop-blur-md flex items-center justify-center hover:bg-black/70 transition">
                 <i data-lucide="x" class="w-5 h-5"></i>
@@ -252,64 +282,3 @@
     </div>
 </div>
 
-@code {
-    [Parameter, EditorRequired] public RestaurantVO Restaurant { get; set; } = null!;
-
-    private string ImageSrc => Restaurant.PhotoList.FirstOrDefault()?.Photo is { Length: > 0 } bytes
-        ? bytes.ToImage()
-        : Restaurant.ImageUrl;
-
-    [Parameter] public EventCallback OnClose { get; set; }
-
-    [Parameter] public EventCallback<RestaurantVO> OnReserve { get; set; }
-
-    private sealed record StaticReview(string Name, string Date, int Rating, string Comment);
-
-    private sealed record RatingMetric(string Label, string BarClass, int Percent, decimal Score);
-
-    private static readonly StaticReview[] _reviews =
-    [
-        new("Sarah M.", "2 days ago", 5, "Outstanding service and the signature dishes were beautifully presented. The window table is worth requesting."),
-        new("James L.", "1 week ago", 4, "Excellent wine pairing and a relaxed atmosphere. Parking was easy with valet."),
-        new("Amélie D.", "2 weeks ago", 5, "A memorable evening for our anniversary. The chef's counter experience is a must.")
-    ];
-
-    private static readonly RatingMetric[] _ratingMetrics =
-    [
-        new("Food Quality", "bg-apple-green", 96, 4.9m),
-        new("Service", "bg-apple-blue", 94, 4.8m),
-        new("Ambience", "bg-apple-purple", 98, 5.0m)
-    ];
-
-    private readonly List<StaticReview> _userReviews = [];
-
-    private bool _showReviewForm;
-    private string _newReviewName = "";
-    private string _newReviewComment = "";
-    private int _newReviewRating = 5;
-
-    private string _tab = "overview";
-
-    private string PriceText => new('$', Math.Clamp(Restaurant.PriceLevel, 1, 4));
-
-    private string MapsUrl => $"https://www.google.com/maps/search/?api=1&query={Uri.EscapeDataString(Restaurant.Address)}";
-
-    private void SwitchTab(string tab) => _tab = tab;
-
-    private void ToggleReviewForm() => _showReviewForm = !_showReviewForm;
-
-    private void SubmitReview()
-    {
-        if (string.IsNullOrWhiteSpace(_newReviewName) || string.IsNullOrWhiteSpace(_newReviewComment))
-        {
-            return;
-        }
-
-        _userReviews.Insert(0, new StaticReview(_newReviewName.Trim(), "Just now", _newReviewRating, _newReviewComment.Trim()));
-        _newReviewName = "";
-        _newReviewComment = "";
-        _newReviewRating = 5;
-        _showReviewForm = false;
-    }
-
-}
