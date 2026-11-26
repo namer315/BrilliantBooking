@@ -60,6 +60,7 @@ public partial class PageDashboard : PageBase
         await Task.Run(async () =>
         {
             FloorList = await _fdm.GetFloorListBy(Search.Resturant);
+            FloorList = FloorList.Where(x => x.TableList is { Count: > 0 }).ToList();
             _selectedFloorIndex = 0;
             BookingList = await _fdm.GetBookingList(Search);
             ApplyActiveBookingReservations(DateTime.Now);
