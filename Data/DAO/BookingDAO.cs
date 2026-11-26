@@ -110,7 +110,7 @@ public class BookingDAO : NHibernateRepository
                 LEFT JOIN booking.BookingTable bookingTable
                 LEFT JOIN booking.Customer customer
             {where}
-            ORDER BY restaurant.Name
+            ORDER BY booking.Date DESC , booking.FromTime
         ";
 
         return await RunHQLAsync<BookingVO>(query , parameters , search);
