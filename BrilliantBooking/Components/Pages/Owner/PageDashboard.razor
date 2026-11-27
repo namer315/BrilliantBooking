@@ -4,6 +4,7 @@
 @inherits PageBase
 
 @using Data.VO.Booking;
+@using Data.VO.Operations
 
 
 <main class="dashboard-shell">
@@ -121,7 +122,7 @@
             <section class="arrivals-card apple-card" aria-labelledby="arrivals-heading">
                 <h2 id="arrivals-heading" class="card-heading"><i data-lucide="clock" class="heading-icon"></i>Shift Arrivals Stream</h2>
                 <div class="arrivals-list">
-                    @foreach (var arrival in Arrivals)
+                    @foreach (var arrival in ArrivalList)
                     {
                         <article class="arrival-item @GetArrivalClass(arrival)">
                             <div>
@@ -131,7 +132,7 @@
                                 </div>
                                 <span class="arrival-detail">@arrival.TableName • @arrival.Tags</span>
                             </div>
-                            @if (string.Equals(arrival.Status, "Seated", StringComparison.OrdinalIgnoreCase))
+                            @if (arrival.Status == ArrivalVO.ArrivalStatus.Seated)
                             {
                                 <span class="arrival-status seated">@arrival.Status</span>
                             }
@@ -241,7 +242,11 @@
                                                 {
                                                     <option value="@status">@status</option>
                                                 } *@
-                                                <option value="@BookingVO.BookingStatus.Active">@BookingVO.BookingStatus.CheckedIn</option>
+                                                @if(booking.Status == BookingVO.BookingStatus.Active)
+                                                {
+                                                    <option value="@BookingVO.BookingStatus.Active">@BookingVO.BookingStatus.Active</option>
+                                                }
+                                                <option value="@BookingVO.BookingStatus.CheckedIn">@BookingVO.BookingStatus.CheckedIn</option>
                                                 <option value="@BookingVO.BookingStatus.Cancelled">@BookingVO.BookingStatus.Cancelled</option>
                                             </select>
                                         }

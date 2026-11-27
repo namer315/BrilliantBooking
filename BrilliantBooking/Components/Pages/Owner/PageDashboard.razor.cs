@@ -7,6 +7,7 @@ using Data.VO.Operations;
 using Data.VO.Restaurant;
 using FDM;
 using Microsoft.AspNetCore.Components;
+using static Data.VO.Operations.ArrivalVO;
 
 namespace BrilliantBooking.Components.Pages.Owner;
 
@@ -15,8 +16,11 @@ public partial class PageDashboard : PageBase
     private readonly DashboardFDM _fdm = new();
     //private readonly DashboardSH Search = new();
     private readonly BookingSH Search = new() { Route = MenuVO.NavigationRoutes.Dashboard, BookingStatusList = DefaultStatus};
-    private IList<BookingVO> BookingList = new List<BookingVO>();
+
     private IList<RestaurantVO> ResturantList = new List<RestaurantVO>();
+    private IList<BookingVO> BookingList = new List<BookingVO>();
+    private IList<ArrivalVO> ArrivalList = new List<ArrivalVO>();
+
     private int _selectedVenueIndex;
     private int _selectedFloorIndex;
 
@@ -63,6 +67,7 @@ public partial class PageDashboard : PageBase
             FloorList = FloorList.Where(x => x.TableList is { Count: > 0 }).ToList();
             _selectedFloorIndex = 0;
             BookingList = await _fdm.GetBookingList(Search);
+            ArrivalList = await _fdm.GetArrivalList();
             ApplyActiveBookingReservations(DateTime.Now);
 
         }).ShowProcessing(this);
@@ -223,7 +228,7 @@ public partial class PageDashboard : PageBase
 
     private void SeatGuest(ArrivalVO arrival)
     {
-        arrival.Status = "Seated";
+        arrival.Status = ArrivalStatus.Seated;
     }
 
     private int GetTableX(int tableIndex) => 120 + tableIndex % 4 * 180;
@@ -259,7 +264,7 @@ public partial class PageDashboard : PageBase
         => $"{table.Name}, {GetTableStatus(table)}, capacity {table.Capacity}";
 
     private static string GetArrivalClass(ArrivalVO arrival)
-        => string.Equals(arrival.Status, "Seated", StringComparison.OrdinalIgnoreCase) ? "arrival-seated" : "arrival-upcoming";
+        => arrival.Status == ArrivalStatus.Seated ? "arrival-seated" : "arrival-upcoming";
 
     private void PopulateSampleArrivals()
     {
@@ -269,17 +274,17 @@ public partial class PageDashboard : PageBase
             new ArrivalVO
             {
                 Time = new TimeSpan(19, 30, 0), GuestName = "Vance Party", PartySize = 4,
-                TableName = "Table 04", Tags = "Gluten-Free", Status = "Seated", Restaurant = Search.Resturant
+                TableName = "Table 04", Tags = "Gluten-Free", Status = ArrivalStatus.Seated, Restaurant = Search.Resturant
             },
             new ArrivalVO
             {
                 Time = new TimeSpan(19, 45, 0), GuestName = "Dr. A. Smith", PartySize = 2,
-                TableName = "Table 12", Tags = "VIP", Status = "Expected", Restaurant = Search.Resturant
+                TableName = "Table 12", Tags = "VIP", Status = ArrivalStatus.Expected, Restaurant = Search.Resturant
             },
             new ArrivalVO
             {
                 Time = new TimeSpan(20, 15, 0), GuestName = "Claire Dupont", PartySize = 6,
-                TableName = "Patio Booth P1", Tags = "Birthday", Status = "Expected", Restaurant = Search.Resturant
+                TableName = "Patio Booth P1", Tags = "Birthday", Status = ArrivalStatus.Expected, Restaurant = Search.Resturant
             }
         })
         {

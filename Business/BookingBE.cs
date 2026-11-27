@@ -26,10 +26,16 @@ public class BookingBE
                 switch (status)
                 {
                     case BookingStatus.CheckedIn:
+                        booking = await _dao.GetBookingBy(booking.Id);
                         booking.Status = status;
                         booking.BookingTable.Status = TableVO.TableStatus.Seated;
-                        await _dao.Update(booking , nameof(BookingVO.Status) , booking.Status);
-                        await _dao.Update(booking.BookingTable , nameof(TableVO.Status) , booking.BookingTable.Status);
+
+                        booking.Arrival = new ArrivalVO();
+                        booking.Arrival.Booking = booking;
+                        booking.Arrival.Table = booking.BookingTable;
+
+                        await Persist(booking);
+                        //await _dao.Update(booking.BookingTable , nameof(TableVO.Status) , booking.BookingTable.Status);
                         break;
                     case BookingStatus.Cancelled:
                         booking.Status = status;
@@ -152,10 +158,14 @@ public class BookingBE
     public async Task<BookingVO> Persist(BookingVO booking)
     {
         await Validation(booking);
+        bool isNew = booking.Id == Guid.Empty;
         booking = await _dao.Merge(booking);
 
-        EmailDTO email = EmailBuilderBE.CreateBookingEmail(booking);
-        //await EmailBE.SendAsync(email);
+        if(isNew)
+        {
+            EmailDTO email = EmailBuilderBE.CreateBookingEmail(booking);
+            //await EmailBE.SendAsync(email);
+        }
 
         return booking;
     }

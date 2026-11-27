@@ -36,6 +36,7 @@ public class BookingVO : EntityBaseWithCode
     public virtual RestaurantVO Restaurant { get; set; } = null!;
     public virtual CustomerVO Customer { get; set; } = null!;
     public virtual TableVO BookingTable { get; set; }
+    public virtual ArrivalVO Arrival { get; set; }
 
     public enum BookingStatus
     {
@@ -88,5 +89,6 @@ public class BookingMap : EntityBaseWithIdCodeMapping<BookingVO>
         References(x => x.Restaurant, "Restaurant").Not.Nullable().Not.LazyLoad().Index("IX_Bookings_RestaurantId");
         References(x => x.Customer , "Customer").Not.Nullable().Not.LazyLoad().Index("IX_Bookings_CustomerId");
         References(x => x.BookingTable , "BookingTable").Not.LazyLoad().Cascade.None();
+        References(x => x.Arrival , "Arrival").Not.LazyLoad().Cascade.Merge();
     }
 }

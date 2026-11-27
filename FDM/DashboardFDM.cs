@@ -35,4 +35,6 @@ public class DashboardFDM
     public async Task ChangeBookingStatus(BookingVO booking , BookingVO.BookingStatus status)
         => await new BookingBE().ChangeBookingStatus(booking , status);
 
+    public async Task<IList<ArrivalVO>> GetArrivalList()
+        => await new ArrivalBE().GetArrivalList();
 }
