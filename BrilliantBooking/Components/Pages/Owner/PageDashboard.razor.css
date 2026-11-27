@@ -588,7 +588,8 @@
 }
 
 .booking-filter input,
-.booking-status-select {
+.booking-status-select,
+.booking-status-label {
     min-height: 2.35rem;
     border: 1px solid rgba(214, 211, 209, 0.9);
     border-radius: 0.7rem;
@@ -698,38 +699,48 @@
     font-size: 0.6875rem;
 }
 
-.booking-status-select {
+.booking-status-select,
+.booking-status-label {
+    display: inline-block;
     min-width: 6.7rem;
     padding: 0.35rem 0.5rem;
-    cursor: pointer;
     font-weight: 800;
 }
 
-.booking-status-select.status-active {
+.booking-status-select {
+    cursor: pointer;
+}
+
+.booking-status-select.status-active,
+.booking-status-label.status-active {
     border-color: rgba(52, 199, 89, 0.45);
     background: rgba(52, 199, 89, 0.12);
     color: #15803d;
 }
 
-.booking-status-select.status-booked {
+.booking-status-select.status-booked,
+.booking-status-label.status-booked {
     border-color: rgba(0, 113, 227, 0.35);
     background: rgba(0, 113, 227, 0.1);
     color: #005bb5;
 }
 
-.booking-status-select.status-completed {
+.booking-status-select.status-completed,
+.booking-status-label.status-completed {
     border-color: rgba(120, 113, 108, 0.35);
     background: rgba(120, 113, 108, 0.1);
     color: #57534e;
 }
 
-.booking-status-select.status-past {
+.booking-status-select.status-past,
+.booking-status-label.status-past {
     border-color: rgba(120, 113, 108, 0.35);
     background: rgba(120, 113, 108, 0.1);
     color: #57534e;
 }
 
-.booking-status-select.status-cancelled {
+.booking-status-select.status-cancelled,
+.booking-status-label.status-cancelled {
     border-color: rgba(255, 59, 48, 0.35);
     background: rgba(255, 59, 48, 0.1);
     color: #dc2626;

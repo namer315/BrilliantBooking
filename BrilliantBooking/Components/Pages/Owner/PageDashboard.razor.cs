@@ -22,7 +22,7 @@ public partial class PageDashboard : PageBase
 
     private static IReadOnlyList<BookingVO.BookingStatus> BookingStatuses { get; } =
         Enum.GetValues<BookingVO.BookingStatus>();
-    private static IList<BookingVO.BookingStatus> DefaultStatus = new List<BookingVO.BookingStatus>()
+    private static IList<BookingVO.BookingStatus> DefaultStatus => new List<BookingVO.BookingStatus>()
     {
             BookingVO.BookingStatus.Active,
             BookingVO.BookingStatus.Cancelled,

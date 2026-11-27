@@ -3,6 +3,8 @@
 @layout PrivateLayout
 @inherits PageBase
 
+@using Data.VO.Booking;
+
 
 <main class="dashboard-shell">
     <section class="operations-section">
@@ -231,13 +233,22 @@
                                     <td>@booking.GuestCount guests</td>
                                     <td>@(booking.BookingTable?.Name ?? "Unassigned")</td>
                                     <td>
-                                        <label class="sr-only" for="booking-status-@booking.Id">Status for @booking.Reference</label>
-                                        <select id="booking-status-@booking.Id" class="booking-status-select status-@booking.Status.ToString().ToLowerInvariant()" value="@booking.Status" @onchange="args => OnBookingStatusChanged(booking, args)">
-                                            @foreach (var status in BookingStatuses)
-                                            {
-                                                <option value="@status">@status</option>
-                                            }
-                                        </select>
+                                        @if (DefaultStatus.Contains(booking.Status))
+                                        {
+                                            <label class="sr-only" for="booking-status-@booking.Id">Status for @booking.Reference</label>
+                                            <select id="booking-status-@booking.Id" class="booking-status-select status-@booking.Status.ToString().ToLowerInvariant()" value="@booking.Status" @onchange="args => OnBookingStatusChanged(booking, args)">
+                                                @* @foreach (var status in DefaultStatus)
+                                                {
+                                                    <option value="@status">@status</option>
+                                                } *@
+                                                <option value="@BookingVO.BookingStatus.Active">@BookingVO.BookingStatus.CheckedIn</option>
+                                                <option value="@BookingVO.BookingStatus.Cancelled">@BookingVO.BookingStatus.Cancelled</option>
+                                            </select>
+                                        }
+                                        else
+                                        {
+                                            <label class="booking-status-label status-@booking.Status.ToString().ToLowerInvariant()">@GetBookingStatusLabel(booking.Status)</label>
+                                        }
                                     </td>
                                 </tr>
                             }
