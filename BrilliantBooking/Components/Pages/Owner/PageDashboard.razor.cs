@@ -194,7 +194,25 @@ public partial class PageDashboard : PageBase
 
     #endregion Booking Management
 
+    #region Arrival
 
+    private void SeatGuest(ArrivalVO arrival)
+    {
+        arrival.Status = ArrivalStatus.Seated;
+    }
+    private async Task ChangeStatus(ArrivalVO arrival)
+    {
+        try
+        {
+            await _fdm.ChangeStatus(arrival);
+            await dgSearch();
+        }
+        catch(Exception ex)
+        {
+            ShowException(ex);
+        }
+    }
+    #endregion Arriva
     private async Task RefreshOperationsAsync()
     {
         try
@@ -226,10 +244,6 @@ public partial class PageDashboard : PageBase
         //};
     }
 
-    private void SeatGuest(ArrivalVO arrival)
-    {
-        arrival.Status = ArrivalStatus.Seated;
-    }
 
     private int GetTableX(int tableIndex) => 120 + tableIndex % 4 * 180;
 

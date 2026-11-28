@@ -128,9 +128,9 @@
                             <div>
                                 <div class="arrival-title-row">
                                     <strong>@arrival.Time.ToString(@"hh\:mm")</strong>
-                                    <span>@arrival.GuestName (@arrival.PartySize)</span>
+                                    <span>@arrival.Booking.Customer.Name (@arrival.PartySize)</span>
                                 </div>
-                                <span class="arrival-detail">@arrival.TableName • @arrival.Tags</span>
+                                <span class="arrival-detail">@arrival.ArrivalTable?.Name • @arrival.Tags</span>
                             </div>
                             @if (arrival.Status == ArrivalVO.ArrivalStatus.Seated)
                             {

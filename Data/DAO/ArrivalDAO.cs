@@ -29,7 +29,8 @@ public class ArrivalDAO : NHibernateRepository
         string query = $@"
             SELECT arrival
             FROM ArrivalVO arrival
-                LEFT JOIN arrival.Booking booking
+                LEFT JOIN arrival.ArrivalTable table
+                LEFT JOIN FETCH arrival.Booking booking
                 LEFT JOIN booking.Restaurant restaurant
                 LEFT JOIN restaurant.Owner owner
             {where}

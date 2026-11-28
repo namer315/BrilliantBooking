@@ -37,4 +37,7 @@ public class DashboardFDM
 
     public async Task<IList<ArrivalVO>> GetArrivalList()
         => await new ArrivalBE().GetArrivalList();
+
+    public async Task ChangeStatus(ArrivalVO arrival)
+        => await new ArrivalBE().ChangeStatus(arrival);
 }

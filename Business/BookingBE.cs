@@ -28,13 +28,16 @@ public class BookingBE
                     case BookingStatus.CheckedIn:
                         booking = await _dao.GetBookingBy(booking.Id);
                         booking.Status = status;
-                        booking.BookingTable.Status = TableVO.TableStatus.Seated;
+                        //booking.BookingTable.Status = TableVO.TableStatus.Seated;
 
                         booking.Arrival = new ArrivalVO();
                         booking.Arrival.Booking = booking;
-                        booking.Arrival.Table = booking.BookingTable;
+                        booking.Arrival.ArrivalTable = booking.BookingTable;
+                        booking.Arrival.Time = DateTime.UtcNow.TimeOfDay;
+                        booking.Arrival.PartySize = booking.GuestCount;
+                        booking.Arrival.Status = ArrivalVO.ArrivalStatus.Arrived;
 
-                        await Persist(booking);
+                        booking = await Persist(booking);
                         //await _dao.Update(booking.BookingTable , nameof(TableVO.Status) , booking.BookingTable.Status);
                         break;
                     case BookingStatus.Cancelled:
@@ -57,9 +60,9 @@ public class BookingBE
                     case BookingStatus.Cancelled:
                     {
                         booking.Status = status;
-                        booking.BookingTable.Status = TableVO.TableStatus.Available;
+                        //booking.BookingTable.Status = TableVO.TableStatus.Available;
                         await _dao.Update(booking , nameof(BookingVO.Status) , booking.Status);
-                        await _dao.Update(booking.BookingTable , nameof(TableVO.Status) , booking.BookingTable.Status);
+                        //await _dao.Update(booking.BookingTable , nameof(TableVO.Status) , booking.BookingTable.Status);
                     }
                         break;
                     default:
