@@ -14,11 +14,11 @@ public class FavoriteVO : EntityBase
     public virtual RestaurantVO Restaurant { get; set; } = null!;
 }
 
-public class FavoriteMap : EntityWithIdMapping<FavoriteVO>
-{
-    public FavoriteMap()
-    {
-        References(x => x.Customer, "Customer").Not.Nullable().Index("IX_Favorites_CustomerId");
-        References(x => x.Restaurant, "Restaurant").Not.Nullable();
-    }
-}
+//public class FavoriteMap : EntityWithIdMapping<FavoriteVO>
+//{
+//    public FavoriteMap()
+//    {
+//        References(x => x.Customer, "Customer").Not.Nullable().Index("IX_Favorites_CustomerId");
+//        References(x => x.Restaurant, "Restaurant").Not.Nullable();
+//    }
+//}
