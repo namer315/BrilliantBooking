@@ -50,7 +50,7 @@ public sealed class RouteUrlService
             //NavigationRoutes.LogOut => "/logout",
             //NavigationRoutes.Booking => "/booking",
             //NavigationRoutes.Customers => "/customers",
-            NavigationRoutes.Resturant => "App/Resturant",
+            NavigationRoutes.Resturant => "App/Restaurant",
             NavigationRoutes.Dashboard => "/Owner/Dashboard",
             _ => $"/{route.ToString()}"
             //_ => throw new ArgumentOutOfRangeException(nameof(route) , route , "Unsupported route enum value.")

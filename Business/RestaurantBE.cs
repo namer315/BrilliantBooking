@@ -169,11 +169,11 @@ public class RestaurantBE
     public async Task<RestaurantVO> GetNew()
     {
         RestaurantVO restaurant = new RestaurantVO();
-        //RestaurantVO restaurant = (await GetRestaurantLsitBy(new()))[index++];
+        //RestaurantVO restaurant = GetSampleRestaurantList()[index++];
         //RestaurantPhotoVO restaurantPhoto = new RestaurantPhotoVO
         //{
-        //    Name = restaurant.Name ,
-        //    Photo = await GetImageBytesAsync(restaurant.ImageUrl) ,
+        //    Name = restaurant.Name,
+        //    Photo = await GetImageBytesAsync(restaurant.ImageUrl),
         //    Restaurant = restaurant
         //};
 

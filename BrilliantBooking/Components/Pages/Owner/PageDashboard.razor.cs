@@ -101,6 +101,10 @@ public partial class PageDashboard : PageBase
         Search.FromDate = DateOnly.Date;
 
         ResturantList = await _fdm.GetResturantList();
+
+        if (ResturantList is not { Count: > 0 })
+            NavigateToNew(MenuVO.NavigationRoutes.Resturant);
+
         Search.Resturant = ResturantList.FirstOrDefault();
 
         PopulateSampleArrivals();

@@ -4,6 +4,7 @@ using Data.Managers;
 using Data.VO;
 using Microsoft.JSInterop;
 using System.Globalization;
+using System.Net;
 using System.Text.Json;
 
 namespace BrilliantBooking.Services;
@@ -12,6 +13,7 @@ public class SessionService
 {
     private readonly IJSRuntime _js;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    public IPAddress? RemoteIpAddress => _httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress;
     public ISession Session
     {
         get
